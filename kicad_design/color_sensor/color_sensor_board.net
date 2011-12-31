@@ -1,0 +1,48 @@
+# EESchema Netlist Version 1.1 created  Thu 20 Oct 2011 06:23:11 PM PDT
+(
+ ( /4E9F2A04 SM0603 C1 0.1_uF
+  ( 1 /5V )
+  ( 2 GND )
+ )
+ ( /4E9F289F 6X2_SHRD_HEADER P1 CONN_6X2
+  ( 1 ? )
+  ( 2 /D4 )
+  ( 3 /5V )
+  ( 4 /D5 )
+  ( 5 ? )
+  ( 6 /A0 )
+  ( 7 GND )
+  ( 8 /A1 )
+  ( 9 /D2 )
+  ( 10 /A2 )
+  ( 11 /D3 )
+  ( 12 /A3 )
+ )
+ ( /4E9F77B0 SCREW_TERMINAL_2 P2 CONN_2
+  ( 1 /A3 )
+  ( 2 GND )
+ )
+ ( /4EA0C6DF SCREW_TERMINAL_2 P3 CONN_2
+  ( 1 /A1 )
+  ( 2 /A2 )
+ )
+ ( /4E9F1F08 TCS3200 U1 TCS3200
+  ( 1 /A0 )
+  ( 2 /D5 )
+  ( 3 GND )
+  ( 4 GND )
+  ( 5 /5V )
+  ( 6 /D2 )
+  ( 7 /D3 )
+  ( 8 /D4 )
+ )
+)
+*
+{ Allowed footprints by component:
+$component C1
+ SM*
+ C?
+ C1-1
+$endlist
+$endfootprintlist
+}

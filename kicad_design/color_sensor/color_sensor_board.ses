@@ -1,0 +1,281 @@
+
+(session color_sensor_board.ses
+  (base_design color_sensor_board.dsn)
+  (placement
+    (resolution mil 10)
+    (component MOUNT_HOLE_4_40
+      (place MOUNT_HOLE_2 67000 -21000 front 0)
+      (place MOUNT_HOLE_1 51000 -21000 front 0)
+      (place MOUNT_HOLE_4 67000 -29000 front 0)
+      (place MOUNT_HOLE_3 51000 -29000 front 0)
+    )
+    (component TCS3200
+      (place U1 59000 -25000 front 0)
+    )
+    (component 6X2_SHRD_HEADER
+      (place P1 54000 -25000 back 270)
+    )
+    (component SM0603
+      (place C1 61797 -25000 front 0)
+    )
+    (component SCREW_TERMINAL_2
+      (place P2 66000 -23500 front 90)
+      (place P3 66000 -26500 front 90)
+    )
+  )
+  (was_is
+  )
+  (routes 
+    (resolution mil 10)
+    (parser
+      (host_cad "Kicad's PCBNEW")
+      (host_version "(2011-07-19)-testing")
+    )
+    (library_out 
+      (padstack "Via[0-1]_35:25_mil"
+        (shape
+          (circle Front 350 0 0)
+        )
+        (shape
+          (circle Back 350 0 0)
+        )
+        (attach off)
+      )
+      (padstack "Via[0-1]_35:0_mil"
+        (shape
+          (circle Front 350 0 0)
+        )
+        (shape
+          (circle Back 350 0 0)
+        )
+        (attach off)
+      )
+    )
+    (network_out 
+      (net /5V
+        (wire
+          (path Front 120
+            59750 -24085
+            59750 -24691
+          )
+        )
+        (wire
+          (path Front 120
+            61497 -25000
+            60059 -25000
+            59750 -24691
+          )
+        )
+        (wire
+          (path Front 120
+            59750 -24085
+            59750 -23479
+          )
+        )
+        (wire
+          (path Front 120
+            59750 -23479
+            57473 -21202
+            53715 -21202
+            52242 -22675
+            52242 -25242
+            53500 -26500
+          )
+        )
+      )
+      (net /A0
+        (wire
+          (path Front 120
+            58250 -25916
+            58250 -25310
+          )
+        )
+        (wire
+          (path Front 120
+            54500 -25500
+            54690 -25310
+            58250 -25310
+          )
+        )
+      )
+      (net /A1
+        (wire
+          (path Back 120
+            65472 -27000
+            62914 -24442
+            54558 -24442
+            54500 -24500
+          )
+        )
+        (wire
+          (path Back 120
+            66000 -27000
+            65472 -27000
+          )
+        )
+      )
+      (net /A2
+        (wire
+          (path Back 120
+            54500 -23500
+            63500 -23500
+            66000 -26000
+          )
+        )
+      )
+      (net /A3
+        (wire
+          (path Back 120
+            66000 -24000
+            65472 -24000
+          )
+        )
+        (wire
+          (path Back 120
+            65472 -24000
+            63972 -22500
+            54500 -22500
+          )
+        )
+      )
+      (net /D2
+        (wire
+          (path Front 120
+            53500 -23500
+            52974 -22974
+            52974 -22299
+            53613 -21660
+            57431 -21660
+            59250 -23479
+          )
+        )
+        (wire
+          (path Front 120
+            59250 -24085
+            59250 -23479
+          )
+        )
+      )
+      (net /D3
+        (wire
+          (path Front 120
+            58750 -24085
+            58750 -23479
+          )
+        )
+        (wire
+          (path Front 120
+            53500 -22500
+            54116 -21884
+            57155 -21884
+            58750 -23479
+          )
+        )
+      )
+      (net /D4
+        (wire
+          (path Front 120
+            58250 -24691
+            58161 -24780
+            57220 -24780
+          )
+        )
+        (wire
+          (path Back 120
+            54500 -27500
+            57220 -24780
+          )
+        )
+        (wire
+          (path Front 120
+            58250 -24085
+            58250 -24691
+          )
+        )
+        (via "Via[0-1]_35:25_mil" 57220 -24780
+        )
+      )
+      (net /D5
+        (wire
+          (path Front 120
+            58750 -25916
+            58750 -26522
+          )
+        )
+        (wire
+          (path Front 120
+            54500 -26500
+            54522 -26522
+            58750 -26522
+          )
+        )
+      )
+      (net GND
+        (wire
+          (path Front 120
+            62097 -25000
+            62385 -25000
+          )
+        )
+        (wire
+          (path Front 120
+            66000 -23000
+            64385 -23000
+            62385 -25000
+          )
+        )
+        (wire
+          (path Front 120
+            59250 -25916
+            59250 -25310
+          )
+        )
+        (wire
+          (path Front 120
+            59750 -25613
+            59447 -25310
+            59250 -25310
+          )
+        )
+        (wire
+          (path Front 120
+            59750 -25613
+            59750 -25310
+          )
+        )
+        (wire
+          (path Front 120
+            59750 -25916
+            59750 -25613
+          )
+        )
+        (wire
+          (path Front 120
+            62097 -25000
+            61809 -25000
+          )
+        )
+        (wire
+          (path Front 120
+            61809 -25000
+            61809 -25288
+            61691 -25406
+            60074 -25406
+            59978 -25310
+            59750 -25310
+          )
+        )
+        (wire
+          (path Back 120
+            66000 -23000
+            64986 -21986
+            53020 -21986
+            52984 -22022
+            52984 -23984
+            53500 -24500
+          )
+        )
+      )
+    )
+  )
+)

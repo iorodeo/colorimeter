@@ -1,0 +1,45 @@
+Cmp-Mod V01 Created by CvPCB (2011-07-19)-testing date = Tue 03 Jan 2012 12:16:26 PM PST
+
+BeginCmp
+TimeStamp = /4F035C71;
+Reference = P1;
+ValeurCmp = CONN_2;
+IdModule  = SCREW_TERMINAL_2;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F035C74;
+Reference = P2;
+ValeurCmp = CONN_2;
+IdModule  = SCREW_TERMINAL_2;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F035CCA;
+Reference = R1;
+ValeurCmp = 90;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F035CCF;
+Reference = R2;
+ValeurCmp = 90;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F035CD1;
+Reference = R3;
+ValeurCmp = 150;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F035E14;
+Reference = U1;
+ValeurCmp = RGB_MULTILED;
+IdModule  = RGB_MULTILED;
+EndCmp
+
+EndListe

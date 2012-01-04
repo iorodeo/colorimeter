@@ -1,0 +1,195 @@
+
+(session rgb_led_board.ses
+  (base_design rgb_led_board.dsn)
+  (placement
+    (resolution mil 10)
+    (component SM0805
+      (place R1 34500 -23500 front 0)
+      (place R2 34500 -25000 front 0)
+      (place R3 34500 -26500 front 0)
+    )
+    (component SCREW_TERMINAL_2
+      (place P1 46161 -26500 front 90)
+      (place P2 46100 -23500 front 90)
+    )
+    (component RGB_MULTILED
+      (place U1 39000 -25000 front 0)
+    )
+    (component MOUNT_HOLE_4_40
+      (place M1 31000 -21000 front 0)
+      (place M2 31000 -29000 front 0)
+      (place M3 47000 -29000 front 0)
+      (place M4 47000 -21000 front 0)
+    )
+  )
+  (was_is
+  )
+  (routes 
+    (resolution mil 10)
+    (parser
+      (host_cad "Kicad's PCBNEW")
+      (host_version "(2011-07-19)-testing")
+    )
+    (library_out 
+      (padstack "Via[0-1]_35:25_mil"
+        (shape
+          (circle Front 350 0 0)
+        )
+        (shape
+          (circle Back 350 0 0)
+        )
+        (attach off)
+      )
+      (padstack "Via[0-1]_35:0_mil"
+        (shape
+          (circle Front 350 0 0)
+        )
+        (shape
+          (circle Back 350 0 0)
+        )
+        (attach off)
+      )
+    )
+    (network_out 
+      (net /A1
+        (wire
+          (path Front 80
+            46161 -27000
+            46732 -26429
+            46732 -25491
+            45808 -24567
+            39581 -24567
+          )
+        )
+      )
+      (net /A2
+        (wire
+          (path Front 80
+            39581 -25000
+            45161 -25000
+            46161 -26000
+          )
+        )
+      )
+      (net /A3
+        (wire
+          (path Front 80
+            39581 -25433
+            39182 -25433
+          )
+        )
+        (wire
+          (path Front 80
+            39182 -25433
+            39182 -24306
+            39488 -24000
+            46100 -24000
+          )
+        )
+      )
+      (net GND
+        (wire
+          (path Front 80
+            34875 -23500
+            35193 -23500
+          )
+        )
+        (wire
+          (path Front 80
+            46100 -23000
+            35693 -23000
+            35193 -23500
+          )
+        )
+        (wire
+          (path Front 80
+            34495 -25419
+            34495 -26438
+            34557 -26500
+          )
+        )
+        (wire
+          (path Front 80
+            34875 -25000
+            34495 -25380
+            34495 -25419
+          )
+        )
+        (wire
+          (path Front 80
+            34495 -25419
+            33822 -25419
+            33800 -25397
+            33800 -23109
+            33828 -23081
+            34456 -23081
+            34875 -23500
+          )
+        )
+        (wire
+          (path Front 80
+            34875 -26500
+            34557 -26500
+          )
+        )
+      )
+      (net "N-000001"
+        (wire
+          (path Front 80
+            34125 -25000
+            34443 -25000
+          )
+        )
+        (wire
+          (path Front 80
+            38419 -25000
+            35527 -25000
+            35108 -24581
+            34544 -24581
+            34443 -24682
+            34443 -25000
+          )
+        )
+      )
+      (net "N-000002"
+        (wire
+          (path Front 80
+            38419 -25433
+            38020 -25433
+          )
+        )
+        (wire
+          (path Front 80
+            38020 -25433
+            36534 -26919
+            34544 -26919
+            34125 -26500
+          )
+        )
+      )
+      (net "N-000003"
+        (wire
+          (path Front 80
+            38419 -24567
+            38020 -24567
+          )
+        )
+        (wire
+          (path Front 80
+            38020 -24567
+            37739 -24286
+            34911 -24286
+            34443 -23818
+            34443 -23500
+          )
+        )
+        (wire
+          (path Front 80
+            34125 -23500
+            34443 -23500
+          )
+        )
+      )
+    )
+  )
+)

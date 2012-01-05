@@ -1,0 +1,85 @@
+# EESchema Netlist Version 1.1 created  Wed 04 Jan 2012 03:19:05 PM PST
+(
+ ( /4F04AA4F SM0805 C1 CP1
+  ( 1 /VIN )
+  ( 2 GND )
+ )
+ ( /4F04D008 PIN_ARRAY_3X1 K1 CONN_3
+  ( 1 /5V )
+  ( 2 GND )
+  ( 3 /POT )
+ )
+ ( /4F04A60F PIN_ARRAY_4X1 P1 CONN_4
+  ( 1 /VIN )
+  ( 2 GND )
+  ( 3 /SRX )
+  ( 4 /STX )
+ )
+ ( /4F03AC98 5X2_SHRD_HEADER P2 CONN_5X2
+  ( 1 /5V )
+  ( 2 /RED )
+  ( 3 GND )
+  ( 4 /GREEN )
+  ( 5 /S0 )
+  ( 6 /BLUE )
+  ( 7 /S1 )
+  ( 8 /FREQ )
+  ( 9 /S2 )
+  ( 10 /S3 )
+ )
+ ( /4F04A9DF DCJACK_2PIN P3 CONN_2
+  ( 1 /VIN )
+  ( 2 GND )
+ )
+ ( /4F04AF56 PIN_ARRAY_2X1 P4 CONN_2
+  ( 1 /BUTTON )
+  ( 2 GND )
+ )
+ ( /4F04C494 POT296 RV1 POT
+  ( 1 /5V )
+  ( 2 /POT )
+  ( 3 GND )
+ )
+ ( /4F03B33E ARDUINO_MEGA_SHIELD SHIELD1 ARDUINO_SHIELD
+  ( 0 ? )
+  ( 1 ? )
+  ( 2 /BUTTON )
+  ( 3 ? )
+  ( 3V3 ? )
+  ( 4 /S0 )
+  ( 5 /S1 )
+  ( 5V /5V )
+  ( 6 /S2 )
+  ( 7 /S3 )
+  ( 8 /FREQ )
+  ( 9 /BLUE )
+  ( 10 /GREEN )
+  ( 11 /RED )
+  ( 12 /SRX )
+  ( 13 /STX )
+  ( AD0 /POT )
+  ( AD1 ? )
+  ( AD2 ? )
+  ( AD3 ? )
+  ( AD4 ? )
+  ( AD5 ? )
+  ( AREF ? )
+  ( GND1 GND )
+  ( GND2 ? )
+  ( GND3 ? )
+  ( RST ? )
+  ( V_IN /VIN )
+ )
+ ( /4F04A9BA $noname$ SW1 SW_PUSH
+  ( 1 /BUTTON )
+  ( 2 GND )
+ )
+)
+*
+{ Allowed footprints by component:
+$component C1
+ CP*
+ SM*
+$endlist
+$endfootprintlist
+}

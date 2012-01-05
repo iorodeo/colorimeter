@@ -1,0 +1,327 @@
+EESchema Schematic File Version 2  date Wed 04 Jan 2012 01:46:40 PM PST
+LIBS:power
+LIBS:device
+LIBS:transistors
+LIBS:conn
+LIBS:linear
+LIBS:regul
+LIBS:74xx
+LIBS:cmos4000
+LIBS:adc-dac
+LIBS:memory
+LIBS:xilinx
+LIBS:special
+LIBS:microcontrollers
+LIBS:dsp
+LIBS:microchip
+LIBS:analog_switches
+LIBS:motorola
+LIBS:texas
+LIBS:intel
+LIBS:audio
+LIBS:interface
+LIBS:digital-audio
+LIBS:philips
+LIBS:display
+LIBS:cypress
+LIBS:siliconi
+LIBS:opto
+LIBS:atmel
+LIBS:contrib
+LIBS:valves
+LIBS:arduino_shieldsNCL
+LIBS:tcs3200
+EELAYER 43  0
+EELAYER END
+$Descr A4 11700 8267
+encoding utf-8
+Sheet 1 1
+Title ""
+Date "4 jan 2012"
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+Text Label 3000 5250 2    60   ~ 0
+POT
+Text Label 2600 4650 0    60   ~ 0
+5V
+Text Label 2600 5750 0    60   ~ 0
+GND
+$Comp
+L GND #PWR?
+U 1 1 4F04C4CB
+P 2600 5750
+F 0 "#PWR?" H 2600 5750 30  0001 C CNN
+F 1 "GND" H 2600 5680 30  0001 C CNN
+	1    2600 5750
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2600 5500 2600 5750
+Wire Wire Line
+	2600 5000 2600 4650
+Wire Wire Line
+	9150 6000 9750 6000
+Wire Wire Line
+	6900 6150 7500 6150
+Wire Wire Line
+	4150 2350 4650 2350
+Wire Wire Line
+	8300 2050 8300 1800
+Wire Wire Line
+	9200 2100 8700 2100
+Wire Wire Line
+	4150 3050 4650 3050
+Wire Wire Line
+	7350 2400 6800 2400
+Wire Wire Line
+	7350 2200 6800 2200
+Wire Wire Line
+	8500 4150 9000 4150
+Wire Wire Line
+	8500 3950 9000 3950
+Wire Wire Line
+	8500 3750 9000 3750
+Wire Wire Line
+	7700 4050 7200 4050
+Wire Wire Line
+	7700 3850 7200 3850
+Wire Wire Line
+	4150 3250 4650 3250
+Wire Wire Line
+	4150 3450 4650 3450
+Wire Wire Line
+	4150 2550 4650 2550
+Wire Wire Line
+	4150 2750 4650 2750
+Wire Wire Line
+	2250 2650 1750 2650
+Wire Wire Line
+	2250 2750 1750 2750
+Wire Wire Line
+	4150 2650 4650 2650
+Wire Wire Line
+	4150 2450 4650 2450
+Wire Wire Line
+	4150 3150 4650 3150
+Wire Wire Line
+	7700 3750 7200 3750
+Wire Wire Line
+	7700 3950 7200 3950
+Wire Wire Line
+	7700 4150 7200 4150
+Wire Wire Line
+	8500 3850 9000 3850
+Wire Wire Line
+	8500 4050 9000 4050
+Wire Wire Line
+	7350 2100 6800 2100
+Wire Wire Line
+	7350 2300 6800 2300
+Wire Wire Line
+	2250 2950 1750 2950
+Wire Wire Line
+	4150 2950 4650 2950
+Wire Wire Line
+	9200 2300 8950 2300
+Wire Wire Line
+	8950 2300 8950 2550
+Wire Wire Line
+	8300 2450 8300 2700
+Wire Wire Line
+	4150 2250 4650 2250
+Wire Wire Line
+	8600 6150 8100 6150
+Wire Wire Line
+	9150 6200 9750 6200
+Wire Wire Line
+	2750 5250 3000 5250
+$Comp
+L POT RV?
+U 1 1 4F04C494
+P 2600 5250
+F 0 "RV?" H 2600 5150 50  0000 C CNN
+F 1 "POT" H 2600 5250 50  0000 C CNN
+	1    2600 5250
+	0    1    1    0   
+$EndComp
+Text Notes 9100 6450 0    60   ~ 0
+enclosure calibration button
+Text Notes 7250 6450 0    60   ~ 0
+smt calibration button
+Text Label 9150 6200 0    60   ~ 0
+GND
+Text Label 8600 6150 2    60   ~ 0
+GND
+Text Label 9150 6000 0    60   ~ 0
+BUTTON
+Text Label 6900 6150 0    60   ~ 0
+BUTTON
+$Comp
+L CONN_2 P?
+U 1 1 4F04AF56
+P 10100 6100
+F 0 "P?" V 10050 6100 40  0000 C CNN
+F 1 "CONN_2" V 10150 6100 40  0000 C CNN
+	1    10100 6100
+	1    0    0    -1  
+$EndComp
+NoConn ~ 4150 3350
+Text Label 4650 2950 2    60   ~ 0
+S3
+Text Label 4650 3050 2    60   ~ 0
+S2
+Text Label 4650 2250 2    60   ~ 0
+STX
+Text Label 4650 2350 2    60   ~ 0
+SRX
+Text Label 8300 1800 3    60   ~ 0
+VIN
+Text Label 8300 2700 0    60   ~ 0
+GND
+$Comp
+L GND #PWR?
+U 1 1 4F04AA6D
+P 8300 2700
+F 0 "#PWR?" H 8300 2700 30  0001 C CNN
+F 1 "GND" H 8300 2630 30  0001 C CNN
+	1    8300 2700
+	1    0    0    -1  
+$EndComp
+$Comp
+L CP1 C?
+U 1 1 4F04AA4F
+P 8300 2250
+F 0 "C?" H 8350 2350 50  0000 L CNN
+F 1 "CP1" H 8350 2150 50  0000 L CNN
+	1    8300 2250
+	1    0    0    -1  
+$EndComp
+Text Label 8700 2100 0    60   ~ 0
+VIN
+Text Label 8950 2550 0    60   ~ 0
+GND
+$Comp
+L GND #PWR?
+U 1 1 4F04AA18
+P 8950 2550
+F 0 "#PWR?" H 8950 2550 30  0001 C CNN
+F 1 "GND" H 8950 2480 30  0001 C CNN
+	1    8950 2550
+	1    0    0    -1  
+$EndComp
+$Comp
+L CONN_2 P?
+U 1 1 4F04A9DF
+P 9550 2200
+F 0 "P?" V 9500 2200 40  0000 C CNN
+F 1 "CONN_2" V 9600 2200 40  0000 C CNN
+	1    9550 2200
+	1    0    0    -1  
+$EndComp
+$Comp
+L SW_PUSH SW?
+U 1 1 4F04A9BA
+P 7800 6150
+F 0 "SW?" H 7950 6260 50  0000 C CNN
+F 1 "SW_PUSH" H 7800 6070 50  0000 C CNN
+	1    7800 6150
+	1    0    0    -1  
+$EndComp
+Text Label 1750 2950 0    60   ~ 0
+VIN
+Text Notes 7450 4350 0    60   ~ 0
+header to color sensor board
+Text Notes 6750 1700 0    60   ~ 0
+software serial (display)
+Text Label 6800 2400 0    60   ~ 0
+STX
+Text Label 6800 2300 0    60   ~ 0
+SRX
+Text Label 6800 2200 0    60   ~ 0
+GND
+Text Label 6800 2100 0    60   ~ 0
+VIN
+$Comp
+L CONN_4 P?
+U 1 1 4F04A60F
+P 7700 2250
+F 0 "P?" V 7650 2250 50  0000 C CNN
+F 1 "CONN_4" V 7750 2250 50  0000 C CNN
+	1    7700 2250
+	1    0    0    -1  
+$EndComp
+Text Label 9000 3750 2    60   ~ 0
+RED
+Text Label 9000 3850 2    60   ~ 0
+GREEN
+Text Label 9000 3950 2    60   ~ 0
+BLUE
+Text Label 9000 4050 2    60   ~ 0
+FREQ
+Text Label 9000 4150 2    60   ~ 0
+S3
+Text Label 7200 4150 0    60   ~ 0
+S2
+Text Label 7200 4050 0    60   ~ 0
+S1
+Text Label 7200 3950 0    60   ~ 0
+S0
+Text Label 7200 3850 0    60   ~ 0
+GND
+Text Label 7200 3750 0    60   ~ 0
+5V
+NoConn ~ 2250 2450
+NoConn ~ 2250 2550
+NoConn ~ 2250 2850
+NoConn ~ 2250 3150
+NoConn ~ 2250 3250
+NoConn ~ 2250 3350
+NoConn ~ 2250 3450
+NoConn ~ 2250 3550
+NoConn ~ 2250 3650
+NoConn ~ 4150 3650
+NoConn ~ 4150 3550
+NoConn ~ 4150 2150
+NoConn ~ 4150 2050
+Text Label 1750 2750 0    60   ~ 0
+GND
+Text Label 1750 2650 0    60   ~ 0
+5V
+Text Label 4650 2450 2    60   ~ 0
+RED
+Text Label 4650 2550 2    60   ~ 0
+GREEN
+Text Label 4650 2650 2    60   ~ 0
+BLUE
+Text Label 4650 2750 2    60   ~ 0
+FREQ
+Text Label 4650 3150 2    60   ~ 0
+S1
+Text Label 4650 3250 2    60   ~ 0
+S0
+Text Label 4650 3450 2    60   ~ 0
+BUTTON
+$Comp
+L ARDUINO_SHIELD SHIELD?
+U 1 1 4F03B33E
+P 3200 2850
+F 0 "SHIELD?" H 2850 3800 60  0000 C CNN
+F 1 "ARDUINO_SHIELD" H 3250 1900 60  0000 C CNN
+	1    3200 2850
+	1    0    0    -1  
+$EndComp
+$Comp
+L CONN_5X2 P?
+U 1 1 4F03AC98
+P 8100 3950
+F 0 "P?" H 8100 4250 60  0000 C CNN
+F 1 "CONN_5X2" V 8100 3950 50  0000 C CNN
+	1    8100 3950
+	1    0    0    -1  
+$EndComp
+$EndSCHEMATC

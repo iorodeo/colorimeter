@@ -1,0 +1,66 @@
+Cmp-Mod V01 Created by CvPCB (2011-07-19)-testing date = Wed 04 Jan 2012 03:19:05 PM PST
+
+BeginCmp
+TimeStamp = /4F04AA4F;
+Reference = C1;
+ValeurCmp = CP1;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F04D008;
+Reference = K1;
+ValeurCmp = CONN_3;
+IdModule  = PIN_ARRAY_3X1;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F04A60F;
+Reference = P1;
+ValeurCmp = CONN_4;
+IdModule  = PIN_ARRAY_4X1;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F03AC98;
+Reference = P2;
+ValeurCmp = CONN_5X2;
+IdModule  = 5X2_SHRD_HEADER;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F04A9DF;
+Reference = P3;
+ValeurCmp = CONN_2;
+IdModule  = DCJACK_2PIN;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F04AF56;
+Reference = P4;
+ValeurCmp = CONN_2;
+IdModule  = PIN_ARRAY_2X1;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F04C494;
+Reference = RV1;
+ValeurCmp = POT;
+IdModule  = POT296;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F03B33E;
+Reference = SHIELD1;
+ValeurCmp = ARDUINO_SHIELD;
+IdModule  = ARDUINO_MEGA_SHIELD;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F04A9BA;
+Reference = SW1;
+ValeurCmp = SW_PUSH;
+IdModule  = ;
+EndCmp
+
+EndListe

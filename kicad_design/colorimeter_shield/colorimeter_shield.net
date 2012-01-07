@@ -1,4 +1,4 @@
-# EESchema Netlist Version 1.1 created  Wed 04 Jan 2012 03:19:05 PM PST
+# EESchema Netlist Version 1.1 created  Fri 06 Jan 2012 06:51:46 PM PST
 (
  ( /4F04AA4F SM0805 C1 CP1
   ( 1 /VIN )
@@ -27,7 +27,7 @@
   ( 9 /S2 )
   ( 10 /S3 )
  )
- ( /4F04A9DF DCJACK_2PIN P3 CONN_2
+ ( /4F04A9DF smt_2p1_pwr_jack P3 CONN_2
   ( 1 /VIN )
   ( 2 GND )
  )
@@ -70,7 +70,7 @@
   ( RST ? )
   ( V_IN /VIN )
  )
- ( /4F04A9BA $noname$ SW1 SW_PUSH
+ ( /4F04A9BA smt_switch SW1 SW_PUSH
   ( 1 /BUTTON )
   ( 2 GND )
  )

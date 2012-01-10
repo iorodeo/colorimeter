@@ -1,4 +1,4 @@
-# EESchema Netlist Version 1.1 created  Fri 06 Jan 2012 06:51:46 PM PST
+# EESchema Netlist Version 1.1 created  Mon 09 Jan 2012 06:01:04 PM PST
 (
  ( /4F04AA4F SM0805 C1 CP1
   ( 1 /VIN )
@@ -6,8 +6,8 @@
  )
  ( /4F04D008 PIN_ARRAY_3X1 K1 CONN_3
   ( 1 /5V )
-  ( 2 GND )
-  ( 3 /POT )
+  ( 2 /POT2 )
+  ( 3 GND )
  )
  ( /4F04A60F PIN_ARRAY_4X1 P1 CONN_4
   ( 1 /VIN )
@@ -27,20 +27,16 @@
   ( 9 /S2 )
   ( 10 /S3 )
  )
- ( /4F04A9DF smt_2p1_pwr_jack P3 CONN_2
-  ( 1 /VIN )
-  ( 2 GND )
- )
  ( /4F04AF56 PIN_ARRAY_2X1 P4 CONN_2
   ( 1 /BUTTON )
   ( 2 GND )
  )
  ( /4F04C494 POT296 RV1 POT
   ( 1 /5V )
-  ( 2 /POT )
+  ( 2 /POT1 )
   ( 3 GND )
  )
- ( /4F03B33E ARDUINO_MEGA_SHIELD SHIELD1 ARDUINO_SHIELD
+ ( /4F03B33E ARDUINO_SHIELD SHIELD1 ARDUINO_SHIELD
   ( 0 ? )
   ( 1 ? )
   ( 2 /BUTTON )
@@ -57,8 +53,8 @@
   ( 11 /RED )
   ( 12 /SRX )
   ( 13 /STX )
-  ( AD0 /POT )
-  ( AD1 ? )
+  ( AD0 /POT1 )
+  ( AD1 /POT2 )
   ( AD2 ? )
   ( AD3 ? )
   ( AD4 ? )

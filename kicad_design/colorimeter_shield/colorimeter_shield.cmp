@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPCB (2011-07-19)-testing date = Fri 06 Jan 2012 06:51:46 PM PST
+Cmp-Mod V01 Created by CvPCB (2011-07-19)-testing date = Mon 09 Jan 2012 06:01:04 PM PST
 
 BeginCmp
 TimeStamp = /4F04AA4F;
@@ -29,13 +29,6 @@ IdModule  = 5X2_SHRD_HEADER;
 EndCmp
 
 BeginCmp
-TimeStamp = /4F04A9DF;
-Reference = P3;
-ValeurCmp = CONN_2;
-IdModule  = smt_2p1_pwr_jack;
-EndCmp
-
-BeginCmp
 TimeStamp = /4F04AF56;
 Reference = P4;
 ValeurCmp = CONN_2;
@@ -53,7 +46,7 @@ BeginCmp
 TimeStamp = /4F03B33E;
 Reference = SHIELD1;
 ValeurCmp = ARDUINO_SHIELD;
-IdModule  = ARDUINO_MEGA_SHIELD;
+IdModule  = ARDUINO_SHIELD;
 EndCmp
 
 BeginCmp

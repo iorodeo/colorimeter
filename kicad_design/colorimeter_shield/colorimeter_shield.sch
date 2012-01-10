@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date Wed 04 Jan 2012 04:01:56 PM PST
+EESchema Schematic File Version 2  date Mon 09 Jan 2012 06:30:10 PM PST
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -38,7 +38,7 @@ $Descr A4 11700 8267
 encoding utf-8
 Sheet 1 1
 Title ""
-Date "4 jan 2012"
+Date "10 jan 2012"
 Rev ""
 Comp ""
 Comment1 ""
@@ -65,19 +65,15 @@ Wire Wire Line
 Wire Wire Line
 	5050 1300 5550 1300
 Wire Wire Line
-	8550 4350 8550 4600
-Wire Wire Line
-	9200 4450 9200 4200
-Wire Wire Line
-	9200 4200 9450 4200
+	8200 4000 8200 4250
 Wire Wire Line
 	5050 2000 5550 2000
 Wire Wire Line
 	3150 2000 2650 2000
 Wire Wire Line
-	7600 4200 7050 4200
+	7250 3850 6700 3850
 Wire Wire Line
-	7600 4000 7050 4000
+	7250 3650 6700 3650
 Wire Wire Line
 	8550 1750 9050 1750
 Wire Wire Line
@@ -117,15 +113,13 @@ Wire Wire Line
 Wire Wire Line
 	8550 1850 9050 1850
 Wire Wire Line
-	7600 4100 7050 4100
+	7250 3750 6700 3750
 Wire Wire Line
-	7600 4300 7050 4300
+	7250 3950 6700 3950
 Wire Wire Line
 	5050 2100 5550 2100
 Wire Wire Line
-	9450 4000 8950 4000
-Wire Wire Line
-	8550 3950 8550 3700
+	8200 3600 8200 3350
 Wire Wire Line
 	5050 1400 5550 1400
 Wire Wire Line
@@ -144,8 +138,6 @@ Wire Wire Line
 	1200 1100 1200 1400
 Wire Wire Line
 	2050 1100 2050 1400
-Text Notes 9650 4450 0    60   ~ 0
-external power 9V
 Text Label 2050 1400 0    60   ~ 0
 5V
 Text Label 1650 1400 0    60   ~ 0
@@ -267,48 +259,26 @@ Text Label 5550 1300 2    60   ~ 0
 STX
 Text Label 5550 1400 2    60   ~ 0
 SRX
-Text Label 8550 3700 3    60   ~ 0
+Text Label 8200 3350 3    60   ~ 0
 VIN
-Text Label 8550 4600 0    60   ~ 0
+Text Label 8200 4250 0    60   ~ 0
 GND
 $Comp
 L GND #PWR06
 U 1 1 4F04AA6D
-P 8550 4600
-F 0 "#PWR06" H 8550 4600 30  0001 C CNN
-F 1 "GND" H 8550 4530 30  0001 C CNN
-	1    8550 4600
+P 8200 4250
+F 0 "#PWR06" H 8200 4250 30  0001 C CNN
+F 1 "GND" H 8200 4180 30  0001 C CNN
+	1    8200 4250
 	1    0    0    -1  
 $EndComp
 $Comp
 L CP1 C1
 U 1 1 4F04AA4F
-P 8550 4150
-F 0 "C1" H 8600 4250 50  0000 L CNN
-F 1 "CP1" H 8600 4050 50  0000 L CNN
-	1    8550 4150
-	1    0    0    -1  
-$EndComp
-Text Label 8950 4000 0    60   ~ 0
-VIN
-Text Label 9200 4450 0    60   ~ 0
-GND
-$Comp
-L GND #PWR07
-U 1 1 4F04AA18
-P 9200 4450
-F 0 "#PWR07" H 9200 4450 30  0001 C CNN
-F 1 "GND" H 9200 4380 30  0001 C CNN
-	1    9200 4450
-	1    0    0    -1  
-$EndComp
-$Comp
-L CONN_2 P3
-U 1 1 4F04A9DF
-P 9800 4100
-F 0 "P3" V 9750 4100 40  0000 C CNN
-F 1 "CONN_2" V 9850 4100 40  0000 C CNN
-	1    9800 4100
+P 8200 3800
+F 0 "C1" H 8250 3900 50  0000 L CNN
+F 1 "CP1" H 8250 3700 50  0000 L CNN
+	1    8200 3800
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -322,25 +292,25 @@ F 1 "SW_PUSH" H 7700 6070 50  0000 C CNN
 $EndComp
 Text Label 2650 2000 0    60   ~ 0
 VIN
-Text Notes 7500 2050 0    60   ~ 0
+Text Notes 7550 1200 0    60   ~ 0
 header to color sensor board
-Text Notes 7850 3550 0    60   ~ 0
+Text Notes 7500 3200 0    60   ~ 0
 software serial (display)
-Text Label 7050 4300 0    60   ~ 0
+Text Label 6700 3950 0    60   ~ 0
 STX
-Text Label 7050 4200 0    60   ~ 0
+Text Label 6700 3850 0    60   ~ 0
 SRX
-Text Label 7050 4100 0    60   ~ 0
+Text Label 6700 3750 0    60   ~ 0
 GND
-Text Label 7050 4000 0    60   ~ 0
+Text Label 6700 3650 0    60   ~ 0
 VIN
 $Comp
 L CONN_4 P1
 U 1 1 4F04A60F
-P 7950 4150
-F 0 "P1" V 7900 4150 50  0000 C CNN
-F 1 "CONN_4" V 8000 4150 50  0000 C CNN
-	1    7950 4150
+P 7600 3800
+F 0 "P1" V 7550 3800 50  0000 C CNN
+F 1 "CONN_4" V 7650 3800 50  0000 C CNN
+	1    7600 3800
 	1    0    0    -1  
 $EndComp
 Text Label 9050 1450 2    60   ~ 0

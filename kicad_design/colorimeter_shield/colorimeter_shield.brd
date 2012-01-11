@@ -1,4 +1,4 @@
-PCBNEW-BOARD Version 1 date Mon 09 Jan 2012 06:28:50 PM PST
+PCBNEW-BOARD Version 1 date Tue 10 Jan 2012 04:10:36 PM PST
 
 # Created by Pcbnew(2011-07-19)-testing
 
@@ -9,8 +9,8 @@ Ly 1FFF8001
 EnabledLayers 1FFF8001
 Links 31
 NoConn 1
-Di 21749 23465 49826 47025
-Ndraw 16
+Di 18502 23465 49826 47025
+Ndraw 17
 Ntrack 113
 Nzone 0
 BoardThickness 630
@@ -21,7 +21,7 @@ $EndGENERAL
 $SHEETDESCR
 Sheet A4 11700 8267
 Title ""
-Date "10 jan 2012"
+Date "11 jan 2012"
 Rev ""
 Comp ""
 Comment1 ""
@@ -55,11 +55,11 @@ TextPcbSize 600 800
 EdgeModWidth 150
 TextModSize 600 600
 TextModWidth 120
-PadSize 1600 1600
-PadDrill 1100
+PadSize 600 600
+PadDrill 400
 Pad2MaskClearance 100
 AuxiliaryAxisOrg 0 0
-PcbPlotParams (pcbplotparams (layerselection 3178497) (usegerberextensions true) (excludeedgelayer true) (linewidth 60) (plotframeref false) (viasonmask false) (mode 1) (useauxorigin false) (hpglpennumber 1) (hpglpenspeed 20) (hpglpendiameter 15) (hpglpenoverlay 0) (pscolor true) (psnegative false) (psa4output false) (plotreference true) (plotvalue true) (plotothertext true) (plotinvisibletext false) (padsonsilk false) (subtractmaskfromsilk false) (outputformat 1) (mirror false) (drillshape 1) (scaleselection 1) (outputdirectory ""))
+PcbPlotParams (pcbplotparams (layerselection 284196865) (usegerberextensions true) (excludeedgelayer true) (linewidth 60) (plotframeref false) (viasonmask false) (mode 1) (useauxorigin false) (hpglpennumber 1) (hpglpenspeed 20) (hpglpendiameter 15) (hpglpenoverlay 0) (pscolor true) (psnegative false) (psa4output false) (plotreference true) (plotvalue true) (plotothertext true) (plotinvisibletext false) (padsonsilk false) (subtractmaskfromsilk false) (outputformat 1) (mirror false) (drillshape 1) (scaleselection 1) (outputdirectory gerber_shield_v1p0/))
 $EndSETUP
 
 $EQUIPOT
@@ -340,47 +340,6 @@ Ne 0 ""
 Po 2170 -3940
 $EndPAD
 $EndMODULE  POT296
-$MODULE PIN_ARRAY_4X1
-Po 25600 40450 1800 15 4F0B9ACC 4F0B78FA ~~
-Li PIN_ARRAY_4X1
-Sc 4F0B78FA
-AR /4F04A60F
-Op 0 0 0
-T0 -2925 -25 600 600 1800 120 N V 21 N "P1"
-T1 500 1000 600 600 1800 120 N I 21 N "CONN_4"
-DS -2000 -500 -2000 500 150 21
-DS -2000 500 2000 500 150 21
-DS 2000 500 2000 -500 150 21
-DS 2000 -500 -2000 -500 150 21
-$PAD
-Sh "1" R 600 600 0 0 1800
-Dr 400 0 0
-At STD N 0000FFFF
-Ne 15 "/VIN"
-Po -1500 0
-$EndPAD
-$PAD
-Sh "2" C 600 600 0 0 1800
-Dr 400 0 0
-At STD N 0000FFFF
-Ne 16 "GND"
-Po -500 0
-$EndPAD
-$PAD
-Sh "3" C 600 600 0 0 1800
-Dr 400 0 0
-At STD N 0000FFFF
-Ne 13 "/SRX"
-Po 500 0
-$EndPAD
-$PAD
-Sh "4" C 600 600 0 0 1800
-Dr 400 0 0
-At STD N 0000FFFF
-Ne 14 "/STX"
-Po 1500 0
-$EndPAD
-$EndMODULE  PIN_ARRAY_4X1
 $MODULE PIN_ARRAY_3X1
 Po 36300 28150 1800 15 4F0B9C8A 4F0B78FB ~~
 Li PIN_ARRAY_3X1
@@ -791,6 +750,60 @@ Ne 0 ""
 Po 5500 -1000
 $EndPAD
 $EndMODULE  ARDUINO_SHIELD
+$MODULE PIN_ARRAY_4X1
+Po 25600 40450 1800 15 4F0CC3B5 4F0B78FA ~~
+Li PIN_ARRAY_4X1
+Sc 4F0B78FA
+AR /4F04A60F
+Op 0 0 0
+T0 -2925 -25 600 600 1800 120 N V 21 N "P1"
+T1 500 1000 600 600 1800 120 N I 21 N "CONN_4"
+DS -2000 -500 -2000 500 150 21
+DS -2000 500 2000 500 150 21
+DS 2000 500 2000 -500 150 21
+DS 2000 -500 -2000 -500 150 21
+$PAD
+Sh "1" R 600 600 0 0 1800
+Dr 400 0 0
+At STD N 00C0FFFF
+Ne 15 "/VIN"
+Po -1500 0
+$EndPAD
+$PAD
+Sh "2" C 600 600 0 0 1800
+Dr 400 0 0
+At STD N 00C0FFFF
+Ne 16 "GND"
+Po -500 0
+$EndPAD
+$PAD
+Sh "3" C 600 600 0 0 1800
+Dr 400 0 0
+At STD N 00C0FFFF
+Ne 13 "/SRX"
+Po 500 0
+$EndPAD
+$PAD
+Sh "4" C 600 600 0 0 1800
+Dr 400 0 0
+At STD N 00C0FFFF
+Ne 14 "/STX"
+Po 1500 0
+$EndPAD
+$EndMODULE  PIN_ARRAY_4X1
+$COTATION
+Ge 0 25 0
+Va 21125
+Te "53.658 mm"
+Po 21161 35912 600 800 120 2701 1
+Sb 0 21801 25350 21801 46475 120
+Sd 0 22550 46475 20521 46475 120
+Sg 0 22550 25350 20521 25350 120
+S1 0 21801 46475 21571 46032 120
+S2 0 21801 46475 22031 46032 120
+S3 0 21801 25350 21571 25793 120
+S4 0 21801 25350 22031 25793 120
+$endCOTATION
 $DRAWSEGMENT
 Po 0 22575 25425 22575 25575 150
 De 28 0 900 0 0

@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPCB (2011-07-19)-testing date = Thu 20 Oct 2011 06:23:11 PM PDT
+Cmp-Mod V01 Created by CvPCB (2011-07-19)-testing date = Tue 10 Jan 2012 01:51:42 PM PST
 
 BeginCmp
 TimeStamp = /4E9F2A04;
@@ -8,10 +8,10 @@ IdModule  = SM0603;
 EndCmp
 
 BeginCmp
-TimeStamp = /4E9F289F;
+TimeStamp = /4F0CA3A1;
 Reference = P1;
-ValeurCmp = CONN_6X2;
-IdModule  = 6X2_SHRD_HEADER;
+ValeurCmp = CONN_5X2;
+IdModule  = 5X2_SHRD_HEADER;
 EndCmp
 
 BeginCmp

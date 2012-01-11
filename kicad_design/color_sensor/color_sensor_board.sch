@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date Fri 21 Oct 2011 11:27:30 AM PDT
+EESchema Schematic File Version 2  date Tue 10 Jan 2012 01:09:11 PM PST
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -38,7 +38,7 @@ $Descr A4 11700 8267
 encoding utf-8
 Sheet 1 1
 Title ""
-Date "21 oct 2011"
+Date "10 jan 2012"
 Rev ""
 Comp ""
 Comment1 ""
@@ -46,26 +46,40 @@ Comment2 ""
 Comment3 ""
 Comment4 ""
 $EndDescr
-Text Label 5300 4400 2    60   ~ 0
-A3
-Text Label 5300 4300 2    60   ~ 0
-A2
-Text Label 5300 4200 2    60   ~ 0
-A1
+Text Label 5250 4050 2    60   ~ 0
+RED
+Text Label 5250 4150 2    60   ~ 0
+GREEN
+Text Label 5250 4250 2    60   ~ 0
+BLUE
+Text Label 5250 4350 2    60   ~ 0
+FREQ
+Text Label 5250 4450 2    60   ~ 0
+S3
+Text Label 3750 4450 0    60   ~ 0
+S2
+Text Label 3750 4350 0    60   ~ 0
+S1
+Text Label 3750 4250 0    60   ~ 0
+S0
+Text Label 3750 4150 0    60   ~ 0
+GND
+Text Label 3750 4050 0    60   ~ 0
+5V
 Wire Wire Line
-	4950 4400 5300 4400
+	4100 4450 3750 4450
 Wire Wire Line
-	4950 4200 5300 4200
+	4100 4250 3750 4250
+Wire Wire Line
+	4100 4050 3750 4050
+Wire Wire Line
+	4900 4350 5250 4350
+Wire Wire Line
+	4900 4150 5250 4150
 Wire Wire Line
 	6250 3950 5950 3950
 Wire Wire Line
 	3650 2550 3650 2650
-Wire Wire Line
-	4950 4000 5300 4000
-Wire Wire Line
-	4150 4400 3800 4400
-Wire Wire Line
-	4150 4200 3800 4200
 Wire Wire Line
 	8900 4400 9400 4400
 Wire Wire Line
@@ -91,25 +105,34 @@ Wire Wire Line
 	7550 4250 7550 4800
 Connection ~ 7550 4400
 Wire Wire Line
-	4150 4000 3800 4000
-Wire Wire Line
-	4150 4300 3800 4300
-Wire Wire Line
-	4950 3900 5300 3900
-Wire Wire Line
-	4950 4100 5300 4100
-Wire Wire Line
 	5950 4300 6250 4300
 Wire Wire Line
 	6250 4500 5950 4500
 Wire Wire Line
 	6250 4150 5950 4150
 Wire Wire Line
-	4950 4300 5300 4300
+	4900 4050 5250 4050
+Wire Wire Line
+	4900 4250 5250 4250
+Wire Wire Line
+	4900 4450 5250 4450
+Wire Wire Line
+	4100 4150 3750 4150
+Wire Wire Line
+	4100 4350 3750 4350
+$Comp
+L CONN_5X2 P1
+U 1 1 4F0CA3A1
+P 4500 4250
+F 0 "P1" H 4500 4550 60  0000 C CNN
+F 1 "CONN_5X2" V 4500 4250 50  0000 C CNN
+	1    4500 4250
+	1    0    0    -1  
+$EndComp
 Text Label 5950 4150 0    60   ~ 0
-A2
+GREEN
 Text Label 5950 3950 0    60   ~ 0
-A1
+BLUE
 $Comp
 L CONN_2 P3
 U 1 1 4EA0C6DF
@@ -120,7 +143,7 @@ F 1 "CONN_2" V 6650 4050 40  0000 C CNN
 	1    0    0    -1  
 $EndComp
 Text Label 5950 4300 0    60   ~ 0
-A3
+RED
 Text Label 5950 4500 0    60   ~ 0
 GND
 $Comp
@@ -152,30 +175,14 @@ F 1 "PWR_FLAG" H 3650 2780 30  0000 C CNN
 	1    3650 2550
 	1    0    0    -1  
 $EndComp
-NoConn ~ 4150 4100
-NoConn ~ 4150 3900
-Text Label 5300 4100 2    60   ~ 0
-A0
-Text Label 5300 4000 2    60   ~ 0
-D5
-Text Label 5300 3900 2    60   ~ 0
-D4
-Text Label 3800 4400 0    60   ~ 0
-D3
-Text Label 3800 4300 0    60   ~ 0
-D2
-Text Label 3800 4200 0    60   ~ 0
-GND
-Text Label 3800 4000 0    60   ~ 0
-5V
 Text Label 7300 3950 0    60   ~ 0
-A0
+S0
 Text Label 7300 4100 0    60   ~ 0
-D5
+S1
 Text Label 9400 3950 2    60   ~ 0
-D4
+S3
 Text Label 9400 4100 2    60   ~ 0
-D3
+S2
 Text Label 7550 4800 2    60   ~ 0
 GND
 $Comp
@@ -208,18 +215,9 @@ F 1 "0.1 uF" H 9250 4650 50  0000 L CNN
 	1    0    0    -1  
 $EndComp
 Text Label 9400 4250 2    60   ~ 0
-D2
+FREQ
 Text Label 9400 4400 2    60   ~ 0
 5V
-$Comp
-L CONN_6X2 P1
-U 1 1 4E9F289F
-P 4550 4150
-F 0 "P1" H 4550 4500 60  0000 C CNN
-F 1 "CONN_6X2" V 4550 4150 60  0000 C CNN
-	1    4550 4150
-	1    0    0    -1  
-$EndComp
 $Comp
 L TCS3200 U1
 U 1 1 4E9F1F08

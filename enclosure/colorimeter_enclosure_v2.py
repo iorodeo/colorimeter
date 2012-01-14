@@ -9,14 +9,15 @@ class Colorimeter_Enclosure(Basic_Enclosure):
         super(Colorimeter_Enclosure,self).make()
 
         # Make second bottom and inner panel
-        self.second_bottom = self.bottom
         self.make_inner_panel()
         self.make_inner_panel_tab_holes()
         self.make_cuvette_slot()
-        self.make_cuvette_hole()
+        self.make_top_hole()
         self.make_pcb_holes()
         self.make_shrouded_header_hole()
         self.make_led_cable_hole()
+        self.make_holder()
+        self.make_holder_standoffs()
 
     def make_inner_panel(self):
         inner_x, inner_y, inner_z = self.params['inner_dimensions']
@@ -31,9 +32,8 @@ class Colorimeter_Enclosure(Basic_Enclosure):
         # Create tab data top and bottom tabs
         xz_pos = []
         xz_neg = []
-        for loc in self.params['inner_panel_topbot_tabs']:
+        for loc in self.params['inner_panel_bottom_tabs']:
             tab_data = (loc, inner_panel_tab_width, tab_depth, '+')
-            xz_pos.append(tab_data)
             xz_neg.append(tab_data)
 
         # Create tab data for front and back tabs 
@@ -65,8 +65,8 @@ class Colorimeter_Enclosure(Basic_Enclosure):
         hole_list = []
 
         # create top and bottom holes
-        for loc in self.params['inner_panel_topbot_tabs']:
-            for panel in ('top', 'bottom'):
+        for loc in self.params['inner_panel_bottom_tabs']:
+            for panel in ('bottom',):
                 x = inner_panel_offset
                 y = -0.5*inner_y + inner_y*loc
                 hole = {
@@ -132,24 +132,18 @@ class Colorimeter_Enclosure(Basic_Enclosure):
                 }
         self.add_holes([hole])
 
-    def make_cuvette_hole(self):
-        cuvette_hole_size = self.params['cuvette_hole_size']
-        cuvette_hole_position = self.params['cuvette_hole_position']
+    def make_top_hole(self):
+        top_hole_size = self.params['top_hole_size']
+        top_hole_position = self.params['top_hole_position']
 
         hole_top = {
                 'panel'    : 'top',
                 'type'     : 'rounded_square',
-                'location' : cuvette_hole_position,
-                'size'     : cuvette_hole_size,
+                'location' : top_hole_position,
+                'size'     : top_hole_size,
                 }
         
-        #hole_bot = {
-        #        'panel'    : 'bottom',
-        #        'type'     : 'rounded_square',
-        #        'location' : cuvette_hole_position,
-        #        'size'     : cuvette_hole_size,
-        #        }
-        #self.add_holes([hole_top,hole_bot])
+        self.add_holes([hole_top])
 
     def make_led_cable_hole(self):
         led_cable_hole_position = self.params['led_cable_hole_position']
@@ -161,16 +155,71 @@ class Colorimeter_Enclosure(Basic_Enclosure):
                 'size'     : led_cable_hole_size,
                 }
         self.add_holes([hole])
+
+    def make_holder(self):
+        holder_size = self.params['holder_size']
+        holder_x, holder_y = holder_size
+        thickness = self.params['wall_thickness']
+        cuvette_size = self.params['cuvette_size']
+        cuvette_x, cuvette_y = cuvette_size
+        standoff_hole_diam = self.params['standoff_hole_diameter']
+        standoff_diam = self.params['standoff_diameter']
+        holder_standoff_inset = self.params['holder_standoff_inset']
+        
+        self.holder = Cube(size=(holder_x, holder_y,thickness))
+        hole_list = []
+
+        cuvette_hole = {
+                'panel': 'holder',
+                'type' : 'square',
+                'location': (0.5*holder_x,0),
+                'size' : (2*cuvette_x, cuvette_y),
+                }
+
+        self.holder_standoff_hole_xy = []
+        for i in (-1,1):
+            hole_x = 0
+            hole_y = i*(0.5*holder_y - 0.5*standoff_diam - holder_standoff_inset)
+            self.holder_standoff_hole_xy.append((hole_x, hole_y))
+            standoff_hole = {
+                    'panel': 'holder',
+                    'type': 'round',
+                    'location': (0, hole_y),
+                    'size': standoff_hole_diam,
+                    }
+            standoff_floor_hole = {
+                    'panel': 'bottom',
+                    'type': 'round',
+                    'location': (0, hole_y),
+                    'size': standoff_hole_diam,
+                    }
+
+            hole_list.append(standoff_hole)
+            hole_list.append(standoff_floor_hole)
+
+        hole_list.append(cuvette_hole)
+        self.add_holes(hole_list)
+
+    def make_holder_standoffs(self):
+        standoff_diam = self.params['standoff_diameter']
+        r = 0.5*standoff_diam
+        h = self.params['holder_standoff_height']
+        standoff = Cylinder(h=h,r1=r,r2=r)
+        self.holder_standoffs = [standoff, standoff]
         
     def get_assembly(self,**kwargs):
-        try:
-            show_second_bottom = kwargs.pop('show_second_bottom')
-        except KeyError:
-            show_second_bottom = True
         try:
             show_inner_panel = kwargs.pop('show_inner_panel')
         except KeyError:
             show_inner_panel = True
+        try:
+            show_holder = kwargs.pop('show_holder')
+        except KeyError:
+            show_holder = True
+        try:
+            show_holder_standoffs = kwargs.pop('show_holder_standoffs')
+        except KeyError:
+            show_holder_standoffs = True
 
         part_list = super(Colorimeter_Enclosure,self).get_assembly(**kwargs)
 
@@ -178,20 +227,31 @@ class Colorimeter_Enclosure(Basic_Enclosure):
         wall_thickness = self.params['wall_thickness']
         explode_x, explode_y, explode_z = kwargs['explode']
 
-        # Position second bottom
-        #z_shift = -(0.5*inner_z + 1.5*wall_thickness + 2*explode_z)
-        #second_bottom = Translate(self.second_bottom,v=(0.0,0.0,z_shift))
-        #if show_second_bottom:
-        #    part_list.append(second_bottom)
-
         # Position inner panel
-
         x_shift = self.params['inner_panel_offset']
         inner_panel = Rotate(self.inner_panel, a=90, v=(0,0,1))
         inner_panel = Rotate(inner_panel, a=90, v=(0,1,0))
         inner_panel = Translate(inner_panel,v=(x_shift,0,0))
         if show_inner_panel:
             part_list.append(inner_panel)
+
+        # Position holder
+        holder_x, holder_y = self.params['holder_size']
+        holder_standoff_height = self.params['holder_standoff_height']
+        x_shift = -0.5*holder_x + self.params['inner_panel_offset']  
+        z_shift = 0.5*wall_thickness - 0.5*inner_z + holder_standoff_height
+        holder = Translate(self.holder,v=(x_shift,0,z_shift))
+
+        # Position holder standoffs
+        shift_z = 0.5*holder_standoff_height - 0.5*inner_z 
+        for pos, standoff in zip(self.holder_standoff_hole_xy, self.holder_standoffs):
+            shift_x, shift_y = pos
+            standoff = Translate(standoff,v=(shift_x, shift_y,shift_z))
+            if show_holder_standoffs:
+                part_list.append(standoff)
+
+        if show_holder:
+            part_list.append(holder)
 
         return part_list
 
@@ -209,10 +269,6 @@ class Colorimeter_Enclosure(Basic_Enclosure):
 
         # Position second bottom
         x_shift = -(1.0*self.bottom_x + wall_thickness + spacing) 
-        #y_shift = -(0.5*self.bottom_y + 0.5*self.top_y + inner_z + 2*wall_thickness + 2*spacing)
-        #second_bottom = Translate(self.second_bottom, v=(x_shift,y_shift,0))
-        #second_bottom = Projection(second_bottom)
-        #part_list.append(second_bottom)
 
         # Position inner panel
         y_shift = -(0.5*self.bottom_y + 0.5*inner_z + wall_thickness + spacing)

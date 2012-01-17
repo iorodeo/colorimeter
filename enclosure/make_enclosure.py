@@ -51,6 +51,7 @@ params = {
         'holder_standoff_height'  : 1*INCH2MM,
         'holder_standoff_inset'   : 2.0,
         'hole_list'               : [],
+        'second_top_dimensions'   : (x + wall_thickness, y + wall_thickness),
         }
 
 enclosure = Colorimeter_Enclosure(params)
@@ -68,6 +69,7 @@ part_assembly = enclosure.get_assembly(
         show_holder=True,
         show_holder_standoffs=True,
         show_inner_panel=True,
+        show_second_top=True,
         )
 
 part_projection = enclosure.get_projection(project=True)

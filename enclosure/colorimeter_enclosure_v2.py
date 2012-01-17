@@ -8,16 +8,18 @@ class Colorimeter_Enclosure(Basic_Enclosure):
     def make(self):
         super(Colorimeter_Enclosure,self).make()
 
-        # Make second bottom and inner panel
+        # Make inner panel, custom cutouts, holder and second top
         self.make_inner_panel()
         self.make_inner_panel_tab_holes()
         self.make_cuvette_slot()
-        self.make_top_hole()
         self.make_pcb_holes()
         self.make_shrouded_header_hole()
+        self.make_top_hole()
         self.make_led_cable_hole()
         self.make_holder()
         self.make_holder_standoffs()
+        self.make_second_top()
+        self.make_second_top_hole()
 
     def make_inner_panel(self):
         inner_x, inner_y, inner_z = self.params['inner_dimensions']
@@ -206,6 +208,35 @@ class Colorimeter_Enclosure(Basic_Enclosure):
         h = self.params['holder_standoff_height']
         standoff = Cylinder(h=h,r1=r,r2=r)
         self.holder_standoffs = [standoff, standoff]
+
+    def make_second_top(self):
+        inner_x, inner_y, inner_z = self.params['inner_dimensions']
+        x, y = self.params['second_top_dimensions']
+        x_overhang = self.params['top_x_overhang']
+        y_overhang = self.params['top_y_overhang']
+        lid_radius = self.params['lid_radius']
+        thickness = self.params['wall_thickness']
+        standoff_hole_diam = self.params['standoff_hole_diameter']
+        hole_list = []
+        for x,y in self.standoff_xy_pos:
+            hole = (x,y,standoff_hole_diam)
+            hole_list.append(hole)
+        self.second_top = plate_w_holes(self.top_x, self.top_y, thickness, hole_list, radius = lid_radius)
+    
+    def make_second_top_hole(self):
+        top_hole_size = self.params['top_hole_size']
+        top_hole_position = self.params['top_hole_position']
+
+        second_top_hole = {
+                'panel'    : 'second_top',
+                'type'     : 'rounded_square',
+                'location' : top_hole_position,
+                'size'     : top_hole_size,
+                }
+        
+        self.add_holes([second_top_hole])
+
+
         
     def get_assembly(self,**kwargs):
         try:
@@ -220,6 +251,10 @@ class Colorimeter_Enclosure(Basic_Enclosure):
             show_holder_standoffs = kwargs.pop('show_holder_standoffs')
         except KeyError:
             show_holder_standoffs = True
+        try:
+            show_second_top = kwargs.pop('show_second_top')
+        except KeyError:
+            show_second_top = True
 
         part_list = super(Colorimeter_Enclosure,self).get_assembly(**kwargs)
 
@@ -252,6 +287,11 @@ class Colorimeter_Enclosure(Basic_Enclosure):
 
         if show_holder:
             part_list.append(holder)
+
+        # Position second top
+        second_top = Translate(self.second_top, v = (0,0,30))
+        if show_second_top:
+            part_list.append(second_top)
 
         return part_list
 

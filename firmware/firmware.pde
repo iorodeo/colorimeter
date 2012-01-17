@@ -8,6 +8,7 @@ ColorSensor sensor;
 
 void setup() {
     Serial.begin(9600);
+
     led.initialize(
         LED_RED_PIN, 
         LED_GRN_PIN, 
@@ -21,12 +22,12 @@ void setup() {
         COLOR_SENSOR_S3,
         COLOR_SENSOR_FO
         );
-
     sensor.setChannelBlue();
 
 }
 
 void loop() {
+
     static bool state = false;
     long freq;
 

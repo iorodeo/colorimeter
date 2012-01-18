@@ -20,6 +20,8 @@ class Colorimeter_Enclosure(Basic_Enclosure):
         self.make_holder_standoffs()
         self.make_second_top()
         self.make_second_top_hole()
+        self.make_outer_slider()
+        self.make_outer_slider_hole()
 
     def make_inner_panel(self):
         inner_x, inner_y, inner_z = self.params['inner_dimensions']
@@ -237,6 +239,44 @@ class Colorimeter_Enclosure(Basic_Enclosure):
         self.add_holes([second_top_hole])
 
 
+    def make_outer_slider(self):
+        inner_x, inner_y, inner_z = self.params['inner_dimensions']
+        x, y = self.params['second_top_dimensions']
+        x_overhang = self.params['top_x_overhang']
+        y_overhang = self.params['top_y_overhang']
+        lid_radius = self.params['lid_radius']
+        thickness = self.params['wall_thickness']
+        standoff_hole_diam = self.params['standoff_hole_diameter']
+        hole_list = []
+        for x,y in self.standoff_xy_pos:
+            hole = (x,y,standoff_hole_diam)
+            hole_list.append(hole)
+        self.outer_slider = plate_w_holes(self.top_x, self.top_y, thickness, hole_list, radius = lid_radius)
+
+    def make_outer_slider_hole(self):
+        slider_hole_1_dimensions = self.params['slider_hole_1_dimensions']
+        slider_hole_1_position = self.params['top_hole_position']
+        slider_hole_2_dimensions = self.params['slider_hole_2_dimensions']
+        slider_hole_2_position = self.params['slider_hole_2_position']
+
+        outer_slider_hole_1 = {
+                'panel'    : 'outer_slider',
+                'type'     : 'square',
+                'location' : slider_hole_1_position,
+                'size'     : slider_hole_1_dimensions,
+                }
+        
+        self.add_holes([outer_slider_hole_1])
+
+        outer_slider_hole_2 = {
+                'panel'    : 'outer_slider',
+                'type'     : 'square',
+                'location' : slider_hole_2_position,
+                'size'     : slider_hole_2_dimensions,
+                }
+        
+        self.add_holes([outer_slider_hole_2])
+
         
     def get_assembly(self,**kwargs):
         try:
@@ -253,6 +293,10 @@ class Colorimeter_Enclosure(Basic_Enclosure):
             show_holder_standoffs = True
         try:
             show_second_top = kwargs.pop('show_second_top')
+        except KeyError:
+            show_second_top = True
+        try:
+            show_outer_slider = kwargs.pop('show_outer_slider')
         except KeyError:
             show_second_top = True
 
@@ -289,9 +333,14 @@ class Colorimeter_Enclosure(Basic_Enclosure):
             part_list.append(holder)
 
         # Position second top
-        second_top = Translate(self.second_top, v = (0,0,30))
+        second_top = Translate(self.second_top, v = (0,0,60))
         if show_second_top:
             part_list.append(second_top)
+
+        # Position outer slider
+        outer_slider = Translate(self.outer_slider, v = (0,0,40))
+        if show_outer_slider:
+            part_list.append(outer_slider)
 
         return part_list
 

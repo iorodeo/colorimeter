@@ -1,6 +1,10 @@
 // ColorSensor.h
 //
 // Interface to ??? rgb color sensor.
+#ifndef _COLORSENSOR_H_
+#define _COLORSENSOR_H_
+
+#define PULSE_IN_WAIT 250000
 
 class ColorSensor {
     public:
@@ -16,4 +20,5 @@ class ColorSensor {
         void setChannelBlue();
         void setChannelClear();
 };
+#endif
 

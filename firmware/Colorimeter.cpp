@@ -6,13 +6,14 @@ const uint8_t blue = 2;
 const uint8_t green = 3;
 
 Colorimeter::Colorimeter() {
+    numSamples = DEFAULT_NUM_SAMPLES;
     // Dummy values - later we will grab these values from eeprom
     calibration.red = 100000;
     calibration.green = 100000; 
     calibration.blue = 100000;
 }
 
-Colorimeter::initialize() {
+void Colorimeter::initialize() {
 
     led.initialize(
             LED_RED_PIN, 
@@ -29,7 +30,7 @@ Colorimeter::initialize() {
             );
 }
 
-Colorimeter::setNumSamples(uint16_t _numSamples) {
+void Colorimeter::setNumSamples(uint16_t _numSamples) {
     numSamples = _numSamples;
 }
 
@@ -37,22 +38,30 @@ uint16_t Colorimeter::getNumSamples() {
     return numSamples;
 }
 
-Colorimeter::getFrequencyRed() {
-    led.setBlue();
-    sensor.setChannelBlue();
+uint32_t Colorimeter::getFrequencyRed() {
+    led.setRed();
+    sensor.setChannelRed();
     return sensor.getFrequency(numSamples);
 }
 
-Colorimeter::getFrequencyGreen() {
+uint32_t Colorimeter::getFrequencyGreen() {
     led.setGreen();
     sensor.setChannelGreen();
     return sensor.getFrequency(numSamples);
 }
 
-Colorimeter::getFrequencyBlue() {
+uint32_t Colorimeter::getFrequencyBlue() {
     led.setBlue();
     sensor.setChannelBlue();
     return sensor.getFrequency(numSamples);
+}
+
+FrequencyData Colorimeter::getFrequencies() {
+    FrequencyData data;
+    data.red = getFrequencyRed();
+    data.green = getFrequencyGreen();
+    data.blue = getFrequencyBlue();
+    return data;
 }
 
 float Colorimeter::getTransmission(uint8_t colorNum) {
@@ -77,12 +86,11 @@ float Colorimeter::getTransmission(uint8_t colorNum) {
         return 2.0;
     }
     else {
-        transmission = freq2transmission(calibration.red,sampleFreq);
-        return transmission;
+        return freq2transmission(calibration.red,sampleFreq);
     }
 }
 
-float Colorimeter::getTransimissionRed() {
+float Colorimeter::getTransmissionRed() {
     return getTransmission(red);
 }
 
@@ -92,6 +100,14 @@ float Colorimeter::getTransmissionGreen() {
 
 float Colorimeter::getTransmissionBlue() {
     return getTransmission(blue);
+}
+
+TransmissionData Colorimeter::getTransmissions() {
+    TransmissionData data;
+    data.red = getTransmissionRed();
+    data.green = getTransmissionGreen();
+    data.blue = getTransmissionBlue();
+    return data;
 }
 
 float freq2transmission(uint32_t calFreq, uint32_t sampleFreq) {

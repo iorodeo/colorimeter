@@ -1,4 +1,5 @@
 from py2scad import *
+import subprocess
 
 class Colorimeter_Enclosure(Basic_Enclosure):
 
@@ -21,7 +22,8 @@ class Colorimeter_Enclosure(Basic_Enclosure):
         self.make_second_top()
         self.make_second_top_hole()
         self.make_outer_slider()
-        self.make_outer_slider_hole()
+        self.make_outer_slider_holes()
+        self.make_slider()
 
     def make_inner_panel(self):
         inner_x, inner_y, inner_z = self.params['inner_dimensions']
@@ -212,10 +214,6 @@ class Colorimeter_Enclosure(Basic_Enclosure):
         self.holder_standoffs = [standoff, standoff]
 
     def make_second_top(self):
-        inner_x, inner_y, inner_z = self.params['inner_dimensions']
-        x, y = self.params['second_top_dimensions']
-        x_overhang = self.params['top_x_overhang']
-        y_overhang = self.params['top_y_overhang']
         lid_radius = self.params['lid_radius']
         thickness = self.params['wall_thickness']
         standoff_hole_diam = self.params['standoff_hole_diameter']
@@ -228,22 +226,16 @@ class Colorimeter_Enclosure(Basic_Enclosure):
     def make_second_top_hole(self):
         top_hole_size = self.params['top_hole_size']
         top_hole_position = self.params['top_hole_position']
-
         second_top_hole = {
                 'panel'    : 'second_top',
                 'type'     : 'rounded_square',
                 'location' : top_hole_position,
                 'size'     : top_hole_size,
                 }
-        
         self.add_holes([second_top_hole])
-
 
     def make_outer_slider(self):
         inner_x, inner_y, inner_z = self.params['inner_dimensions']
-        x, y = self.params['second_top_dimensions']
-        x_overhang = self.params['top_x_overhang']
-        y_overhang = self.params['top_y_overhang']
         lid_radius = self.params['lid_radius']
         thickness = self.params['wall_thickness']
         standoff_hole_diam = self.params['standoff_hole_diameter']
@@ -253,29 +245,80 @@ class Colorimeter_Enclosure(Basic_Enclosure):
             hole_list.append(hole)
         self.outer_slider = plate_w_holes(self.top_x, self.top_y, thickness, hole_list, radius = lid_radius)
 
-    def make_outer_slider_hole(self):
-        slider_hole_1_dimensions = self.params['slider_hole_1_dimensions']
-        slider_hole_1_position = self.params['top_hole_position']
-        slider_hole_2_dimensions = self.params['slider_hole_2_dimensions']
-        slider_hole_2_position = self.params['slider_hole_2_position']
+    def make_outer_slider_holes(self):
+        
+        # Create central hole
+        slider_hole_size = self.params['slider_hole_size']
+        slider_hole_position = self.params['top_hole_position']
+        slider_tab_length_y = self.params['slider_tab_length_y']
+        thickness = self.params['wall_thickness']
 
-        outer_slider_hole_1 = {
+        outer_slider_hole = {
                 'panel'    : 'outer_slider',
                 'type'     : 'square',
-                'location' : slider_hole_1_position,
-                'size'     : slider_hole_1_dimensions,
+                'location' : slider_hole_position,
+                'size'     : slider_hole_size,
                 }
         
-        self.add_holes([outer_slider_hole_1])
+        self.add_holes([outer_slider_hole])
 
-        outer_slider_hole_2 = {
+        # Cut gap for slider
+        slider_hole_x, slider_hole_y = slider_hole_size
+        gap_cut_pos_x = -0.5*self.top_x + 0.25*(self.top_x - slider_hole_x)
+        gap_cut_pos_y = 0
+        gap_cut_size_x = 0.5*(self.top_x - slider_hole_x) + 2*thickness
+        gap_cut_size_y = slider_hole_y - 2*slider_tab_length_y
+        self.slider_gap_size_y = gap_cut_size_y
+
+        slider_gap_hole = {
                 'panel'    : 'outer_slider',
                 'type'     : 'square',
-                'location' : slider_hole_2_position,
-                'size'     : slider_hole_2_dimensions,
+                'location' : (gap_cut_pos_x, gap_cut_pos_y),
+                'size'     : (gap_cut_size_x, gap_cut_size_y),
                 }
         
-        self.add_holes([outer_slider_hole_2])
+        self.add_holes([slider_gap_hole])
+
+    def make_slider(self):
+        slider_hole_size = self.params['slider_hole_size']
+        slider_overhang = self.params['slider_overhang']
+        slider_tolerance = self.params['slider_tolerance']
+        thickness = self.params['wall_thickness']
+        lid_radius = self.params['lid_radius']
+        slider_hole_x, slider_hole_y = slider_hole_size
+
+        # Create base cube for slider
+        slider_base_x = slider_hole_x + 0.5*(self.top_x - slider_hole_x)
+        slider_base_x += slider_overhang
+        slider_base_y = self.slider_gap_size_y - 2.0*slider_tolerance
+        slider_base_z = thickness
+        slider_base_size = slider_base_x, slider_base_y, slider_base_z
+        self.slider_base_size = slider_base_size
+        slider_base = plate_w_holes(
+                slider_base_x,
+                slider_base_y,
+                slider_base_z,
+                [],
+                radius = lid_radius,
+                )
+        # Fix issue with removed material due to lid radius
+        slider_base_fixup = Cube(size=(0.5*slider_base_x, slider_base_y, slider_base_z))
+        slider_base_fixup = Translate(slider_base_fixup,v=(0.25*slider_base_x,0,0))
+        slider_base = Union([slider_base,slider_base_fixup])
+
+        # Create blocking tabs for slider
+        slider_tab_x = self.params['slider_tab_length_x']
+        slider_tab_y = slider_hole_y - 2.0*slider_tolerance
+        slider_tab_z = thickness
+        slider_tab_size = slider_tab_x, slider_tab_y, slider_tab_z
+        slider_tab = Cube(size=slider_tab_size)
+
+        # Positoin slider tab
+        x_shift = 0.5*slider_base_x - 0.5*slider_tab_x
+        slider_tab = Translate(slider_tab,v=(x_shift,0,0))
+
+        # Create slider through union
+        self.slider = Union([slider_base,slider_tab])
 
         
     def get_assembly(self,**kwargs):
@@ -299,6 +342,10 @@ class Colorimeter_Enclosure(Basic_Enclosure):
             show_outer_slider = kwargs.pop('show_outer_slider')
         except KeyError:
             show_second_top = True
+        try:
+            show_slider = kwargs.pop('show_slider')
+        except KeyError:
+            show_slider = True
 
         part_list = super(Colorimeter_Enclosure,self).get_assembly(**kwargs)
 
@@ -322,49 +369,72 @@ class Colorimeter_Enclosure(Basic_Enclosure):
         holder = Translate(self.holder,v=(x_shift,0,z_shift))
 
         # Position holder standoffs
-        shift_z = 0.5*holder_standoff_height - 0.5*inner_z 
+        z_shift = 0.5*holder_standoff_height - 0.5*inner_z 
         for pos, standoff in zip(self.holder_standoff_hole_xy, self.holder_standoffs):
-            shift_x, shift_y = pos
-            standoff = Translate(standoff,v=(shift_x, shift_y,shift_z))
+            x_shift, y_shift = pos
+            standoff = Translate(standoff,v=(x_shift, y_shift,z_shift))
             if show_holder_standoffs:
                 part_list.append(standoff)
 
         if show_holder:
             part_list.append(holder)
 
-        # Position second top
-        second_top = Translate(self.second_top, v = (0,0,60))
-        if show_second_top:
-            part_list.append(second_top)
-
         # Position outer slider
-        outer_slider = Translate(self.outer_slider, v = (0,0,40))
+        z_shift = 0.5*inner_z + 1.5*wall_thickness + 2*explode_z
+        outer_slider = Translate(self.outer_slider, v = (0,0,z_shift))
         if show_outer_slider:
             part_list.append(outer_slider)
 
+        # Position slider
+        slider_tolerance = self.params['slider_tolerance']
+        slider_base_x, slider_base_y, slider_base_z = self.slider_base_size
+        slider_hole_x, slider_hole_y = self.params['slider_hole_size']
+        x_shift = -0.5*slider_base_x  + 0.5*slider_hole_x - slider_tolerance 
+        slider = Translate(self.slider,v=(x_shift,0,z_shift))
+        if show_slider:
+            part_list.append(slider)
+
+        # Position second top
+        z_shift += wall_thickness + explode_z
+        second_top = Translate(self.second_top, v = (0,0,z_shift))
+        if show_second_top:
+            part_list.append(second_top)
         return part_list
 
-    def get_projection(self,**kwargs):
+    def write_projections(self,prefix='projection', create_dxf=True):
+        self.ref_cube = Cube(size=[INCH2MM,INCH2MM,INCH2MM])
+        parts_list = [
+                'top',
+                'bottom',
+                'left',
+                'right',
+                'front',
+                'back',
+                'inner_panel',
+                'second_top',
+                'slider',
+                'outer_slider',
+                'holder',
+                'ref_cube',
+                ]
+        for part_name in parts_list:
+            part = getattr(self,part_name)
+            filename_base = '{0}_{1}'.format(prefix,part_name)
+            filename_scad = '{0}.scad'.format(filename_base) 
+            print 'writing: {0}'.format(filename_scad)
 
-        part_list = super(Colorimeter_Enclosure,self).get_projection(**kwargs)
+            # Create openscad projections
+            prog = SCAD_Prog()
+            prog.fn = 50
+            part_projection = Projection(part)
+            prog.add(part_projection)
+            prog.write(filename_scad)
+            del prog
 
-        inner_x, inner_y, inner_z = self.params['inner_dimensions']
-        wall_thickness = self.params['wall_thickness']
-        top_x_overhang = self.params['top_x_overhang']
-        top_y_overhang = self.params['top_y_overhang']
-        bottom_x_overhang = self.params['bottom_x_overhang']
-        bottom_y_overhang = self.params['bottom_y_overhang']
-        spacing = 4*wall_thickness
+            # Write dxf files
+            filename_dxf = '{0}.dxf'.format(filename_base)
+            print 'writing: {0}'.format(filename_dxf)
+            subprocess.call(['openscad', '-x', filename_dxf, filename_scad])
 
-        # Position second bottom
-        x_shift = -(1.0*self.bottom_x + wall_thickness + spacing) 
-
-        # Position inner panel
-        y_shift = -(0.5*self.bottom_y + 0.5*inner_z + wall_thickness + spacing)
-        inner_panel = Translate(self.inner_panel, v=(x_shift,y_shift,0))
-        inner_panel = Projection(inner_panel)
-        part_list.append(inner_panel)
-
-        return part_list
 
 

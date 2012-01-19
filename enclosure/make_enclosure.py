@@ -30,6 +30,7 @@ params = {
         'lid2front_tab_width'     : 0.5*INCH2MM,
         'lid2side_tab_width'      : 0.5*INCH2MM, 
         'side2side_tab_width'     : 0.5*INCH2MM,
+        'tab_depth_adjust'        : -0.25,
         'inner_panel_tab_width'   : 0.3*INCH2MM, 
         'standoff_diameter'       : 0.25*INCH2MM,
         'standoff_offset'         : 0.05*INCH2MM,
@@ -51,10 +52,14 @@ params = {
         'holder_standoff_height'  : 1*INCH2MM,
         'holder_standoff_inset'   : 2.0,
         'hole_list'               : [],
-        'second_top_dimensions'   : (x + wall_thickness, y + wall_thickness),
-        'slider_hole_1_dimensions': (x-0.6*INCH2MM, y-0.6*INCH2MM),
-        'slider_hole_2_dimensions': (x*0.5, y -19),
-        'slider_hole_2_position'  : (-0.5*x - wall_thickness,0),
+        'slider_hole_size'        : (x-0.6*INCH2MM, y-0.25*INCH2MM),
+        'slider_tab_length_y'     : 4.0,
+        'slider_tab_length_x'     : 4.0,
+        'slider_overhang'         : 0.5*INCH2MM,
+        'slider_tolerance'        : 0.1,
+
+        #'slider_hole_2_dimensions': (x*0.5, y -17),
+        #'slider_hole_2_position'  : (-0.5*x - wall_thickness,0),
         }
 
 enclosure = Colorimeter_Enclosure(params)
@@ -70,10 +75,12 @@ part_assembly = enclosure.get_assembly(
         show_front=True,
         show_back=True,
         show_holder=True,
+        show_standoffs=True,
         show_holder_standoffs=True,
         show_inner_panel=True,
-        show_second_top=False,
+        show_second_top=True,
         show_outer_slider=True,
+        show_slider=True,
         )
 
 part_projection = enclosure.get_projection(project=True)
@@ -83,8 +90,5 @@ prog_assembly.fn = 50
 prog_assembly.add(part_assembly)
 prog_assembly.write('enclosure_assembly_2.0.scad')
 
-prog_projection = SCAD_Prog()
-prog_projection.fn = 50
-prog_projection.add(part_projection)
-prog_projection.write('enclosure_projection.scad')
+enclosure.write_projections(create_dxf=True)
 

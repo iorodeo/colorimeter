@@ -2,6 +2,8 @@
 //
 // The RGBLed class provides control over the a red, greed, blue
 // LED. 
+#ifndef _RGBLED_H_
+#define _RGBLED_H_
 
 class RGBLed {
     public:
@@ -15,3 +17,5 @@ class RGBLed {
         void setBlue();
         void setOff();
 };
+
+#endif

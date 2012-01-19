@@ -31,7 +31,7 @@ uint32_t ColorSensor::getFrequency(uint16_t numSamples) {
     uint16_t _numSamples = numSamples;
 
     for(uint16_t j=0; j<numSamples; j++) {
-        dt = pulseIn(FO, HIGH, 250000);
+        dt = pulseIn(FO, HIGH, PULSE_IN_WAIT);
         if (dt > 0) {
             freq+= 500000/dt;
         }

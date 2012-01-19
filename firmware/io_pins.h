@@ -1,3 +1,5 @@
+#ifndef _IO_PINS_H_
+#define _IO_PINS_H_
 
 // RGB LED Control Pins
 #define LED_BLU_PIN A1
@@ -10,3 +12,5 @@
 #define COLOR_SENSOR_S2  3
 #define COLOR_SENSOR_S3  4
 #define COLOR_SENSOR_FO  2       
+
+#endif

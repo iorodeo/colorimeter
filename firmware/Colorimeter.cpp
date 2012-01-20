@@ -1,3 +1,4 @@
+#include <math.h>
 #include "Colorimeter.h"
 #include "io_pins.h"
 
@@ -56,7 +57,11 @@ uint32_t Colorimeter::getFrequencyBlue() {
     return sensor.getFrequency(numSamples);
 }
 
-FrequencyData Colorimeter::getFrequencies() {
+uint8_t Colorimeter::getFrequency(uint8_t colorNum) {
+
+}
+
+FrequencyData Colorimeter::getFrequencyAll() {
     FrequencyData data;
     data.red = getFrequencyRed();
     data.green = getFrequencyGreen();
@@ -83,10 +88,10 @@ float Colorimeter::getTransmission(uint8_t colorNum) {
             break;
     }
     if (error) {
-        return 2.0;
+        return -1.0;
     }
     else {
-        return freq2transmission(calibration.red,sampleFreq);
+        return freq2trans(calibration.red,sampleFreq);
     }
 }
 
@@ -102,7 +107,7 @@ float Colorimeter::getTransmissionBlue() {
     return getTransmission(blue);
 }
 
-TransmissionData Colorimeter::getTransmissions() {
+TransmissionData Colorimeter::getTransmissionAll() {
     TransmissionData data;
     data.red = getTransmissionRed();
     data.green = getTransmissionGreen();
@@ -110,7 +115,56 @@ TransmissionData Colorimeter::getTransmissions() {
     return data;
 }
 
-float freq2transmission(uint32_t calFreq, uint32_t sampleFreq) {
+float Colorimeter::getAbsorbanceRed() {
+    float trans;
+    trans = getTransmissionRed();
+    return trans2absorb(trans);
+}
+
+float Colorimeter::getAbsorbanceGreen() {
+    float trans;
+    trans = getTransmissionGreen();
+    return trans2absorb(trans);
+}
+
+float Colorimeter::getAbsorbanceBlue() {
+    float trans;
+    trans = getTransmissionBlue();
+    return trans2absorb(trans);
+}
+
+float Colorimeter::getAbsorbance(uint8_t colorNum) {
+    float absorb;
+    switch (colorNum) {
+        case red:
+            absorb = getAbsorbanceRed();
+            break;
+
+        case green:
+            absorb = getAbsorbanceGreen();
+            break;
+
+        case blue:
+            absorb = getAbsorbanceBlue();
+            break;
+
+        default:
+            absorb = -1.0;
+            break;
+    }
+    return absorb;
+}
+
+AbsorbanceData Colorimeter::getAbsorbanceAll() {
+    AbsorbanceData data;
+    data.red = getAbsorbanceRed();
+    data.green = getAbsorbanceGreen();
+    data.blue = getAbsorbanceBlue();
+    return data;
+}
+
+
+float freq2trans(uint32_t calFreq, uint32_t sampleFreq) {
     float trans;
     trans = calFreq/sampleFreq;
     if (trans > 1.0) {
@@ -118,3 +172,8 @@ float freq2transmission(uint32_t calFreq, uint32_t sampleFreq) {
     }
     return trans;
 }
+
+float trans2absorb(float transmission) { 
+    return  (float)log10( 1.0/((double) transmission));
+}
+

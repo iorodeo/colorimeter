@@ -39,19 +39,20 @@ class Colorimeter {
         uint32_t getFrequencyRed();
         uint32_t getFrequencyGreen();
         uint32_t getFrequencyBlue();
-        FrequencyData getFrequencies();
+        uint32_t getFreqeuncy(uint8_t colorNum);
+        FrequencyData getFrequencyAll();
 
         float getTransmissionRed();
         float getTransmissionGreen();
         float getTransmissionBlue();
         float getTransmission(uint8_t colorNum);
-        TransmissionData getTransmissions();
+        TransmissionData getTransmissionAll();
 
         float getAbsorbanceRed();
         float getAbsorbanceGreen();
         float getAbsorbanceBlue();
         float getAbsorbance(uint8_t colorNum);
-        AbsorbanceData getAbsorbances();
+        AbsorbanceData getAbsorbanceAll();
 
         void calibrateRed();
         void calibrateGreen();
@@ -66,5 +67,7 @@ class Colorimeter {
 
 };
 
-float freq2transmission(uint32_t calFreq, uint32_t sampleFreq);
+float freq2trans(uint32_t calFreq, uint32_t sampleFreq);
+
+float trans2absorb(float transmission);
 #endif

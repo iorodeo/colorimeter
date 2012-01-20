@@ -1,3 +1,4 @@
+#include <math.h>
 #include <Streaming.h>
 #include "io_pins.h"
 #include "RGBLed.h"
@@ -16,9 +17,12 @@ void setup() {
 void loop() {
 
     //FrequencyData data;
-    //data = colorimeter.getFrequencies();
-    TransmissionData data;
-    data = colorimeter.getTransmissions();
+    //data = colorimeter.getFrequencyAll();
+    //TransmissionData data;
+    //data = colorimeter.getTransmissionAll();
+    AbsorbanceData data;
+    data = colorimeter.getAbsorbanceAll();
+
 
     Serial << "red: " << data.red; 
     Serial << ", green: " << data.green;

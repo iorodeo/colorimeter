@@ -15,6 +15,7 @@ class RGBLed {
         void setRed();
         void setGreen();
         void setBlue();
+        void setWhite();
         void setOff();
 };
 

@@ -59,3 +59,7 @@ void RGBLed::setBlue() {
 void RGBLed::setOff() {
     setRGB(false,false,false);
 }
+
+void RGBLed::setWhite() {
+    setRGB(true,true,true);
+}

@@ -1,10 +1,14 @@
 #include <math.h>
 #include "Colorimeter.h"
 #include "io_pins.h"
+#include "EEPROMAnything.h"
 
-const uint8_t red = 1;
-const uint8_t blue = 2;
-const uint8_t green = 3;
+
+const uint8_t EERPOM_CAL_RED = 0; 
+const uint8_t EEPROM_CAL_GREEN = 4; 
+const uint8_t EEPROM_CAL_BLUE = 8;
+const uint8_t EEPROM_CAL_WHITE = 12;
+
 
 Colorimeter::Colorimeter() {
     numSamples = DEFAULT_NUM_SAMPLES;
@@ -12,6 +16,7 @@ Colorimeter::Colorimeter() {
     calibration.red = 100000;
     calibration.green = 100000; 
     calibration.blue = 100000;
+    calibration.white = 100000;
 }
 
 void Colorimeter::initialize() {
@@ -57,54 +62,44 @@ uint32_t Colorimeter::getFrequencyBlue() {
     return sensor.getFrequency(numSamples);
 }
 
-uint8_t Colorimeter::getFrequency(uint8_t colorNum) {
-
+uint32_t Colorimeter::getFrequencyWhite() {
+    led.setWhite();
+    sensor.setChannelClear();
+    return sensor.getFrequency(numSamples);
 }
+
 
 FrequencyData Colorimeter::getFrequencyAll() {
     FrequencyData data;
     data.red = getFrequencyRed();
     data.green = getFrequencyGreen();
     data.blue = getFrequencyBlue();
+    data.white = getFrequencyWhite();
     return data;
 }
 
-float Colorimeter::getTransmission(uint8_t colorNum) {
-    uint32_t sampleFreq;
-    float trans;
-    bool error = false;
-    switch (colorNum) {
-        case red:
-            sampleFreq = getFrequencyRed();
-            break;
-        case green:
-            sampleFreq = getFrequencyGreen();
-            break;
-        case blue:
-            sampleFreq = getFrequencyBlue();
-            break;
-        default:
-            error = true;
-            break;
-    }
-    if (error) {
-        return -1.0;
-    }
-    else {
-        return freq2trans(calibration.red,sampleFreq);
-    }
-}
-
 float Colorimeter::getTransmissionRed() {
-    return getTransmission(red);
+    uint32_t sampleFreq;
+    sampleFreq = getFrequencyRed();
+    return freq2trans(calibration.red,sampleFreq);
 }
 
 float Colorimeter::getTransmissionGreen() {
-    return getTransmission(green);
+    uint32_t sampleFreq;
+    sampleFreq = getFrequencyGreen();
+    return freq2trans(calibration.green,sampleFreq);
 }
 
 float Colorimeter::getTransmissionBlue() {
-    return getTransmission(blue);
+    uint32_t sampleFreq;
+    sampleFreq = getFrequencyBlue();
+    return freq2trans(calibration.blue,sampleFreq);
+}
+
+float Colorimeter::getTransmissionWhite() {
+    uint32_t sampleFreq;
+    sampleFreq = getFrequencyWhite();
+    return freq2trans(calibration.white,sampleFreq);
 }
 
 TransmissionData Colorimeter::getTransmissionAll() {
@@ -112,6 +107,7 @@ TransmissionData Colorimeter::getTransmissionAll() {
     data.red = getTransmissionRed();
     data.green = getTransmissionGreen();
     data.blue = getTransmissionBlue();
+    data.white = getTransmissionWhite();
     return data;
 }
 
@@ -133,26 +129,10 @@ float Colorimeter::getAbsorbanceBlue() {
     return trans2absorb(trans);
 }
 
-float Colorimeter::getAbsorbance(uint8_t colorNum) {
-    float absorb;
-    switch (colorNum) {
-        case red:
-            absorb = getAbsorbanceRed();
-            break;
-
-        case green:
-            absorb = getAbsorbanceGreen();
-            break;
-
-        case blue:
-            absorb = getAbsorbanceBlue();
-            break;
-
-        default:
-            absorb = -1.0;
-            break;
-    }
-    return absorb;
+float Colorimeter::getAbsorbanceWhite() {
+    float trans;
+    trans = getTransmissionWhite();
+    return trans2absorb(trans);
 }
 
 AbsorbanceData Colorimeter::getAbsorbanceAll() {
@@ -160,9 +140,15 @@ AbsorbanceData Colorimeter::getAbsorbanceAll() {
     data.red = getAbsorbanceRed();
     data.green = getAbsorbanceGreen();
     data.blue = getAbsorbanceBlue();
+    data.white = getAbsorbanceWhite();
     return data;
 }
 
+void Colorimeter::calibrateRed() {
+    uint32_t sampleFreq;
+    sampleFreq = getFrequencyRed();
+
+}
 
 float freq2trans(uint32_t calFreq, uint32_t sampleFreq) {
     float trans;

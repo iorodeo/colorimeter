@@ -11,6 +11,7 @@ class FrequencyData {
         uint32_t red;
         uint32_t green;
         uint32_t blue;
+        uint32_t white;
 };
 
 class TransmissionData {
@@ -18,6 +19,7 @@ class TransmissionData {
         float red;
         float green;
         float blue;
+        float white;
 };
 
 class AbsorbanceData {
@@ -25,6 +27,7 @@ class AbsorbanceData {
         float red;
         float green;
         float blue;
+        float white;
 };
 
 
@@ -39,24 +42,25 @@ class Colorimeter {
         uint32_t getFrequencyRed();
         uint32_t getFrequencyGreen();
         uint32_t getFrequencyBlue();
-        uint32_t getFreqeuncy(uint8_t colorNum);
+        uint32_t getFrequencyWhite();
         FrequencyData getFrequencyAll();
 
         float getTransmissionRed();
         float getTransmissionGreen();
         float getTransmissionBlue();
-        float getTransmission(uint8_t colorNum);
+        float getTransmissionWhite();
         TransmissionData getTransmissionAll();
 
         float getAbsorbanceRed();
         float getAbsorbanceGreen();
         float getAbsorbanceBlue();
-        float getAbsorbance(uint8_t colorNum);
+        float getAbsorbanceWhite();
         AbsorbanceData getAbsorbanceAll();
 
         void calibrateRed();
         void calibrateGreen();
         void calibrateBlue();
+        void calibrateWhite();
         void calibrate();
 
     private:

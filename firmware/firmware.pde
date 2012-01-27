@@ -1,17 +1,18 @@
 #include <math.h>
+#include <EEPROM.h>
 #include <Streaming.h>
 #include "io_pins.h"
 #include "RGBLed.h"
 #include "ColorSensor.h"
 #include "Colorimeter.h"
-
+#include "EEPROMAnything.h"
 
 Colorimeter colorimeter;
 
 void setup() {
     Serial.begin(9600);
     colorimeter.initialize();
-    colorimeter.setNumSamples(500);
+    colorimeter.setNumSamples(5000);
 }
 
 void loop() {

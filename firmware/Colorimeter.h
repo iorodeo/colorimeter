@@ -29,46 +29,31 @@ class AbsorbanceData {
         float blue;
         float white;
 };
-
-
+            
 class Colorimeter {
     public:
+
         Colorimeter();
         void initialize();
 
-        void setNumSamples(uint16_t _numSamples);
-        uint16_t getNumSamples();
+        RGBLed led;
+        ColorSensor sensor;
 
         uint32_t getFrequencyRed();
         uint32_t getFrequencyGreen();
         uint32_t getFrequencyBlue();
         uint32_t getFrequencyWhite();
-        FrequencyData getFrequencyAll();
+        void getMeasurement();
 
-        float getTransmissionRed();
-        float getTransmissionGreen();
-        float getTransmissionBlue();
-        float getTransmissionWhite();
-        TransmissionData getTransmissionAll();
-
-        float getAbsorbanceRed();
-        float getAbsorbanceGreen();
-        float getAbsorbanceBlue();
-        float getAbsorbanceWhite();
-        AbsorbanceData getAbsorbanceAll();
-
-        void calibrateRed();
-        void calibrateGreen();
-        void calibrateBlue();
-        void calibrateWhite();
         void calibrate();
+        void EEPROM_saveCalibration();
+        void EEPROM_loadCalibration();
 
-    private:
-        RGBLed led;
-        ColorSensor sensor;
-        FrequencyData calibration;
         uint16_t numSamples;
-
+        FrequencyData calibration;
+        FrequencyData frequency;
+        TransmissionData transmission;
+        AbsorbanceData absorbance;
 };
 
 float freq2trans(uint32_t calFreq, uint32_t sampleFreq);

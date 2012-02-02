@@ -6,28 +6,13 @@
 
 #define DEFAULT_NUM_SAMPLES 5000
 
-class FrequencyData {
+template <class T>
+class ColorimeterData {
     public:
-        uint32_t red;
-        uint32_t green;
-        uint32_t blue;
-        uint32_t white;
-};
-
-class TransmissionData {
-    public:
-        float red;
-        float green;
-        float blue;
-        float white;
-};
-
-class AbsorbanceData {
-    public:
-        float red;
-        float green;
-        float blue;
-        float white;
+        T red;
+        T green;
+        T blue;
+        T white;
 };
             
 class Colorimeter {
@@ -50,10 +35,10 @@ class Colorimeter {
         void EEPROM_loadCalibration();
 
         uint16_t numSamples;
-        FrequencyData calibration;
-        FrequencyData frequency;
-        TransmissionData transmission;
-        AbsorbanceData absorbance;
+        ColorimeterData<uint32_t> calibration;
+        ColorimeterData<uint32_t> frequency; 
+        ColorimeterData<float> transmission;
+        ColorimeterData<float> absorbance;
 };
 
 float freq2trans(uint32_t calFreq, uint32_t sampleFreq);

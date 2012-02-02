@@ -6,8 +6,11 @@
 #include "ColorSensor.h"
 #include "Colorimeter.h"
 #include "EEPROMAnything.h"
+#include "SerialReceiver.h"
+#include "SerialHandler.h"
 
 Colorimeter colorimeter;
+SerialReceiver receiver;
 
 void setup() {
     Serial.begin(9600);
@@ -26,6 +29,14 @@ void setup() {
 }
 
 void loop() {
+
+    while (Serial.available() > 0) {
+        receiver.process(Serial.read());
+        if (receiver.messageReady()) {
+            receiver.printMessage();
+            receiver.reset();
+        }
+    }
 
     //colorimeter.getMeasurement();
 

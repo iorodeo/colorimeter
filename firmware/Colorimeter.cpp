@@ -70,6 +70,7 @@ void Colorimeter::getMeasurement() {
     frequency.green = getFrequencyGreen();
     frequency.blue = getFrequencyBlue();
     frequency.white = getFrequencyWhite();
+    led.setOff();
 
     transmission.red = freq2trans(calibration.red, frequency.red);
     transmission.green = freq2trans(calibration.green, frequency.green);
@@ -88,6 +89,7 @@ void Colorimeter::calibrate() {
     calibration.green = getFrequencyGreen();
     calibration.blue = getFrequencyBlue();
     calibration.white = getFrequencyWhite();
+    led.setOff();
 }
 
 void Colorimeter::EEPROM_saveCalibration() {

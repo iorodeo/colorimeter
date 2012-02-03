@@ -15,7 +15,7 @@ RSP_SUCCESS = 1
 
 class Colorimeter(serial.Serial):
 
-    def __init__(self, port, timeout=2.0, debug=False):
+    def __init__(self, port, timeout=4.0, debug=False):
         params = {'baudrate': 9600, 'timeout': timeout}
         super(Colorimeter,self).__init__(port,**params)
         time.sleep(RESET_SLEEP_T)

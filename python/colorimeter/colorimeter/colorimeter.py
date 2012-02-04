@@ -15,11 +15,18 @@ RSP_SUCCESS = 1
 
 class Colorimeter(serial.Serial):
 
-    def __init__(self, port, timeout=4.0, debug=False):
+    def __init__(self, port, timeout=10.0, debug=True):
         params = {'baudrate': 9600, 'timeout': timeout}
         super(Colorimeter,self).__init__(port,**params)
         time.sleep(RESET_SLEEP_T)
         self.debug=debug
+        self.clearBuffer()
+
+    def clearBuffer(self):
+        time.sleep(0.1)
+        while self.inWaiting() > 0:
+            self.read(self.inWaiting())
+            time.sleep(0.1)
 
     def sendCmd(self,cmd):
         """
@@ -27,6 +34,7 @@ class Colorimeter(serial.Serial):
         """
         self.write('{0}\n'.format(cmd))
         rsp = self.readline()
+        self.clearBuffer()
         if self.debug:
             print('cmd: ', cmd)
             print('rsp: ', rsp)

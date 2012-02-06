@@ -8,6 +8,7 @@
 #include "EEPROMAnything.h"
 #include "SerialReceiver.h"
 #include "SerialHandler.h"
+#include "tests.h"
 
 void disableLCD();
 
@@ -19,11 +20,13 @@ void setup() {
     Serial.begin(9600);
     colorimeter.initialize();
     colorimeter.numSamples = 1000;
-    colorimeter.EEPROM_loadCalibration();
+    //colorimeter.EEPROM_loadCalibration();
+    
 }
 
 void loop() {
     comm.processInput();
+    //test_get_frequencies();
 }
 
 void disableLCD() {
@@ -32,3 +35,4 @@ void disableLCD() {
     digitalWrite(7,LOW);
     digitalWrite(8,LOW);
 }
+

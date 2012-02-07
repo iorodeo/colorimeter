@@ -65,15 +65,10 @@ uint32_t Colorimeter::getFrequencyWhite() {
 
 
 void Colorimeter::getMeasurement() {
-    //Serial << "red" << endl;
     frequency.red = getFrequencyRed();
-    //Serial << "green" << endl;
     frequency.green = getFrequencyGreen();
-    //Serial << "blue" << endl;
     frequency.blue = getFrequencyBlue();
-    //Serial << "white" << endl;
     frequency.white = getFrequencyWhite();
-    //Serial << "off" << endl;
     led.setOff();
 
     transmission.red = freq2trans(calibration.red, frequency.red);

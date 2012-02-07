@@ -71,7 +71,7 @@ void SerialHandler::sendMeasurement() {
     Serial << ',' << valueStr;
     dtostre(colorimeter.transmission.blue, valueStr, DBL_PREC, 0);
     Serial << ',' << valueStr;
-    dtostre(colorimeter.transmission.red, valueStr, DBL_PREC, 0);
+    dtostre(colorimeter.transmission.white, valueStr, DBL_PREC, 0);
     Serial << ',' << valueStr;
 
     dtostre(colorimeter.absorbance.red, valueStr, DBL_PREC, 0);
@@ -80,7 +80,7 @@ void SerialHandler::sendMeasurement() {
     Serial << ',' << valueStr;
     dtostre(colorimeter.absorbance.blue, valueStr, DBL_PREC, 0);
     Serial << ',' << valueStr;
-    dtostre(colorimeter.absorbance.red, valueStr, DBL_PREC, 0);
+    dtostre(colorimeter.absorbance.white, valueStr, DBL_PREC, 0);
     Serial << ',' << valueStr;
     Serial << ']' << endl;
 }

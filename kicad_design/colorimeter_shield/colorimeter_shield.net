@@ -1,4 +1,4 @@
-# EESchema Netlist Version 1.1 created  Fri 10 Feb 2012 10:52:09 AM PST
+# EESchema Netlist Version 1.1 created  Fri 10 Feb 2012 12:57:52 PM PST
 (
  ( /4F03B33E $noname  SHIELD1 ARDUINO_SHIELD {Lib=ARDUINO_SHIELD}
   (    0 ? )
@@ -26,11 +26,11 @@
   ( AREF ? )
   ( GND1 GND )
   ( GND2 ? )
-  ( GND3 ? )
+  ( GND3 GND )
   (  RST ? )
   ( V_IN ? )
  )
- ( /4F03AC98 $noname  P2 CONN_5X2 {Lib=CONN_5X2}
+ ( /4F03AC98 $noname  P1 CONN_5X2 {Lib=CONN_5X2}
   (    1 /5V )
   (    2 /RED )
   (    3 GND )
@@ -46,34 +46,35 @@
 *
 { Pin List by Nets
 Net 5 "/S0" "S0"
- P2 5
+ P1 5
  SHIELD1 4
 Net 6 "/S1" "S1"
+ P1 7
  SHIELD1 5
- P2 7
 Net 7 "/FREQ" "FREQ"
- P2 8
+ P1 8
  SHIELD1 8
 Net 8 "/BLUE" "BLUE"
- P2 6
  SHIELD1 9
+ P1 6
 Net 9 "/GREEN" "GREEN"
- P2 4
+ P1 4
  SHIELD1 10
 Net 10 "/RED" "RED"
+ P1 2
  SHIELD1 11
- P2 2
 Net 15 "/S3" "S3"
  SHIELD1 7
- P2 10
+ P1 10
 Net 16 "/S2" "S2"
- P2 9
  SHIELD1 6
+ P1 9
 Net 19 "GND" "GND"
- P2 3
+ P1 3
+ SHIELD1 GND3
  SHIELD1 GND1
-Net 26 "/5V" "5V"
+Net 25 "/5V" "5V"
  SHIELD1 5V
- P2 1
+ P1 1
 }
 #End

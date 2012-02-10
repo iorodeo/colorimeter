@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date Fri 10 Feb 2012 11:31:17 AM PST
+EESchema Schematic File Version 2  date Fri 10 Feb 2012 12:57:46 PM PST
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -46,56 +46,60 @@ Comment2 ""
 Comment3 ""
 Comment4 ""
 $EndDescr
+Text Label 5950 3250 2    60   ~ 0
+GND
+Wire Wire Line
+	5450 3250 5950 3250
+Wire Wire Line
+	2450 3150 2450 3450
+Wire Wire Line
+	1600 3150 1600 3450
+Wire Wire Line
+	5450 4150 5950 4150
+Wire Wire Line
+	8950 3900 9450 3900
+Wire Wire Line
+	8950 3700 9450 3700
+Wire Wire Line
+	8950 3500 9450 3500
+Wire Wire Line
+	8150 3800 7650 3800
+Wire Wire Line
+	8150 3600 7650 3600
+Wire Wire Line
+	5450 4350 5950 4350
+Wire Wire Line
+	5450 3650 5950 3650
+Wire Wire Line
+	5450 3850 5950 3850
+Wire Wire Line
+	3550 3750 3050 3750
+Wire Wire Line
+	3550 3850 3050 3850
+Wire Wire Line
+	5450 3750 5950 3750
+Wire Wire Line
+	5450 3550 5950 3550
+Wire Wire Line
+	5450 4250 5950 4250
+Wire Wire Line
+	8150 3500 7650 3500
+Wire Wire Line
+	8150 3700 7650 3700
+Wire Wire Line
+	8150 3900 7650 3900
+Wire Wire Line
+	8950 3600 9450 3600
+Wire Wire Line
+	8950 3800 9450 3800
+Wire Wire Line
+	5450 4050 5950 4050
 NoConn ~ 5450 4550
 NoConn ~ 3550 4350
 NoConn ~ 3550 4250
 NoConn ~ 3550 4050
 NoConn ~ 5450 3450
 NoConn ~ 5450 3350
-Wire Wire Line
-	5450 4050 5950 4050
-Wire Wire Line
-	8950 3800 9450 3800
-Wire Wire Line
-	8950 3600 9450 3600
-Wire Wire Line
-	8150 3900 7650 3900
-Wire Wire Line
-	8150 3700 7650 3700
-Wire Wire Line
-	8150 3500 7650 3500
-Wire Wire Line
-	5450 4250 5950 4250
-Wire Wire Line
-	5450 3550 5950 3550
-Wire Wire Line
-	5450 3750 5950 3750
-Wire Wire Line
-	3550 3850 3050 3850
-Wire Wire Line
-	3550 3750 3050 3750
-Wire Wire Line
-	5450 3850 5950 3850
-Wire Wire Line
-	5450 3650 5950 3650
-Wire Wire Line
-	5450 4350 5950 4350
-Wire Wire Line
-	8150 3600 7650 3600
-Wire Wire Line
-	8150 3800 7650 3800
-Wire Wire Line
-	8950 3500 9450 3500
-Wire Wire Line
-	8950 3700 9450 3700
-Wire Wire Line
-	8950 3900 9450 3900
-Wire Wire Line
-	5450 4150 5950 4150
-Wire Wire Line
-	1600 3150 1600 3450
-Wire Wire Line
-	2450 3150 2450 3450
 Text Label 2450 3450 0    60   ~ 0
 5V
 $Comp
@@ -163,7 +167,6 @@ NoConn ~ 3550 4650
 NoConn ~ 3550 4750
 NoConn ~ 5450 4750
 NoConn ~ 5450 4650
-NoConn ~ 5450 3250
 NoConn ~ 5450 3150
 Text Label 3050 3850 0    60   ~ 0
 GND
@@ -191,10 +194,10 @@ F 1 "ARDUINO_SHIELD" H 4550 3000 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L CONN_5X2 P2
+L CONN_5X2 P1
 U 1 1 4F03AC98
 P 8550 3700
-F 0 "P2" H 8550 4000 60  0000 C CNN
+F 0 "P1" H 8550 4000 60  0000 C CNN
 F 1 "CONN_5X2" V 8550 3700 50  0000 C CNN
 	1    8550 3700
 	1    0    0    -1  

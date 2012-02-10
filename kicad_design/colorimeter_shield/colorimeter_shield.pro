@@ -1,6 +1,6 @@
-update=Tue 10 Jan 2012 02:58:08 PM PST
+update=Fri 10 Feb 2012 10:07:57 AM PST
 version=1
-last_client=pcbnew
+last_client=cvpcb
 [general]
 version=1
 [eeschema]
@@ -67,11 +67,6 @@ LibName29=contrib
 LibName30=valves
 LibName31=arduino_shieldsNCL
 LibName32=/home/jo/work/colorimeter/kicad_design/color_sensor/tcs3200
-[cvpcb]
-version=1
-NetIExt=net
-[cvpcb/libraries]
-EquName1=devcms
 [pcbnew]
 version=1
 PadDrlX=400
@@ -90,7 +85,6 @@ TxtLar=120
 MSegLar=150
 LastNetListRead=colorimeter_shield.net
 [pcbnew/libraries]
-LibDir=
 LibName1=sockets
 LibName2=connect
 LibName3=discret
@@ -108,3 +102,9 @@ LibName14=sparkfun_lcd
 LibName15=POT296
 LibName16=5X2_SHRD_HEADER
 LibName17=PIN_ARRAY_4X1
+LibDir=
+[cvpcb]
+version=1
+NetIExt=net
+[cvpcb/libraries]
+EquName1=devcms

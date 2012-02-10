@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPCB (2011-07-19)-testing date = Mon 09 Jan 2012 06:01:04 PM PST
+Cmp-Mod V01 Created by CvPCB (2011-07-19)-testing date = Fri 10 Feb 2012 10:14:45 AM PST
 
 BeginCmp
 TimeStamp = /4F04AA4F;
@@ -46,7 +46,7 @@ BeginCmp
 TimeStamp = /4F03B33E;
 Reference = SHIELD1;
 ValeurCmp = ARDUINO_SHIELD;
-IdModule  = ARDUINO_SHIELD;
+IdModule  = arduino_shield_modified;
 EndCmp
 
 BeginCmp

@@ -1,4 +1,4 @@
-# EESchema Netlist Version 1.1 created  Tue 10 Jan 2012 01:51:42 PM PST
+# EESchema Netlist Version 1.1 created  Thu 09 Feb 2012 05:54:27 PM PST
 (
  ( /4E9F2A04 SM0603 C1 0.1_uF
   ( 1 /5V )
@@ -6,23 +6,21 @@
  )
  ( /4F0CA3A1 5X2_SHRD_HEADER P1 CONN_5X2
   ( 1 /5V )
-  ( 2 /RED )
+  ( 2 /red )
   ( 3 GND )
-  ( 4 /GREEN )
+  ( 4 /green )
   ( 5 /S0 )
-  ( 6 /BLUE )
+  ( 6 /blue )
   ( 7 /S1 )
   ( 8 /FREQ )
   ( 9 /S2 )
   ( 10 /S3 )
  )
- ( /4E9F77B0 SCREW_TERMINAL_2 P2 CONN_2
-  ( 1 /RED )
-  ( 2 GND )
- )
- ( /4EA0C6DF SCREW_TERMINAL_2 P3 CONN_2
-  ( 1 /BLUE )
-  ( 2 /GREEN )
+ ( /4F347703 SMD_wire_4x1 P2 CONN_4
+  ( 1 /blue )
+  ( 2 /green )
+  ( 3 /red )
+  ( 4 GND )
  )
  ( /4E9F1F08 TCS3200 U1 TCS3200
   ( 1 /S0 )

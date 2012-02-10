@@ -1,32 +1,30 @@
-# EESchema Netlist Version 1.1 created  Tue 03 Jan 2012 12:16:26 PM PST
+# EESchema Netlist Version 1.1 created  Thu 09 Feb 2012 04:22:49 PM PST
 (
- ( /4F035C71 SCREW_TERMINAL_2 P1 CONN_2
-  ( 1 /A1 )
-  ( 2 /A2 )
- )
- ( /4F035C74 SCREW_TERMINAL_2 P2 CONN_2
-  ( 1 /A3 )
-  ( 2 GND )
+ ( /4F345F7F SMD_wire_4x1 P1 CONN_4
+  ( 1 /blue )
+  ( 2 /green )
+  ( 3 /red )
+  ( 4 GND )
  )
  ( /4F035CCA SM0805 R1 90
-  ( 1 N-000003 )
+  ( 1 N-000004 )
   ( 2 GND )
  )
  ( /4F035CCF SM0805 R2 90
-  ( 1 N-000001 )
-  ( 2 GND )
- )
- ( /4F035CD1 SM0805 R3 150
   ( 1 N-000002 )
   ( 2 GND )
  )
+ ( /4F035CD1 SM0805 R3 150
+  ( 1 N-000003 )
+  ( 2 GND )
+ )
  ( /4F035E14 RGB_MULTILED U1 RGB_MULTILED
-  ( A1 /A1 )
-  ( A2 /A2 )
-  ( A3 /A3 )
-  ( C1 N-000003 )
-  ( C2 N-000001 )
-  ( C3 N-000002 )
+  ( A1 /blue )
+  ( A2 /green )
+  ( A3 /red )
+  ( C1 N-000004 )
+  ( C2 N-000002 )
+  ( C3 N-000003 )
  )
 )
 *

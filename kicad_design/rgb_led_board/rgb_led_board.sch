@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date Tue 03 Jan 2012 12:05:37 PM PST
+EESchema Schematic File Version 2  date Thu 09 Feb 2012 04:13:39 PM PST
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -30,13 +30,14 @@ LIBS:atmel
 LIBS:contrib
 LIBS:valves
 LIBS:rgb_multiled
-EELAYER 43  0
+LIBS:rgb_led_board-cache
+EELAYER 25  0
 EELAYER END
 $Descr A4 11700 8267
 encoding utf-8
 Sheet 1 1
 Title ""
-Date "3 jan 2012"
+Date "10 feb 2012"
 Rev ""
 Comp ""
 Comment1 ""
@@ -44,6 +45,18 @@ Comment2 ""
 Comment3 ""
 Comment4 ""
 $EndDescr
+Text Label 7000 3150 2    60   ~ 0
+red
+Text Label 7000 2950 2    60   ~ 0
+green
+Wire Wire Line
+	6550 3150 7000 3150
+Wire Wire Line
+	6550 2750 7000 2750
+Wire Wire Line
+	9300 3000 8700 3000
+Wire Wire Line
+	9300 2800 8700 2800
 Wire Wire Line
 	4800 3800 4800 2750
 Wire Wire Line
@@ -53,15 +66,7 @@ Wire Wire Line
 Wire Wire Line
 	5300 4300 5300 4500
 Wire Wire Line
-	7400 3350 7150 3350
-Wire Wire Line
-	6550 2950 7400 2950
-Wire Wire Line
 	2700 1900 2700 2200
-Wire Wire Line
-	6550 2750 7400 2750
-Wire Wire Line
-	6550 3150 7400 3150
 Wire Wire Line
 	5650 3150 5300 3150
 Wire Wire Line
@@ -73,21 +78,38 @@ Wire Wire Line
 Wire Wire Line
 	5050 2950 5050 3800
 Wire Wire Line
-	7150 3350 7150 4500
+	9300 2700 8700 2700
+Wire Wire Line
+	9300 2900 8700 2900
+Wire Wire Line
+	8700 3000 8700 3400
+Wire Wire Line
+	6550 2950 7000 2950
+Text Label 7000 2750 2    60   ~ 0
+blue
+Text Label 8700 2900 0    60   ~ 0
+red
+Text Label 8700 2800 0    60   ~ 0
+green
+Text Label 8700 2700 0    60   ~ 0
+blue
+$Comp
+L CONN_4 P1
+U 1 1 4F345F7F
+P 9650 2850
+F 0 "P1" V 9600 2850 50  0000 C CNN
+F 1 "CONN_4" V 9700 2850 50  0000 C CNN
+	1    9650 2850
+	1    0    0    -1  
+$EndComp
 Text Label 4800 4500 0    60   ~ 0
 GND
 Text Label 5050 4500 0    60   ~ 0
 GND
 Text Label 5300 4500 0    60   ~ 0
 GND
-Text Label 7150 4500 0    60   ~ 0
+Text Label 8700 3400 0    60   ~ 0
 GND
-Text Label 7100 3150 0    60   ~ 0
-A3
-Text Label 7100 2950 0    60   ~ 0
-A2
-Text Label 7100 2750 0    60   ~ 0
-A1
 Text Label 2700 2200 0    60   ~ 0
 GND
 $Comp
@@ -156,10 +178,10 @@ $EndComp
 $Comp
 L GND #PWR04
 U 1 1 4F035C8B
-P 7150 4500
-F 0 "#PWR04" H 7150 4500 30  0001 C CNN
-F 1 "GND" H 7150 4430 30  0001 C CNN
-	1    7150 4500
+P 8700 3400
+F 0 "#PWR04" H 8700 3400 30  0001 C CNN
+F 1 "GND" H 8700 3330 30  0001 C CNN
+	1    8700 3400
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -178,24 +200,6 @@ P 2700 1900
 F 0 "#FLG06" H 2700 2170 30  0001 C CNN
 F 1 "PWR_FLAG" H 2700 2130 30  0000 C CNN
 	1    2700 1900
-	1    0    0    -1  
-$EndComp
-$Comp
-L CONN_2 P2
-U 1 1 4F035C74
-P 7750 3250
-F 0 "P2" V 7700 3250 40  0000 C CNN
-F 1 "CONN_2" V 7800 3250 40  0000 C CNN
-	1    7750 3250
-	1    0    0    -1  
-$EndComp
-$Comp
-L CONN_2 P1
-U 1 1 4F035C71
-P 7750 2850
-F 0 "P1" V 7700 2850 40  0000 C CNN
-F 1 "CONN_2" V 7800 2850 40  0000 C CNN
-	1    7750 2850
 	1    0    0    -1  
 $EndComp
 $EndSCHEMATC

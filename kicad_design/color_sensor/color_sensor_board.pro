@@ -1,6 +1,6 @@
-update=Mon 06 Feb 2012 11:28:17 AM PST
+update=Thu 09 Feb 2012 05:54:05 PM PST
 version=1
-last_client=eeschema
+last_client=cvpcb
 [general]
 version=1
 [pcbnew]
@@ -35,12 +35,8 @@ LibName11=TCS3200
 LibName12=SCREW_TERMINAL_2
 LibName13=MOUNT_HOLE_4_40
 LibName14=SHROUD_HEADER_5X2
+LibName15=SMD_wire_4x1
 LibDir=
-[cvpcb]
-version=1
-NetIExt=net
-[cvpcb/libraries]
-EquName1=devcms
 [eeschema]
 version=1
 LibDir=
@@ -105,3 +101,8 @@ LibName29=contrib
 LibName30=valves
 LibName31=tcs3200
 LibName32=/home/jo/work/kicad/ping_expansion_board/ping_breakout-cache
+[cvpcb]
+version=1
+NetIExt=net
+[cvpcb/libraries]
+EquName1=devcms

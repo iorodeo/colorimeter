@@ -1,0 +1,187 @@
+EESchema Schematic File Version 2  date Fri 10 Feb 2012 02:18:31 PM PST
+LIBS:power
+LIBS:device
+LIBS:transistors
+LIBS:conn
+LIBS:linear
+LIBS:regul
+LIBS:74xx
+LIBS:cmos4000
+LIBS:adc-dac
+LIBS:memory
+LIBS:xilinx
+LIBS:special
+LIBS:microcontrollers
+LIBS:dsp
+LIBS:microchip
+LIBS:analog_switches
+LIBS:motorola
+LIBS:texas
+LIBS:intel
+LIBS:audio
+LIBS:interface
+LIBS:digital-audio
+LIBS:philips
+LIBS:display
+LIBS:cypress
+LIBS:siliconi
+LIBS:opto
+LIBS:atmel
+LIBS:contrib
+LIBS:valves
+LIBS:arduino_nano
+EELAYER 43  0
+EELAYER END
+$Descr A4 11700 8267
+encoding utf-8
+Sheet 1 1
+Title ""
+Date "10 feb 2012"
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+Text Label 2050 1950 0    60   ~ 0
+GND
+Wire Wire Line
+	2050 1850 2050 1950
+Wire Wire Line
+	4650 3550 4150 3550
+Wire Wire Line
+	4650 3450 4150 3450
+Wire Wire Line
+	4650 3250 4150 3250
+Wire Wire Line
+	4650 3050 4150 3050
+Wire Wire Line
+	6350 2650 6850 2650
+Wire Wire Line
+	1950 3400 1400 3400
+Wire Wire Line
+	1950 3200 1400 3200
+Wire Wire Line
+	1950 3000 1400 3000
+Wire Wire Line
+	2750 3300 3300 3300
+Wire Wire Line
+	2750 3100 3300 3100
+Wire Wire Line
+	2750 3000 3300 3000
+Wire Wire Line
+	2750 3200 3300 3200
+Wire Wire Line
+	2750 3400 3300 3400
+Wire Wire Line
+	1950 3100 1400 3100
+Wire Wire Line
+	1950 3300 1400 3300
+Wire Wire Line
+	6350 2450 6850 2450
+Wire Wire Line
+	4650 2950 4150 2950
+Wire Wire Line
+	4650 3150 4150 3150
+Wire Wire Line
+	4650 3350 4150 3350
+Wire Wire Line
+	4650 3650 4150 3650
+$Comp
+L GND #PWR?
+U 1 1 4F359796
+P 2050 1950
+F 0 "#PWR?" H 2050 1950 30  0001 C CNN
+F 1 "GND" H 2050 1880 30  0001 C CNN
+	1    2050 1950
+	1    0    0    -1  
+$EndComp
+$Comp
+L PWR_FLAG #FLG?
+U 1 1 4F359783
+P 2050 1850
+F 0 "#FLG?" H 2050 2120 30  0001 C CNN
+F 1 "PWR_FLAG" H 2050 2080 30  0000 C CNN
+	1    2050 1850
+	1    0    0    -1  
+$EndComp
+Text Label 4150 3650 0    60   ~ 0
+RED
+Text Label 4150 3550 0    60   ~ 0
+GREEN
+Text Label 4150 3450 0    60   ~ 0
+BLUE
+Text Label 4150 3350 0    60   ~ 0
+FREQ
+Text Label 4150 3250 0    60   ~ 0
+S3
+Text Label 4150 3150 0    60   ~ 0
+S2
+Text Label 4150 3050 0    60   ~ 0
+S1
+Text Label 4150 2950 0    60   ~ 0
+S0
+NoConn ~ 4650 2850
+NoConn ~ 4650 2750
+Text Label 6850 2650 2    60   ~ 0
+5V
+Text Label 6850 2450 2    60   ~ 0
+GND
+NoConn ~ 4650 3750
+NoConn ~ 6350 3750
+NoConn ~ 6350 3650
+NoConn ~ 6350 3550
+NoConn ~ 6350 3450
+NoConn ~ 6350 3350
+NoConn ~ 6350 3250
+NoConn ~ 6350 3150
+NoConn ~ 6350 3050
+NoConn ~ 6350 2950
+NoConn ~ 6350 2850
+NoConn ~ 6350 2750
+NoConn ~ 6350 2550
+NoConn ~ 6350 2350
+NoConn ~ 4650 2650
+NoConn ~ 4650 2550
+NoConn ~ 4650 2450
+NoConn ~ 4650 2350
+Text Label 3300 3000 2    60   ~ 0
+RED
+Text Label 3300 3100 2    60   ~ 0
+GREEN
+Text Label 3300 3200 2    60   ~ 0
+BLUE
+Text Label 3300 3300 2    60   ~ 0
+FREQ
+Text Label 3300 3400 2    60   ~ 0
+S3
+Text Label 1400 3400 0    60   ~ 0
+S2
+Text Label 1400 3300 0    60   ~ 0
+S1
+Text Label 1400 3200 0    60   ~ 0
+S0
+Text Label 1400 3100 0    60   ~ 0
+GND
+Text Label 1400 3000 0    60   ~ 0
+5V
+$Comp
+L CONN_5X2 P?
+U 1 1 4F3592AD
+P 2350 3200
+F 0 "P?" H 2350 3500 60  0000 C CNN
+F 1 "CONN_5X2" V 2350 3200 50  0000 C CNN
+	1    2350 3200
+	1    0    0    -1  
+$EndComp
+$Comp
+L ARDUINO_NANO U?
+U 1 1 4F359286
+P 5500 3100
+F 0 "U?" H 5050 4050 60  0000 C CNN
+F 1 "ARDUINO_NANO" H 5500 2250 60  0000 C CNN
+	1    5500 3100
+	1    0    0    -1  
+$EndComp
+$EndSCHEMATC

@@ -1,0 +1,17 @@
+Cmp-Mod V01 Created by CvPCB (2011-07-19)-testing date = Fri 10 Feb 2012 02:23:54 PM PST
+
+BeginCmp
+TimeStamp = /4F3592AD;
+Reference = P1;
+ValeurCmp = CONN_5X2;
+IdModule  = 5X2_SHRD_HEADER;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F359286;
+Reference = U1;
+ValeurCmp = ARDUINO_NANO;
+IdModule  = arduino_nano;
+EndCmp
+
+EndListe

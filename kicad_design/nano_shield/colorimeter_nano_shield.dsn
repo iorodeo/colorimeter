@@ -1,0 +1,197 @@
+(pcb /home/jo/work/colorimeter/kicad_design/nano_shield/colorimeter_nano_shield.dsn
+  (parser
+    (string_quote ")
+    (space_in_quoted_tokens on)
+    (host_cad "Kicad's PCBNEW")
+    (host_version "(2011-07-19)-testing")
+  )
+  (resolution mil 10)
+  (unit mil)
+  (structure
+    (layer Front
+      (type signal)
+      (property
+        (index 0)
+      )
+    )
+    (layer Back
+      (type signal)
+      (property
+        (index 1)
+      )
+    )
+    (boundary
+      (path pcb 0  4500 -3000  4500 -4800  6300 -4800  6300 -4780  6300 -3000
+            6290 -3000  4500 -3000)
+    )
+    (via "Via[0-1]_35:25_mil" "Via[0-1]_35:0_mil")
+    (rule
+      (width 12)
+      (clearance 10.1)
+      (clearance 10.1 (type default_smd))
+      (clearance 2.5 (type smd_smd))
+    )
+  )
+  (placement
+    (component arduino_nano
+      (place U1 5130 -3900 front 0 (PN ARDUINO_NANO))
+    )
+    (component 5X2_SHRD_HEADER
+      (place P1 5950 -3900 front 270 (PN CONN_5X2))
+    )
+    (component MOUNT_HOLE_4_40
+      (place MOUNT_HOLE_2 6200 -3100 front 0 (PN VAL**))
+      (place MOUNT_HOLE_3 6200 -4700 front 0 (PN VAL**))
+      (place MOUNT_HOLE_4 4600 -4700 front 0 (PN VAL**))
+      (place MOUNT_HOLE_1 4600 -3100 front 0 (PN VAL**))
+    )
+  )
+  (library
+    (image arduino_nano
+      (outline (path signal 15  250 750  50 750))
+      (outline (path signal 15  -250 750  -50 750))
+      (outline (path signal 15  -250 750  -250 -750))
+      (outline (path signal 15  -250 -750  250 -750))
+      (outline (path signal 15  250 -750  250 750))
+      (pin Rect[A]Pad_69x60_mil 1 -300 700)
+      (pin Round[A]Pad_69_mil 2 -300 600)
+      (pin Round[A]Pad_69_mil 3 -300 500)
+      (pin Round[A]Pad_69_mil 4 -300 400)
+      (pin Round[A]Pad_69_mil 5 -300 300)
+      (pin Round[A]Pad_69_mil 6 -300 200)
+      (pin Round[A]Pad_69_mil 7 -300 100)
+      (pin Round[A]Pad_69_mil 8 -300 0)
+      (pin Round[A]Pad_69_mil 9 -300 -100)
+      (pin Round[A]Pad_69_mil 10 -300 -200)
+      (pin Round[A]Pad_69_mil 11 -300 -300)
+      (pin Round[A]Pad_69_mil 12 -300 -400)
+      (pin Round[A]Pad_69_mil 13 -300 -500)
+      (pin Round[A]Pad_69_mil 14 -300 -600)
+      (pin Round[A]Pad_69_mil 15 -300 -700)
+      (pin Round[A]Pad_69_mil 16 300 -700)
+      (pin Round[A]Pad_69_mil 17 300 -600)
+      (pin Round[A]Pad_69_mil 18 300 -500)
+      (pin Round[A]Pad_69_mil 19 300 -400)
+      (pin Round[A]Pad_69_mil 20 300 -300)
+      (pin Round[A]Pad_69_mil 21 300 -200)
+      (pin Round[A]Pad_69_mil 22 300 -100)
+      (pin Round[A]Pad_69_mil 23 300 0)
+      (pin Round[A]Pad_69_mil 24 300 100)
+      (pin Round[A]Pad_69_mil 25 300 200)
+      (pin Round[A]Pad_69_mil 26 300 300)
+      (pin Round[A]Pad_69_mil 27 300 400)
+      (pin Round[A]Pad_69_mil 28 300 500)
+      (pin Round[A]Pad_69_mil 29 300 600)
+      (pin Round[A]Pad_69_mil 30 300 700)
+    )
+    (image 5X2_SHRD_HEADER
+      (outline (path signal 15  -400 190  400 190))
+      (outline (path signal 15  400 190  400 -190))
+      (outline (path signal 15  400 -190  -400 -190))
+      (outline (path signal 15  -400 -190  -400 190))
+      (outline (path signal 15  -271.7 -287.4  -153.5 -287.4))
+      (outline (path signal 15  -211.2 -216.1  -271.2 -286.1))
+      (outline (path signal 15  -151.2 -286  -211.2 -216))
+      (pin Rect[A]Pad_70x70_mil 1 -200 -50)
+      (pin Round[A]Pad_70_mil 2 -200 50)
+      (pin Round[A]Pad_70_mil 3 -100 -50)
+      (pin Round[A]Pad_70_mil 4 -100 50)
+      (pin Round[A]Pad_70_mil 5 0 -50)
+      (pin Round[A]Pad_70_mil 6 0 50)
+      (pin Round[A]Pad_70_mil 7 100 -50)
+      (pin Round[A]Pad_70_mil 8 100 50)
+      (pin Round[A]Pad_70_mil 9 200 -50)
+      (pin Round[A]Pad_70_mil 10 200 50)
+    )
+    (image MOUNT_HOLE_4_40
+      (pin Round[A]Pad_130_mil @1 0 0)
+    )
+    (padstack Round[A]Pad_130_mil
+      (shape (circle Front 130))
+      (shape (circle Back 130))
+      (attach off)
+    )
+    (padstack Round[A]Pad_69_mil
+      (shape (circle Front 69))
+      (shape (circle Back 69))
+      (attach off)
+    )
+    (padstack Round[A]Pad_70_mil
+      (shape (circle Front 70))
+      (shape (circle Back 70))
+      (attach off)
+    )
+    (padstack Rect[A]Pad_69x60_mil
+      (shape (rect Front -34.5 -30 34.5 30))
+      (shape (rect Back -34.5 -30 34.5 30))
+      (attach off)
+    )
+    (padstack Rect[A]Pad_70x70_mil
+      (shape (rect Front -35 -35 35 35))
+      (shape (rect Back -35 -35 35 35))
+      (attach off)
+    )
+    (padstack "Via[0-1]_35:25_mil"
+      (shape (circle Front 35))
+      (shape (circle Back 35))
+      (attach off)
+    )
+    (padstack "Via[0-1]_35:0_mil"
+      (shape (circle Front 35))
+      (shape (circle Back 35))
+      (attach off)
+    )
+  )
+  (network
+    (net /5V
+      (pins U1-27 P1-1)
+    )
+    (net /BLUE
+      (pins U1-12 P1-6)
+    )
+    (net /FREQ
+      (pins U1-11 P1-8)
+    )
+    (net /GREEN
+      (pins U1-13 P1-4)
+    )
+    (net /RED
+      (pins U1-14 P1-2)
+    )
+    (net /S0
+      (pins U1-7 P1-5)
+    )
+    (net /S1
+      (pins U1-8 P1-7)
+    )
+    (net /S2
+      (pins U1-9 P1-9)
+    )
+    (net /S3
+      (pins U1-10 P1-10)
+    )
+    (net GND
+      (pins U1-29 P1-3)
+    )
+    (class kicad_default ""
+      (circuit
+        (use_via Via[0-1]_35:25_mil)
+      )
+      (rule
+        (width 12)
+        (clearance 10.1)
+      )
+    )
+    (class 0.0120 /5V /BLUE /FREQ /GREEN /RED /S0 /S1 /S2 /S3 GND
+      (circuit
+        (use_via Via[0-1]_35:25_mil)
+      )
+      (rule
+        (width 12)
+        (clearance 10.1)
+      )
+    )
+  )
+  (wiring
+  )
+)

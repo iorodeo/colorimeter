@@ -1,0 +1,177 @@
+
+(session colorimeter_nano_shield.ses
+  (base_design colorimeter_nano_shield.dsn)
+  (placement
+    (resolution mil 10)
+    (component arduino_nano
+      (place U1 51300 -39000 front 0)
+    )
+    (component 5X2_SHRD_HEADER
+      (place P1 59500 -39000 front 270)
+    )
+    (component MOUNT_HOLE_4_40
+      (place MOUNT_HOLE_2 62000 -31000 front 0)
+      (place MOUNT_HOLE_3 62000 -47000 front 0)
+      (place MOUNT_HOLE_4 46000 -47000 front 0)
+      (place MOUNT_HOLE_1 46000 -31000 front 0)
+    )
+  )
+  (was_is
+  )
+  (routes 
+    (resolution mil 10)
+    (parser
+      (host_cad "Kicad's PCBNEW")
+      (host_version "(2011-07-19)-testing")
+    )
+    (library_out 
+      (padstack "Via[0-1]_35:25_mil"
+        (shape
+          (circle Front 350 0 0)
+        )
+        (shape
+          (circle Back 350 0 0)
+        )
+        (attach off)
+      )
+      (padstack "Via[0-1]_35:0_mil"
+        (shape
+          (circle Front 350 0 0)
+        )
+        (shape
+          (circle Back 350 0 0)
+        )
+        (attach off)
+      )
+    )
+    (network_out 
+      (net /5V
+        (wire
+          (path Front 120
+            59000 -37000
+            58487 -37000
+          )
+        )
+        (wire
+          (path Front 120
+            58487 -37000
+            56487 -35000
+            54300 -35000
+          )
+        )
+      )
+      (net /BLUE
+        (wire
+          (path Back 120
+            60000 -39000
+            60558 -39558
+            60558 -41384
+            54935 -47007
+            52307 -47007
+            48300 -43000
+          )
+        )
+      )
+      (net /FREQ
+        (wire
+          (path Front 120
+            48300 -42000
+            53266 -46966
+            54794 -46966
+            60514 -41246
+            60514 -40514
+            60000 -40000
+          )
+        )
+      )
+      (net /GREEN
+        (wire
+          (path Back 120
+            48300 -44000
+            51531 -47231
+            55044 -47231
+            60781 -41494
+            60781 -38781
+            60000 -38000
+          )
+        )
+      )
+      (net /RED
+        (wire
+          (path Front 120
+            60000 -37000
+            61042 -38042
+            61042 -41083
+            54582 -47543
+            50843 -47543
+            48300 -45000
+          )
+        )
+      )
+      (net /S0
+        (wire
+          (path Back 120
+            48300 -38000
+            53791 -43491
+            53791 -46475
+            53825 -46509
+            54694 -46509
+            57567 -43636
+            57567 -40433
+            59000 -39000
+          )
+        )
+      )
+      (net /S1
+        (wire
+          (path Back 120
+            59000 -40000
+            58139 -40861
+            58139 -43469
+            54876 -46732
+            53732 -46732
+            53568 -46568
+            53568 -44268
+            48300 -39000
+          )
+        )
+      )
+      (net /S2
+        (wire
+          (path Front 120
+            59000 -41000
+            59000 -42044
+            54524 -46520
+            54073 -46520
+            53627 -46074
+            53627 -45327
+            48300 -40000
+          )
+        )
+      )
+      (net /S3
+        (wire
+          (path Front 120
+            48300 -41000
+            53324 -46024
+            53324 -46340
+            53727 -46743
+            54617 -46743
+            60000 -41360
+            60000 -41000
+          )
+        )
+      )
+      (net GND
+        (wire
+          (path Back 120
+            54300 -33000
+            58486 -37186
+            58486 -37486
+            59000 -38000
+          )
+        )
+      )
+    )
+  )
+)

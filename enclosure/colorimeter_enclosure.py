@@ -180,8 +180,8 @@ class Colorimeter_Enclosure(Basic_Enclosure):
 
  
         # Position inner panel
-
         x_shift = self.params['inner_panel_offset']
+        inner_panel = self.inner_panel
         inner_panel = Rotate(self.inner_panel, a=90, v=(0,0,1))
         inner_panel = Rotate(inner_panel, a=90, v=(0,1,0))
         inner_panel = Translate(inner_panel,v=(x_shift,0,0))

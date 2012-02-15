@@ -2,7 +2,7 @@
 Creates an enclosure for the colorimeter
 """
 from py2scad import *
-from colorimeter_enclosure_v2 import Colorimeter_Enclosure
+from colorimeter_enclosure_v3 import Colorimeter_Enclosure
 
 INCH2MM = 25.4
 
@@ -35,9 +35,9 @@ params = {
         'standoff_diameter'       : 0.25*INCH2MM,
         'standoff_offset'         : 0.05*INCH2MM,
         'standoff_hole_diameter'  : 0.116*INCH2MM, 
-        'inner_panel_offset'      : 0.5*cuvette_size[0] + wall_thickness,
+        'inner_panel_offset'      : 0.5*cuvette_size[0] + 0.5*wall_thickness,
         'led_cable_hole_position' : (-1.0*INCH2MM, -0.45*INCH2MM),
-        'led_cable_hole_size'     : 2.5,
+        'led_cable_hole_size'     : 3.0,
         'cuvette_slot_size'       : (3.0,5.0),
         'cuvette_slot_position'   : (0.0, -6.55),
         'pcb_position'            : (0,-0.15*INCH2MM),
@@ -54,12 +54,10 @@ params = {
         'hole_list'               : [],
         'slider_hole_size'        : (x-0.6*INCH2MM, y-0.25*INCH2MM),
         'slider_tab_length_y'     : 4.0,
-        'slider_tab_length_x'     : 4.0,
+        'slider_tab_length_x'     : 8.0,
         'slider_overhang'         : 0.5*INCH2MM,
         'slider_tolerance'        : 0.1,
-
-        #'slider_hole_2_dimensions': (x*0.5, y -17),
-        #'slider_hole_2_position'  : (-0.5*x - wall_thickness,0),
+        'inner_panel_vert_tol'    : 0.5, 
         }
 
 enclosure = Colorimeter_Enclosure(params)
@@ -83,12 +81,12 @@ part_assembly = enclosure.get_assembly(
         show_slider=True,
         )
 
-part_projection = enclosure.get_projection(project=True)
+part_projection = enclosure.get_projection(project=False)
 
 prog_assembly = SCAD_Prog()
 prog_assembly.fn = 50
 prog_assembly.add(part_assembly)
-prog_assembly.write('enclosure_assembly_2.0.scad')
+prog_assembly.write('enclosure_assembly_3.0.scad')
 
-enclosure.write_projections(create_dxf=True)
+#enclosure.write_projections(create_dxf=False)
 

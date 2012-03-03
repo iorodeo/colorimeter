@@ -1,36 +1,36 @@
-# EESchema Netlist Version 1.1 created  Fri 10 Feb 2012 12:26:29 PM PST
+# EESchema Netlist Version 1.1 created  Fri 02 Mar 2012 02:33:49 PM PST
 (
- ( /4F347703 $noname  P2 CONN_4 {Lib=CONN_4}
-  (    1 /blue )
-  (    2 /green )
-  (    3 /red )
-  (    4 GND )
+ ( /4F347703 smt_4-pin 4-pin 4-pin
+  ( 1 /blue )
+  ( 2 /green )
+  ( 3 /red )
+  ( 4 GND )
  )
- ( /4F0CA3A1 $noname  P1 CONN_5X2 {Lib=CONN_5X2}
-  (    1 /5V )
-  (    2 /red )
-  (    3 GND )
-  (    4 /green )
-  (    5 /S0 )
-  (    6 /blue )
-  (    7 /S1 )
-  (    8 /FREQ )
-  (    9 /S2 )
-  (   10 /S3 )
+ ( /4E9F2A04 SM0603 C1 0.1_uF
+  ( 1 /5V )
+  ( 2 GND )
  )
- ( /4E9F2A04 $noname  C1 0.1_uF {Lib=C}
-  (    1 /5V )
-  (    2 GND )
+ ( /4F0CA3A1 5X2_SHRD_HEADER P1 CONN_5X2
+  ( 1 /5V )
+  ( 2 /red )
+  ( 3 GND )
+  ( 4 /green )
+  ( 5 /S0 )
+  ( 6 /blue )
+  ( 7 /S1 )
+  ( 8 /FREQ )
+  ( 9 /S2 )
+  ( 10 /S3 )
  )
- ( /4E9F1F08 $noname  U1 TCS3200 {Lib=TCS3200}
-  (    1 /S0 )
-  (    2 /S1 )
-  (    3 GND )
-  (    4 GND )
-  (    5 /5V )
-  (    6 /FREQ )
-  (    7 /S2 )
-  (    8 /S3 )
+ ( /4E9F1F08 TCS3200 U1 TCS3200
+  ( 1 /S0 )
+  ( 2 /S1 )
+  ( 3 GND )
+  ( 4 GND )
+  ( 5 /5V )
+  ( 6 /FREQ )
+  ( 7 /S2 )
+  ( 8 /S3 )
  )
 )
 *
@@ -42,40 +42,3 @@ $component C1
 $endlist
 $endfootprintlist
 }
-{ Pin List by Nets
-Net 1 "GND" "GND"
- C1 2
- U1 3
- U1 4
- P2 4
- P1 3
-Net 2 "/5V" "5V"
- C1 1
- P1 1
- U1 5
-Net 3 "/S1" "S1"
- P1 7
- U1 2
-Net 4 "/S2" "S2"
- P1 9
- U1 7
-Net 5 "/S0" "S0"
- P1 5
- U1 1
-Net 6 "/FREQ" "FREQ"
- P1 8
- U1 6
-Net 7 "/S3" "S3"
- U1 8
- P1 10
-Net 8 "/green" "green"
- P2 2
- P1 4
-Net 9 "/red" "red"
- P2 3
- P1 2
-Net 10 "/blue" "blue"
- P2 1
- P1 6
-}
-#End

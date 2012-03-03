@@ -1,6 +1,6 @@
-# EESchema Netlist Version 1.1 created  Thu 09 Feb 2012 04:22:49 PM PST
+# EESchema Netlist Version 1.1 created  Fri 02 Mar 2012 03:26:25 PM PST
 (
- ( /4F345F7F SMD_wire_4x1 P1 CONN_4
+ ( /4F345F7F smt_4-pin P1 CONN_4
   ( 1 /blue )
   ( 2 /green )
   ( 3 /red )

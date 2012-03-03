@@ -1,0 +1,17 @@
+M48
+;DRILL file {PCBnew (2011-07-19)-testing} date Fri 02 Mar 2012 04:01:09 PM PST
+;FORMAT={2:4/ absolute / inch / suppress trailing zeros}
+FMAT,2
+INCH,LZ
+T1C0.120
+%
+G90
+G05
+M72
+T1
+X031Y-021
+X031Y-029
+X047Y-021
+X047Y-029
+T0
+M30

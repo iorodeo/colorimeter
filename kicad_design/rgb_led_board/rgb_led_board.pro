@@ -1,4 +1,4 @@
-update=Thu 09 Feb 2012 04:22:19 PM PST
+update=Fri 02 Mar 2012 03:26:01 PM PST
 version=1
 last_client=cvpcb
 [general]
@@ -98,6 +98,7 @@ LibName11=/home/jo/work/colorimeter/kicad_design/rgb_led_board/SCREW_TERMINAL_2
 LibName12=/home/jo/work/colorimeter/kicad_design/rgb_led_board/RGB_MULTILED
 LibName13=/home/jo/work/colorimeter/kicad_design/rgb_led_board/MOUNT_HOLE_4_40
 LibName14=/home/jo/repos/colorimeter/kicad_design/rgb_led_board/SMD_wire_4x1
+LibName15=/home/jo/work/colorimeter/kicad_design/color_sensor/smt_4-pin
 LibDir=
 [cvpcb]
 version=1

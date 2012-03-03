@@ -38,7 +38,7 @@
       (place R3 3450 -2650 front 0 (PN 150))
     )
     (component RGB_MULTILED
-      (place U1 3900 -2500 front 0)
+      (place U1 3900 -2500 front 0 (PN RGB_MULTILED))
     )
     (component MOUNT_HOLE_4_40
       (place M1 3100 -2100 front 0)
@@ -46,8 +46,8 @@
       (place M3 4700 -2900 front 0)
       (place M4 4700 -2100 front 0)
     )
-    (component SMD_wire_4x1
-      (place P1 4575 -2500 front 90)
+    (component smt
+      (place P1 4540 -2475 front 90 (PN CONN_4))
     )
   )
   (library
@@ -81,19 +81,15 @@
     (image MOUNT_HOLE_4_40
       (pin Round[A]Pad_130_mil @1 0 0)
     )
-    (image SMD_wire_4x1
-      (outline (path signal 15  -196.9 196.9  196.9 196.9))
-      (outline (path signal 15  196.9 196.9  196.9 -196.9))
-      (outline (path signal 15  196.9 -196.9  -196.9 -196.9))
-      (outline (path signal 15  -196.9 -196.9  -196.9 196.9))
-      (pin Rect[T]Pad_47.2x70.9_mil 4 147.6 139.8)
-      (pin Rect[T]Pad_47.2x70.9_mil 3 49.2 139.8)
-      (pin Rect[T]Pad_47.2x70.9_mil 1 -147.6 139.8)
-      (pin Rect[T]Pad_59.1x70.9_mil 1@1 -147.6 -139.8)
-      (pin Rect[T]Pad_59.1x70.9_mil 2 -49.2 -139.8)
-      (pin Rect[T]Pad_47.2x70.9_mil 2@1 -49.2 139.8)
-      (pin Rect[T]Pad_59.1x70.9_mil 3@1 49.2 -139.8)
-      (pin Rect[T]Pad_59.1x70.9_mil 4@1 147.6 -139.8)
+    (image smt
+      (outline (path signal 15  -220 260  220 260))
+      (outline (path signal 15  220 260  220 -260))
+      (outline (path signal 15  220 -260  -220 -260))
+      (outline (path signal 15  -220 -260  -220 260))
+      (pin Rect[T]Pad_50x250_mil 1 -150 99.8)
+      (pin Rect[T]Pad_50x250_mil 2 -50 -99.8)
+      (pin Rect[T]Pad_50x250_mil 3 50 99.8)
+      (pin Rect[T]Pad_50x250_mil 4 150 -99.8)
     )
     (padstack Round[A]Pad_130_mil
       (shape (circle Front 130))
@@ -104,16 +100,12 @@
       (shape (rect Front -17.5 -27.5 17.5 27.5))
       (attach off)
     )
-    (padstack Rect[T]Pad_47.2x70.9_mil
-      (shape (rect Front -23.6 -35.45 23.6 35.45))
+    (padstack Rect[T]Pad_50x250_mil
+      (shape (rect Front -25 -125 25 125))
       (attach off)
     )
     (padstack Rect[T]Pad_51.2x27.6_mil
       (shape (rect Front -25.6 -13.8 25.6 13.8))
-      (attach off)
-    )
-    (padstack Rect[T]Pad_59.1x70.9_mil
-      (shape (rect Front -29.55 -35.45 29.55 35.45))
       (attach off)
     )
     (padstack "Via[0-1]_35:25_mil"
@@ -129,16 +121,16 @@
   )
   (network
     (net /blue
-      (pins U1-A1 P1-1 P1-1@1)
+      (pins U1-A1 P1-1)
     )
     (net /green
-      (pins U1-A2 P1-2 P1-2@1)
+      (pins U1-A2 P1-2)
     )
     (net /red
-      (pins U1-A3 P1-3 P1-3@1)
+      (pins U1-A3 P1-3)
     )
     (net GND
-      (pins R1-2 R2-2 R3-2 P1-4 P1-4@1)
+      (pins R1-2 R2-2 R3-2 P1-4)
     )
     (net "N-000002"
       (pins R2-1 U1-C2)

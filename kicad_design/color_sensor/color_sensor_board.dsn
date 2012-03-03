@@ -42,13 +42,13 @@
       (place U1 5900 -2500 front 0 (PN TCS3200))
     )
     (component SM0603
-      (place C1 5399.7 -2180 front 0 (PN 0.1_uF))
+      (place C1 6375 -2125 front 0 (PN 0.1_uF))
     )
     (component 5X2_SHRD_HEADER
-      (place P1 5400 -2500 back 270 (PN CONN_5X2))
+      (place P1 6375 -2475 back 270 (PN CONN_5X2))
     )
-    (component SMD_wire_4x1
-      (place P2 6570 -2480 front 90 (PN CONN_4))
+    (component smt
+      (place P2 5250 -2475 front 90)
     )
   )
   (library
@@ -97,19 +97,15 @@
       (pin Round[A]Pad_70_mil 9 200 -50)
       (pin Round[A]Pad_70_mil 10 200 50)
     )
-    (image SMD_wire_4x1
-      (outline (path signal 15  -196.9 196.9  196.9 196.9))
-      (outline (path signal 15  196.9 196.9  196.9 -196.9))
-      (outline (path signal 15  196.9 -196.9  -196.9 -196.9))
-      (outline (path signal 15  -196.9 -196.9  -196.9 196.9))
-      (pin Rect[T]Pad_47.2x70.9_mil 4 147.6 139.8)
-      (pin Rect[T]Pad_47.2x70.9_mil 3 49.2 139.8)
-      (pin Rect[T]Pad_47.2x70.9_mil 1 -147.6 139.8)
-      (pin Rect[T]Pad_59.1x70.9_mil 1@1 -147.6 -139.8)
-      (pin Rect[T]Pad_59.1x70.9_mil 2 -49.2 -139.8)
-      (pin Rect[T]Pad_47.2x70.9_mil 2@1 -49.2 139.8)
-      (pin Rect[T]Pad_59.1x70.9_mil 3@1 49.2 -139.8)
-      (pin Rect[T]Pad_59.1x70.9_mil 4@1 147.6 -139.8)
+    (image smt
+      (outline (path signal 15  -220 260  220 260))
+      (outline (path signal 15  220 260  220 -260))
+      (outline (path signal 15  220 -260  -220 -260))
+      (outline (path signal 15  -220 -260  -220 260))
+      (pin Rect[T]Pad_50x250_mil 1 -150 99.8)
+      (pin Rect[T]Pad_50x250_mil 2 -50 -99.8)
+      (pin Rect[T]Pad_50x250_mil 3 50 99.8)
+      (pin Rect[T]Pad_50x250_mil 4 150 -99.8)
     )
     (padstack Round[A]Pad_130_mil
       (shape (circle Front 130))
@@ -125,12 +121,8 @@
       (shape (rect Front -12.5 -22.5 12.5 22.5))
       (attach off)
     )
-    (padstack Rect[T]Pad_47.2x70.9_mil
-      (shape (rect Front -23.6 -35.45 23.6 35.45))
-      (attach off)
-    )
-    (padstack Rect[T]Pad_59.1x70.9_mil
-      (shape (rect Front -29.55 -35.45 29.55 35.45))
+    (padstack Rect[T]Pad_50x250_mil
+      (shape (rect Front -25 -125 25 125))
       (attach off)
     )
     (padstack Rect[A]Pad_70x70_mil
@@ -173,16 +165,16 @@
       (pins U1-8 P1-10)
     )
     (net /blue
-      (pins P1-6 P2-1 P2-1@1)
+      (pins P1-6 P2-1)
     )
     (net /green
-      (pins P1-4 P2-2 P2-2@1)
+      (pins P1-4 P2-2)
     )
     (net /red
-      (pins P1-2 P2-3 P2-3@1)
+      (pins P1-2 P2-3)
     )
     (net GND
-      (pins U1-3 U1-4 C1-2 P1-3 P2-4 P2-4@1)
+      (pins U1-3 U1-4 C1-2 P1-3 P2-4)
     )
     (class kicad_default "" /5V /FREQ /S0 /S1 /S2 /S3 /blue /green /red GND
       (circuit

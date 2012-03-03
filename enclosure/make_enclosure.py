@@ -70,7 +70,7 @@ part_assembly = enclosure.get_assembly(
         show_bottom=True,
         show_left=True,
         show_right=True,
-        show_front=True,
+        show_front=False,
         show_back=True,
         show_holder=True,
         show_standoffs=True,
@@ -81,12 +81,12 @@ part_assembly = enclosure.get_assembly(
         show_slider=True,
         )
 
-part_projection = enclosure.get_projection(project=False)
+#part_projection = enclosure.get_projection(project=True)
 
 prog_assembly = SCAD_Prog()
 prog_assembly.fn = 50
 prog_assembly.add(part_assembly)
 prog_assembly.write('enclosure_assembly_3.0.scad')
 
-#enclosure.write_projections(create_dxf=False)
+#enclosure.write_projections(create_dxf=True)
 

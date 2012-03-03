@@ -1,4 +1,11 @@
-Cmp-Mod V01 Created by CvPCB (2011-07-19)-testing date = Thu 09 Feb 2012 05:54:27 PM PST
+Cmp-Mod V01 Created by CvPCB (2011-07-19)-testing date = Fri 02 Mar 2012 02:33:49 PM PST
+
+BeginCmp
+TimeStamp = /4F347703;
+Reference = 4-pin;
+ValeurCmp = 4-pin;
+IdModule  = smt_4-pin;
+EndCmp
 
 BeginCmp
 TimeStamp = /4E9F2A04;
@@ -12,13 +19,6 @@ TimeStamp = /4F0CA3A1;
 Reference = P1;
 ValeurCmp = CONN_5X2;
 IdModule  = 5X2_SHRD_HEADER;
-EndCmp
-
-BeginCmp
-TimeStamp = /4F347703;
-Reference = P2;
-ValeurCmp = CONN_4;
-IdModule  = SMD_wire_4x1;
 EndCmp
 
 BeginCmp

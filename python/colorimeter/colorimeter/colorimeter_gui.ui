@@ -224,7 +224,7 @@
        <item>
         <widget class="QLabel" name="label">
          <property name="text">
-          <string>Serail Port</string>
+          <string>Serial Port</string>
          </property>
         </widget>
        </item>

@@ -6,96 +6,42 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>651</width>
-    <height>441</height>
+    <width>712</width>
+    <height>660</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Colorimeter</string>
+   <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout_5">
+   <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <widget class="QWidget" name="widget_2" native="true">
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
-        <widget class="QFrame" name="frame">
-         <property name="frameShape">
-          <enum>QFrame::StyledPanel</enum>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Raised</enum>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_2">
-          <item>
-           <widget class="QGroupBox" name="transmissionGroupBox">
-            <property name="title">
-             <string>Transmission</string>
-            </property>
-            <layout class="QVBoxLayout" name="verticalLayout">
-             <item>
-              <widget class="QTextEdit" name="transmissionTextEdit"/>
-             </item>
-            </layout>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QFrame" name="frame_2">
-         <property name="frameShape">
-          <enum>QFrame::StyledPanel</enum>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Raised</enum>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_4">
-          <item>
-           <widget class="QGroupBox" name="absorbanceGroupBox">
-            <property name="title">
-             <string>Absorbance</string>
-            </property>
-            <layout class="QVBoxLayout" name="verticalLayout_3">
-             <item>
-              <widget class="QTextEdit" name="absorbanceTextEdit"/>
-             </item>
-            </layout>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item>
-     <widget class="QWidget" name="widget_3" native="true">
-      <layout class="QHBoxLayout" name="horizontalLayout_3">
-       <item>
-        <widget class="QLabel" name="label_2">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
+        <widget class="QLabel" name="label">
          <property name="text">
-          <string>Samples   </string>
+          <string>Test solution</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="samplesLineEdit">
+        <widget class="QComboBox" name="testSolutionComboBox">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="minimumSize">
+          <size>
+           <width>200</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="maximumSize">
           <size>
-           <width>100</width>
+           <width>400</width>
            <height>16777215</height>
           </size>
          </property>
@@ -115,90 +61,16 @@
         </spacer>
        </item>
        <item>
-        <widget class="QCheckBox" name="redCheckBox">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>65</width>
-           <height>16777215</height>
-          </size>
-         </property>
+        <widget class="QPushButton" name="clearPushButton">
          <property name="text">
-          <string>red</string>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
+          <string>Clear</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="greenCheckBox">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>65</width>
-           <height>16777215</height>
-          </size>
-         </property>
+        <widget class="QPushButton" name="pushButton">
          <property name="text">
-          <string>green</string>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="blueCheckBox">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>65</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>blue</string>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="whiteCheckBox">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>65</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>white</string>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
+          <string>Save</string>
          </property>
         </widget>
        </item>
@@ -206,11 +78,80 @@
      </widget>
     </item>
     <item>
-     <widget class="Line" name="line">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
+     <widget class="QWidget" name="widget_3" native="true">
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <item>
+        <widget class="QLabel" name="coefficientLabel">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>300</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Molar extinction coefficient:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_4">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Fixed</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QLabel" name="ledLabel">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>LED:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
      </widget>
+    </item>
+    <item>
+     <widget class="QTableWidget" name="tableWidget"/>
     </item>
     <item>
      <widget class="QWidget" name="widget" native="true">
@@ -222,7 +163,7 @@
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <widget class="QLabel" name="label">
+        <widget class="QLabel" name="label_3">
          <property name="text">
           <string>Serial Port</string>
          </property>
@@ -294,7 +235,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>651</width>
+     <width>712</width>
      <height>23</height>
     </rect>
    </property>

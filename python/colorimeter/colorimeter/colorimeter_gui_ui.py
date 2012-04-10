@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'colorimeter_gui.ui'
 #
-# Created: Mon Mar 19 09:39:08 2012
+# Created: Mon Apr  9 14:11:41 2012
 #      by: PyQt4 UI code generator 4.7.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -177,7 +177,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "Colorimeter", None, QtGui.QApplication.UnicodeUTF8))
-        self.transmissionGroupBox.setTitle(QtGui.QApplication.translate("MainWindow", "Transmission", None, QtGui.QApplication.UnicodeUTF8))
+        self.transmissionGroupBox.setTitle(QtGui.QApplication.translate("MainWindow", "Transmittance", None, QtGui.QApplication.UnicodeUTF8))
         self.absorbanceGroupBox.setTitle(QtGui.QApplication.translate("MainWindow", "Absorbance", None, QtGui.QApplication.UnicodeUTF8))
         self.label_2.setText(QtGui.QApplication.translate("MainWindow", "Samples   ", None, QtGui.QApplication.UnicodeUTF8))
         self.redCheckBox.setText(QtGui.QApplication.translate("MainWindow", "red", None, QtGui.QApplication.UnicodeUTF8))

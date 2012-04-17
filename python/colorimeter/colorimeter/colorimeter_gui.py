@@ -1,10 +1,12 @@
 import sys
+import platform
 from PyQt4 import QtCore
 from PyQt4 import QtGui
 from colorimeter_gui_ui import Ui_MainWindow 
 from colorimeter import Colorimeter
 
-DFLT_PORT = '/dev/ttyACM0'
+DFLT_PORT_WINDOWS = 'com1' 
+DFLT_PORT_LINUX = '/dev/ttyACM0' 
 
 class ColorimeterMainWindow(QtGui.QMainWindow,Ui_MainWindow):
 
@@ -25,7 +27,11 @@ class ColorimeterMainWindow(QtGui.QMainWindow,Ui_MainWindow):
         self.samplesLineEdit.editingFinished.connect(self.samplesChanged_Callback)
 
     def initialize(self):
-        self.port = DFLT_PORT
+        osType = platform.system()
+        if osType == 'Linux': 
+            self.port = DFLT_PORT_LINUX 
+        else: 
+            self.port = DFLT_PORT_WINDOWS 
         self.portLineEdit.setText(self.port) 
         self.setWidgetEnableOnDisconnect()
         self.dev = None

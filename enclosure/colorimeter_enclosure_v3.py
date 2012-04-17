@@ -412,7 +412,7 @@ class Colorimeter_Enclosure(Basic_Enclosure):
         slider_base_x, slider_base_y, slider_base_z = self.slider_base_size
         slider_hole_x, slider_hole_y = self.params['slider_hole_size']
         x_shift = -0.5*slider_base_x  + 0.5*slider_hole_x - slider_tolerance 
-        slider = Translate(self.slider,v=(x_shift,0,z_shift))
+        slider = Translate(self.slider,v=(4*x_shift,0,z_shift))
         if show_slider:
             part_list.append(slider)
 

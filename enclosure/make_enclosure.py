@@ -43,7 +43,7 @@ params = {
         'pcb_position'            : (0,-0.15*INCH2MM),
         'pcb_hole_spacing'        : (1.6*INCH2MM, 0.8*INCH2MM),
         'pcb_mount_hole_diam'     : 0.12* INCH2MM,
-        'shrouded_hole_position'  : (0.5*INCH2MM, -0.15*INCH2MM),
+        'shrouded_hole_position'  : (0.475*INCH2MM, -0.125*INCH2MM),
         'shrouded_hole_size'      : (9.5, 20.5, 1),
         'top_hole_size'           : (x-0.8*INCH2MM, y-0.8*INCH2MM, 1),
         'top_hole_position'       : (0,0),
@@ -88,5 +88,5 @@ prog_assembly.fn = 50
 prog_assembly.add(part_assembly)
 prog_assembly.write('enclosure_assembly_3.0.scad')
 
-#enclosure.write_projections(create_dxf=True)
+enclosure.write_projections(create_dxf=True)
 

@@ -117,7 +117,7 @@ class Colorimeter(serial.Serial):
 # -----------------------------------------------------------------------------
 if __name__ == '__main__':
 
-    dev = Colorimeter('/dev/ttyUSB2')
+    dev = Colorimeter('/dev/ttyACM0')
     dev.printMeasurement()
 
 

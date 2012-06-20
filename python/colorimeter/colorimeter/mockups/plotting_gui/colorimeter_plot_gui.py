@@ -2,6 +2,8 @@ from __future__ import print_function
 import os, sys, platform
 import functools
 import random, re, time
+import matplotlib
+matplotlib.use('Qt4Agg')
 from matplotlib import pylab
 
 from PyQt4 import QtCore

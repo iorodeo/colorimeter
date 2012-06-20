@@ -178,7 +178,8 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         pylab.xlabel('Concentration')
         pylab.ylabel('Absorbance ('+self.currentColor_str+' led)')
         slope = polyFit[0]
-        pylab.figlegend((hFit,),('slope = {0:1.3f}'.format(slope),), 'upper left')
+        #pylab.figlegend((hFit,),('slope = {0:1.3f}'.format(slope),), 'upper left')
+        pylab.figtext(0.15,0.85,'slope = {0:1.3f}'.format(slope), color='r')
         pylab.show()
         
     def setWidgetEnabledOnDisconnect(self):

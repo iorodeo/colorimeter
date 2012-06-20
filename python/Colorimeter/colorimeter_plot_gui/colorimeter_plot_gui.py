@@ -10,8 +10,7 @@ from PyQt4 import QtCore
 from PyQt4 import QtGui
 
 from colorimeter_plot_gui_ui import Ui_MainWindow 
-sys.path.append('../..')
-from colorimeter import Colorimeter
+from colorimeter_serial import Colorimeter
 
 DFLT_PORT_WINDOWS = 'com1' 
 DFLT_PORT_LINUX = '/dev/ttyACM0' 
@@ -323,10 +322,17 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
     def main(self):
         self.show()
 
-# -----------------------------------------------------------------------------
-if __name__ == '__main__':
-
+def plot_gui_main():
+    """
+    Entry point for plotting gui
+    """
     app = QtGui.QApplication(sys.argv)
     mainWindow = ColorimeterPlotMainWindow()
     mainWindow.main()
     app.exec_()
+
+
+# -----------------------------------------------------------------------------
+if __name__ == '__main__':
+    plot_gui_main()
+

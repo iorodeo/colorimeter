@@ -13,18 +13,18 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-from setuptools import setup, find_packages
+from setuptools import setup
 
-setup(name='colorimeter',
-      version='0.1',
-      description = "library for communicating with IO Rodeo's OSHW colorimeter",
-      author = 'William Dickson, IO Rodeo Inc.',
-      author_email = 'will@iorodeo.com',
-      packages=find_packages(),
-      entry_points = {
-          'console_scripts' : [
-              'colorimeter = colorimeter.colorimeter_gui:colorimeterMain'
-              ]
-          }
-      )
+setup(
+    name='Colorimeter',
+    version='0.1.0',
+    author='Will Dickson',
+    author_email='will@iorodeo.com',
+    packages=['colorimeter_serial', 'colorimeter_basic_gui', 'colorimeter_plot_gui'],
+    scripts=['bin/colorimeter-basic', 'bin/colorimeter-plot'],
+    license='LICENSE.txt',
+    description='A test 2nd test package.',
+    long_description=open('README.txt').read(),
+    install_requires= [],
+)
 

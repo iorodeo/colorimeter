@@ -20,10 +20,6 @@ params = {
         'inner_dimensions'        : (x,y,z), 
         'wall_thickness'          : wall_thickness, 
         'lid_radius'              : 0.25*INCH2MM,  
-        #'top_x_overhang'          : 0.2*INCH2MM,
-        #'top_y_overhang'          : 0.2*INCH2MM,
-        #'bottom_x_overhang'       : 0.2*INCH2MM,
-        #'bottom_y_overhang'       : 0.2*INCH2MM, 
         'top_x_overhang'          : 0.16*INCH2MM,
         'top_y_overhang'          : 0.16*INCH2MM,
         'bottom_x_overhang'       : 0.16*INCH2MM,
@@ -41,12 +37,10 @@ params = {
         'standoff_diameter'       : 0.25*INCH2MM,
         'standoff_offset'         : 0.05*INCH2MM,
         'standoff_hole_diameter'  : 0.116*INCH2MM, 
-        #'inner_panel_offset'      : 0.5*cuvette_size[0] + 0.5*wall_thickness,
         'inner_panel_offset'      : 0.5*cuvette_size[0] + 0.5*wall_thickness + cuvette_offset,
         'led_cable_hole_position' : (-1.0*INCH2MM, -0.45*INCH2MM),
         'led_cable_hole_size'     : 3.0,
         'cuvette_slot_size'       : (3.0,5.0),
-        #'cuvette_slot_position'   : (0.0, -6.55),
         'cuvette_slot_position'   : (0.0, -0.15*INCH2MM),
         'pcb_position'            : (0,-0.15*INCH2MM),
         'pcb_hole_spacing'        : (1.6*INCH2MM, 0.8*INCH2MM),
@@ -62,7 +56,7 @@ params = {
         'hole_list'               : [],
         'slider_hole_size'        : (x-0.6*INCH2MM, y-0.25*INCH2MM),
         'slider_tab_length_y'     : 4.0,
-        'slider_tab_length_x'     : 8.0,
+        'slider_tab_length_x'     : 20.0,
         'slider_overhang'         : 0.5*INCH2MM,
         'slider_tolerance'        : 0.1,
         'inner_panel_vert_tol'    : 0.5, 
@@ -74,7 +68,7 @@ enclosure.add_holes(hole_list)
 
 part_assembly = enclosure.get_assembly(
         explode=(0,0,5),
-        show_top=False,
+        show_top=True,
         show_bottom=True,
         show_left=True,
         show_right=True,
@@ -84,12 +78,12 @@ part_assembly = enclosure.get_assembly(
         show_standoffs=True,
         show_holder_standoffs=True,
         show_inner_panel=True,
-        show_second_top=False,
-        show_outer_slider=False,
-        show_slider=False,
+        show_second_top=True,
+        show_outer_slider=True,
+        show_slider=True,
         )
 
-#part_projection = enclosure.get_projection(project=True)
+part_projection = enclosure.get_projection(project=True)
 
 prog_assembly = SCAD_Prog()
 prog_assembly.fn = 50

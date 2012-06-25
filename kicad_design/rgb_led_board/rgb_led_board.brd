@@ -1,4 +1,4 @@
-PCBNEW-BOARD Version 1 date Fri 02 Mar 2012 04:01:17 PM PST
+PCBNEW-BOARD Version 1 date Wed 13 Jun 2012 12:22:55 PM PDT
 
 # Created by Pcbnew(2011-07-19)-testing
 
@@ -21,7 +21,7 @@ $EndGENERAL
 $SHEETDESCR
 Sheet A4 11700 8267
 Title ""
-Date "3 mar 2012"
+Date "13 jun 2012"
 Rev ""
 Comp ""
 Comment1 ""
@@ -59,7 +59,7 @@ PadSize 600 600
 PadDrill 320
 Pad2MaskClearance 100
 AuxiliaryAxisOrg 0 0
-PcbPlotParams (pcbplotparams (layerselection 284196865) (usegerberextensions true) (excludeedgelayer true) (linewidth 60) (plotframeref false) (viasonmask false) (mode 1) (useauxorigin false) (hpglpennumber 1) (hpglpenspeed 20) (hpglpendiameter 15) (hpglpenoverlay 0) (pscolor true) (psnegative false) (psa4output false) (plotreference true) (plotvalue true) (plotothertext true) (plotinvisibletext false) (padsonsilk false) (subtractmaskfromsilk false) (outputformat 1) (mirror false) (drillshape 1) (scaleselection 1) (outputdirectory gerber_led_v2p1/))
+PcbPlotParams (pcbplotparams (layerselection 284196865) (usegerberextensions true) (excludeedgelayer true) (linewidth 60) (plotframeref false) (viasonmask false) (mode 1) (useauxorigin false) (hpglpennumber 1) (hpglpenspeed 20) (hpglpendiameter 15) (hpglpenoverlay 0) (pscolor true) (psnegative false) (psa4output false) (plotreference true) (plotvalue true) (plotothertext true) (plotinvisibletext false) (padsonsilk false) (subtractmaskfromsilk false) (outputformat 1) (mirror false) (drillshape 1) (scaleselection 1) (outputdirectory gerber_led_v2p1_correct/))
 $EndSETUP
 
 $EQUIPOT
@@ -410,7 +410,7 @@ Po 42100 24200 394 394 79 0
 De 21 1 0 Normal C
 $EndTEXTPCB
 $TEXTPCB
-Te "Colorimeter LED Board v2.0"
+Te "Colorimeter LED Board v2.1"
 Po 39250 29000 600 800 120 0
 De 21 1 0 Normal C
 $EndTEXTPCB

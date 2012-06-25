@@ -1,4 +1,4 @@
-PCBNEW-BOARD Version 1 date Fri 10 Feb 2012 01:08:33 PM PST
+PCBNEW-BOARD Version 1 date Tue 12 Jun 2012 01:23:24 PM PDT
 
 # Created by Pcbnew(2011-07-19)-testing
 
@@ -9,8 +9,8 @@ Ly 1FFF8001
 EnabledLayers 1FFF8001
 Links 11
 NoConn 0
-Di 49051 30250 75902 52126
-Ndraw 5
+Di 49051 30250 77139 52126
+Ndraw 33
 Ntrack 38
 Nzone 0
 BoardThickness 630
@@ -21,7 +21,7 @@ $EndGENERAL
 $SHEETDESCR
 Sheet A4 11700 8267
 Title ""
-Date "10 feb 2012"
+Date "12 jun 2012"
 Rev ""
 Comp ""
 Comment1 ""
@@ -55,8 +55,8 @@ TextPcbSize 600 800
 EdgeModWidth 150
 TextModSize 600 600
 TextModWidth 120
-PadSize 600 600
-PadDrill 400
+PadSize 1000 600
+PadDrill 320
 Pad2MaskClearance 100
 AuxiliaryAxisOrg 0 0
 PcbPlotParams (pcbplotparams (layerselection 284196865) (usegerberextensions true) (excludeedgelayer true) (linewidth 60) (plotframeref false) (viasonmask false) (mode 1) (useauxorigin false) (hpglpennumber 1) (hpglpenspeed 20) (hpglpendiameter 15) (hpglpenoverlay 0) (pscolor true) (psnegative false) (psa4output false) (plotreference true) (plotvalue true) (plotothertext true) (plotinvisibletext false) (padsonsilk false) (subtractmaskfromsilk false) (outputformat 1) (mirror false) (drillshape 1) (scaleselection 1) (outputdirectory gerber_shield_v2p0/))
@@ -128,7 +128,7 @@ AddNet "/S3"
 AddNet "GND"
 $EndNCLASS
 $MODULE arduino_shield_modified
-Po 49651 51501 0 15 4F358537 4F356BF7 ~~
+Po 49651 51501 0 15 4FD79372 4F356BF7 ~~
 Li arduino_shield_modified
 Sc 4F356BF7
 AR /4F03B33E
@@ -337,12 +337,12 @@ Po 15000 -1000
 $EndPAD
 $EndMODULE  arduino_shield_modified
 $MODULE 5X2_SHRD_HEADER
-Po 66750 41000 2700 15 4F356E31 4F0B929A ~~
+Po 66750 41000 2700 15 4F358C4D 4F0B929A ~~
 Li 5X2_SHRD_HEADER
 Sc 4F0B929A
 AR /4F03AC98
 Op 0 0 0
-T0 -4900 400 600 600 2700 120 N V 21 N "P1"
+T0 -2102 4152 600 600 3600 120 N V 21 N "P1"
 T1 -200 -2800 600 600 2700 120 N I 21 N "CONN_5X2"
 DS -4000 -1900 4000 -1900 150 21
 DS 4000 -1900 4000 1900 150 21
@@ -425,6 +425,152 @@ Ne 9 "/S3"
 Po 2000 -500
 $EndPAD
 $EndMODULE  5X2_SHRD_HEADER
+$TEXTPCB
+Te "AREF"
+Po 59051 32501 400 600 80 900
+De 21 1 0 Normal R
+$EndTEXTPCB
+$TEXTPCB
+Te "GND"
+Po 60051 32501 400 600 80 900
+De 21 1 0 Normal R
+$EndTEXTPCB
+$TEXTPCB
+Te "13"
+Po 61051 32501 400 600 80 900
+De 21 1 0 Normal R
+$EndTEXTPCB
+$TEXTPCB
+Te "12"
+Po 62051 32501 400 600 80 900
+De 21 1 0 Normal R
+$EndTEXTPCB
+$TEXTPCB
+Te "11"
+Po 63051 32501 400 600 80 900
+De 21 1 0 Normal R
+$EndTEXTPCB
+$TEXTPCB
+Te "10"
+Po 64051 32501 400 600 80 900
+De 21 1 0 Normal R
+$EndTEXTPCB
+$TEXTPCB
+Te "9"
+Po 65051 32501 400 600 80 900
+De 21 1 0 Normal R
+$EndTEXTPCB
+$TEXTPCB
+Te "8"
+Po 66051 32501 400 600 80 900
+De 21 1 0 Normal R
+$EndTEXTPCB
+$TEXTPCB
+Te "7"
+Po 67651 32501 400 600 80 900
+De 21 1 0 Normal R
+$EndTEXTPCB
+$TEXTPCB
+Te "6"
+Po 68651 32501 400 600 80 900
+De 21 1 0 Normal R
+$EndTEXTPCB
+$TEXTPCB
+Te "5"
+Po 69651 32501 400 600 80 900
+De 21 1 0 Normal R
+$EndTEXTPCB
+$TEXTPCB
+Te "4"
+Po 70651 32501 400 600 80 900
+De 21 1 0 Normal R
+$EndTEXTPCB
+$TEXTPCB
+Te "3"
+Po 71651 32501 400 600 80 900
+De 21 1 0 Normal R
+$EndTEXTPCB
+$TEXTPCB
+Te "2"
+Po 72651 32501 400 600 80 900
+De 21 1 0 Normal R
+$EndTEXTPCB
+$TEXTPCB
+Te "1"
+Po 73651 32501 400 600 80 900
+De 21 1 0 Normal R
+$EndTEXTPCB
+$TEXTPCB
+Te "0"
+Po 74651 32501 400 600 80 900
+De 21 1 0 Normal R
+$EndTEXTPCB
+$TEXTPCB
+Te "RESET"
+Po 62651 49501 400 600 80 900
+De 21 1 0 Normal L
+$EndTEXTPCB
+$TEXTPCB
+Te "3.3V"
+Po 63651 49501 400 600 80 900
+De 21 1 0 Normal L
+$EndTEXTPCB
+$TEXTPCB
+Te "5V"
+Po 64651 49501 400 600 80 900
+De 21 1 0 Normal L
+$EndTEXTPCB
+$TEXTPCB
+Te "GND"
+Po 65651 49501 400 600 80 900
+De 21 1 0 Normal L
+$EndTEXTPCB
+$TEXTPCB
+Te "GND"
+Po 66651 49501 400 600 80 900
+De 21 1 0 Normal L
+$EndTEXTPCB
+$TEXTPCB
+Te "Vin"
+Po 67651 49501 400 600 80 900
+De 21 1 0 Normal L
+$EndTEXTPCB
+$TEXTPCB
+Te "A0"
+Po 69651 49501 400 600 80 900
+De 21 1 0 Normal L
+$EndTEXTPCB
+$TEXTPCB
+Te "A1"
+Po 70651 49501 400 600 80 900
+De 21 1 0 Normal L
+$EndTEXTPCB
+$TEXTPCB
+Te "A2"
+Po 71651 49501 400 600 80 900
+De 21 1 0 Normal L
+$EndTEXTPCB
+$TEXTPCB
+Te "A3"
+Po 72651 49501 400 600 80 900
+De 21 1 0 Normal L
+$EndTEXTPCB
+$TEXTPCB
+Te "A4"
+Po 73651 49501 400 600 80 900
+De 21 1 0 Normal L
+$EndTEXTPCB
+$TEXTPCB
+Te "A5"
+Po 74651 49501 400 600 80 900
+De 21 1 0 Normal L
+$EndTEXTPCB
+$TEXTPCB
+Te "IO Rodeo"
+nl "Colorimeter shield v2.1"
+Po 71737 41000 600 800 120 900
+De 21 1 0 Normal C
+$EndTEXTPCB
 $DRAWSEGMENT
 Po 0 57850 51500 57850 30500 150
 De 28 0 900 0 0
@@ -441,12 +587,6 @@ $DRAWSEGMENT
 Po 0 57850 30500 75650 30500 150
 De 28 0 900 0 0
 $EndDRAWSEGMENT
-$TEXTPCB
-Te "IO Rodeo Inc."
-nl "Colorimeter shield v2.0"
-Po 66772 33386 600 800 120 0
-De 21 1 0 Normal C
-$EndTEXTPCB
 $TRACK
 Po 0 64651 40599 64651 50501 120 -1
 De 15 0 1 0 800000

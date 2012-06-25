@@ -2,16 +2,16 @@ import sys
 import platform
 from PyQt4 import QtCore
 from PyQt4 import QtGui
-from colorimeter_gui_ui import Ui_MainWindow 
-from colorimeter import Colorimeter
+from colorimeter_basic_gui_ui import Ui_MainWindow 
+from colorimeter_serial import Colorimeter
 
 DFLT_PORT_WINDOWS = 'com1' 
 DFLT_PORT_LINUX = '/dev/ttyACM0' 
 
-class ColorimeterMainWindow(QtGui.QMainWindow,Ui_MainWindow):
+class BasicMainWindow(QtGui.QMainWindow,Ui_MainWindow):
 
     def __init__(self,parent=None):
-        super(ColorimeterMainWindow,self).__init__(parent)
+        super(BasicMainWindow,self).__init__(parent)
         self.setupUi(self)
         self.connectActions()
         self.initialize()
@@ -152,14 +152,13 @@ class ColorimeterMainWindow(QtGui.QMainWindow,Ui_MainWindow):
     def main(self):
         self.show()
 
-
-def colorimeterMain():
+def basic_gui_main():
     app = QtGui.QApplication(sys.argv)
-    mainWindow = ColorimeterMainWindow()
+    mainWindow = BasicMainWindow()
     mainWindow.main()
     app.exec_()
 
 # -----------------------------------------------------------------------------
 if __name__ == '__main__':
-    colorimeterMain()
+    basic_gui_main()
 

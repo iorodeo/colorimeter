@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>476</width>
-    <height>542</height>
+    <width>487</width>
+    <height>618</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -32,7 +32,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="serialPortLineEdit">
+        <widget class="QLineEdit" name="portLineEdit">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -158,9 +158,18 @@
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_4">
        <item>
-        <widget class="QTableWidget" name="dataTableWidget">
+        <widget class="QTableWidget" name="tableWidget">
          <property name="editTriggers">
-          <set>QAbstractItemView::NoEditTriggers</set>
+          <set>QAbstractItemView::AnyKeyPressed|QAbstractItemView::DoubleClicked|QAbstractItemView::SelectedClicked</set>
+         </property>
+         <property name="alternatingRowColors">
+          <bool>true</bool>
+         </property>
+         <property name="rowCount">
+          <number>0</number>
+         </property>
+         <property name="columnCount">
+          <number>0</number>
          </property>
         </widget>
        </item>
@@ -186,6 +195,13 @@
         <widget class="QPushButton" name="calibratePushButton">
          <property name="text">
           <string>Calibrate</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="clearPushButton">
+         <property name="text">
+          <string>Clear</string>
          </property>
         </widget>
        </item>
@@ -226,12 +242,36 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>476</width>
-     <height>23</height>
+     <width>487</width>
+     <height>26</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <addaction name="action_Save"/>
+   </widget>
+   <widget class="QMenu" name="menuAbout">
+    <property name="title">
+     <string>&amp;Help</string>
+    </property>
+    <addaction name="action_About"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuAbout"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="action_Save">
+   <property name="text">
+    <string>&amp;Save...</string>
+   </property>
+  </action>
+  <action name="action_About">
+   <property name="text">
+    <string>About...</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

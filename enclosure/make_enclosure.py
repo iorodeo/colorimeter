@@ -39,7 +39,7 @@ params = {
         'standoff_hole_diameter'  : 0.116*INCH2MM, 
         'inner_panel_offset'      : 0.5*cuvette_size[0] + 0.5*wall_thickness + cuvette_offset,
         'led_cable_hole_position' : (-1.0*INCH2MM, -0.45*INCH2MM),
-        'led_cable_hole_size'     : 3.0,
+        'led_cable_hole_size'     : 3.85,
         'cuvette_slot_size'       : (3.0,5.0),
         'cuvette_slot_position'   : (0.0, -0.15*INCH2MM),
         'pcb_position'            : (0,-0.15*INCH2MM),

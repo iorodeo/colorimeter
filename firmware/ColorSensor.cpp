@@ -1,8 +1,6 @@
 // ColorSensor.cpp
 //
 // Interface to ??? rgb color sensor
-
-#include "WProgram.h"
 #include "ColorSensor.h"
 
 void ColorSensor::initialize(uint8_t _S0, uint8_t _S1, uint8_t _S2, uint8_t _S3, uint8_t _FO) {

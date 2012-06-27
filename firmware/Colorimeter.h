@@ -1,6 +1,10 @@
 #ifndef _COLORIMETER_H_
 #define _COLORIMETER_H_
+#if defined(ARDUINO) && ARDUINO >= 100
+#include "Arduino.h"
+#else
 #include "WProgram.h"
+#endif
 #include "ColorSensor.h"
 #include "RGBLed.h"
 

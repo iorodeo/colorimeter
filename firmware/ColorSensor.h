@@ -3,6 +3,11 @@
 // Interface to ??? rgb color sensor.
 #ifndef _COLORSENSOR_H_
 #define _COLORSENSOR_H_
+#if defined(ARDUINO) && ARDUINO >= 100
+#include "Arduino.h"
+#else
+#include "WProgram.h"
+#endif
 
 #define PULSE_IN_WAIT 250000
 

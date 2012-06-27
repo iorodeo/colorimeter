@@ -3,8 +3,6 @@
 // The RGBLed class provides control over the a red, greed, blue
 // LED. 
 //
-
-#include "WProgram.h"
 #include "RGBLed.h"
 
 

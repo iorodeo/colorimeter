@@ -1,5 +1,10 @@
+from __future__ import print_function
 import sys
 import platform
+import matplotlib
+matplotlib.use('Qt4Agg')
+import matplotlib.pyplot as plt 
+import numpy
 from PyQt4 import QtCore
 from PyQt4 import QtGui
 from colorimeter_basic_gui_ui import Ui_MainWindow 
@@ -27,6 +32,7 @@ class BasicMainWindow(QtGui.QMainWindow,Ui_MainWindow):
         self.samplesLineEdit.editingFinished.connect(self.samplesChanged_Callback)
 
     def initialize(self):
+        self.ledColors = 'red', 'green', 'blue', 'white'
         osType = platform.system()
         if osType == 'Linux': 
             self.port = DFLT_PORT_LINUX 
@@ -38,6 +44,14 @@ class BasicMainWindow(QtGui.QMainWindow,Ui_MainWindow):
         self.numSamples = None
         self.samplesValidator = QtGui.QIntValidator(0,2**16-1,self.samplesLineEdit)
         self.samplesLineEdit.setValidator(self.samplesValidator)
+        for name in self.ledColors:
+            checkBox = getattr(self,'{0}CheckBox'.format(name))
+            checkBox.setCheckState(QtCore.Qt.Checked)
+            
+        self.plotCheckBox.setCheckState(QtCore.Qt.Checked)
+        plt.ion()
+        self.fig = None
+        
 
     def portChanged_Callback(self):
         self.port = str(self.portLineEdit.text())
@@ -63,56 +77,86 @@ class BasicMainWindow(QtGui.QMainWindow,Ui_MainWindow):
     def calibratePressed_Callback(self):
         self.transmissionTextEdit.setText('')
         self.absorbanceTextEdit.setText('')
-        self.transmissionTextEdit.setEnabled(False)
-        self.absorbanceTextEdit.setEnabled(False)
-        self.transmissionGroupBox.setEnabled(False)
-        self.absorbanceGroupBox.setEnabled(False)
         self.measurePushButton.setEnabled(False)
-        self.samplesLineEdit.setEnabled(False)
-        self.redCheckBox.setEnabled(False)
-        self.greenCheckBox.setEnabled(False)
-        self.blueCheckBox.setEnabled(False)
-        self.whiteCheckBox.setEnabled(False)
+        self.setWidgetEnableOnMeasure()
 
     def calibrateClicked_Callback(self):
         self.dev.calibrate()
+        trans  = 1.0, 1.0, 1.0, 1.0
+        absorb = 0.0, 0.0, 0.0, 0.0
+        self.updateResultsDisplay(trans,absorb)
         self.setWidgetEnableOnConnect()
 
     def measurePressed_Callback(self):
         self.transmissionTextEdit.setText('')
         self.absorbanceTextEdit.setText('')
-        self.transmissionTextEdit.setEnabled(False)
-        self.absorbanceTextEdit.setEnabled(False)
-        self.transmissionGroupBox.setEnabled(False)
-        self.absorbanceGroupBox.setEnabled(False)
         self.calibratePushButton.setEnabled(False)
-        self.samplesLineEdit.setEnabled(False)
-        self.redCheckBox.setEnabled(False)
-        self.greenCheckBox.setEnabled(False)
-        self.blueCheckBox.setEnabled(False)
-        self.whiteCheckBox.setEnabled(False)
+        self.setWidgetEnableOnMeasure()
 
     def measureClicked_Callback(self):
         freq, trans, absorb = self.dev.getMeasurement()
+        self.updateResultsDisplay(trans,absorb)
+        self.setWidgetEnableOnConnect()
+
+        if self.plotCheckBox.isChecked():
+            barWidth = 0.8
+            yticks = 0.5*numpy.arange(0.0,2.0*max([max(absorb),1.0]))
+            colorList = ('r','g','b','w')
+            xLabelList = ('red', 'green', 'blue', 'white') 
+            posList = range(1,len(absorb)+1)
+            xlim = (posList[0],posList[-1]+barWidth)
+            ylim = (0,max(1.2*max(absorb),1.0))
+
+            plt.clf()
+            fig = plt.figure(1)
+            fig.canvas.manager.set_window_title('Colorimeter Basic: Absorbance Plot')
+            ax = fig.add_subplot(111)
+            for y in yticks[1:]:
+                ax.plot(xlim,[y,y],'k:')
+            for pos, value, color in zip(posList, absorb,colorList): 
+                ax.bar([pos],[value],width=barWidth,color=color,linewidth=2)
+                ax.text(
+                        pos+0.5*barWidth, 
+                        value+0.01, 
+                        '{0:1.3f}'.format(value), 
+                        ha ='center', 
+                        va ='bottom'
+                        )
+
+            ax.set_xlim(*xlim)
+            ax.set_ylim(*ylim)
+
+            ax.set_xticks([x+0.5*barWidth for x in posList])
+            ax.set_xticklabels(xLabelList)
+            ax.set_ylabel('Absorbance')
+            ax.set_xlabel('LED')
+            ax.set_yticks(yticks)
+            plt.draw() 
+        else:
+            if self.fig is not None:
+                del self.fig
+                self.fig = None
+
+
+    def updateResultsDisplay(self,trans,absorb):
         transStrList = []
         absorbStrList = []
         if self.redCheckBox.isChecked():
-            transStrList.append('red:    {0:1.2f}'.format(trans[0]))
-            absorbStrList.append('red:    {0:1.2f}'.format(absorb[0]))
+            transStrList.append('red:    {0:1.3f}'.format(trans[0]))
+            absorbStrList.append('red:    {0:1.3f}'.format(absorb[0]))
         if self.greenCheckBox.isChecked():
-            transStrList.append('green:  {0:1.2f}'.format(trans[1]))
-            absorbStrList.append('green:  {0:1.2f}'.format(absorb[1]))
+            transStrList.append('green:  {0:1.3f}'.format(trans[1]))
+            absorbStrList.append('green:  {0:1.3f}'.format(absorb[1]))
         if self.blueCheckBox.isChecked():
-            transStrList.append('blue:   {0:1.2f}'.format(trans[2]))
-            absorbStrList.append('blue:   {0:1.2f}'.format(absorb[2]))
+            transStrList.append('blue:   {0:1.3f}'.format(trans[2]))
+            absorbStrList.append('blue:   {0:1.3f}'.format(absorb[2]))
         if self.whiteCheckBox.isChecked():
-            transStrList.append('white:  {0:1.2f}'.format(trans[3]))
-            absorbStrList.append('white:  {0:1.2f}'.format(absorb[3]))
+            transStrList.append('white:  {0:1.3f}'.format(trans[3]))
+            absorbStrList.append('white:  {0:1.3f}'.format(absorb[3]))
         transStr = '\n'.join(transStrList)
         absorbStr = '\n'.join(absorbStrList)
         self.transmissionTextEdit.setText(transStr)
         self.absorbanceTextEdit.setText(absorbStr)
-        self.setWidgetEnableOnConnect()
 
     def samplesChanged_Callback(self):
         valueStr = str(self.samplesLineEdit.text())
@@ -120,6 +164,19 @@ class BasicMainWindow(QtGui.QMainWindow,Ui_MainWindow):
         if value != self.numSamples:
             self.numSamples = value
             self.dev.setNumSamples(value)
+
+    def setWidgetEnableOnMeasure(self):
+        self.transmissionTextEdit.setEnabled(False)
+        self.absorbanceTextEdit.setEnabled(False)
+        self.transmissionGroupBox.setEnabled(False)
+        self.absorbanceGroupBox.setEnabled(False)
+        self.samplesLineEdit.setEnabled(False)
+        self.redCheckBox.setEnabled(False)
+        self.greenCheckBox.setEnabled(False)
+        self.blueCheckBox.setEnabled(False)
+        self.whiteCheckBox.setEnabled(False)
+        self.plotCheckBox.setEnabled(False)
+
 
     def setWidgetEnableOnConnect(self):
         self.transmissionTextEdit.setEnabled(True)
@@ -134,6 +191,7 @@ class BasicMainWindow(QtGui.QMainWindow,Ui_MainWindow):
         self.blueCheckBox.setEnabled(True)
         self.whiteCheckBox.setEnabled(True)
         self.portLineEdit.setEnabled(False)
+        self.plotCheckBox.setEnabled(True)
 
     def setWidgetEnableOnDisconnect(self):
         self.transmissionTextEdit.setEnabled(False)
@@ -148,6 +206,7 @@ class BasicMainWindow(QtGui.QMainWindow,Ui_MainWindow):
         self.blueCheckBox.setEnabled(False)
         self.whiteCheckBox.setEnabled(False)
         self.portLineEdit.setEnabled(True)
+        self.plotCheckBox.setEnabled(False)
 
     def main(self):
         self.show()

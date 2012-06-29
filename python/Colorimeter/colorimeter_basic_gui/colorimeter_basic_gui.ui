@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>651</width>
-    <height>441</height>
+    <width>646</width>
+    <height>396</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Colorimeter</string>
+   <string>Colorimeter Basic</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -284,6 +284,13 @@
          </property>
         </widget>
        </item>
+       <item>
+        <widget class="QCheckBox" name="plotCheckBox">
+         <property name="text">
+          <string>Plot   </string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
     </item>
@@ -294,7 +301,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>651</width>
+     <width>646</width>
      <height>23</height>
     </rect>
    </property>

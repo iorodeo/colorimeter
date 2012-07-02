@@ -51,7 +51,6 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         if self.userHome is None:
             self.userHome = os.getenv('HOME')
         self.lastLogDir = self.userHome
-            
         self.portLineEdit.setText(self.port) 
         self.measIndex = 0
         self.dev = None
@@ -59,14 +58,25 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.currentColor_str = 'red'
         self.statusbar.showMessage('Not Connected')
 
-        pylab.ion()
-
         # Set up data table
         self.cleanDataTable(setup=True)
         self.setWidgetEnabledOnDisconnect()
-
-        self.tableWidget.setHorizontalHeaderLabels(('Concentration','Absorbance')) 
+        self.tableWidget.setHorizontalHeaderLabels(('Datetime', 'Concentration')) 
         self.tableWidget.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
+
+        # Setup plot style action group 
+        self.plotAxisActionGrp = QtGui.QActionGroup(self)
+        self.actionPlotStyleBar.setActionGroup(self.plotAxisActionGrp)
+        self.actionPlotStyleScatter.setActionGroup(self.plotAxisActionGrp)
+        self.actionPlotStyleBar.setChecked(True)
+
+        # Setup plot axis action group
+        self.plotAxisActionGrp = QtGui.QActionGroup(self)
+        self.actionPlotAxisTime.setActionGroup(self.plotAxisActionGrp)
+        self.actionPlotAxisNumber.setActionGroup(self.plotAxisActionGrp)
+        self.actionPlotAxisTime.setChecked(True)
+
+        pylab.ion()
 
     def portChanged_Callback(self):
         self.port = str(self.portLineEdit.text())

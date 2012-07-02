@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'colorimeter_measurement.ui'
 #
-# Created: Sun Jul  1 19:18:28 2012
+# Created: Sun Jul  1 19:49:07 2012
 #      by: PyQt4 UI code generator 4.7.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -12,7 +12,7 @@ from PyQt4 import QtCore, QtGui
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(651, 760)
+        MainWindow.resize(609, 705)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayout = QtGui.QVBoxLayout(self.centralwidget)
@@ -169,10 +169,16 @@ class Ui_MainWindow(object):
         self.verticalLayout.addWidget(self.widget_3)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 651, 23))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 609, 23))
         self.menubar.setObjectName("menubar")
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
+        self.menuPlotOptions = QtGui.QMenu(self.menubar)
+        self.menuPlotOptions.setObjectName("menuPlotOptions")
+        self.menuPlotStyle = QtGui.QMenu(self.menuPlotOptions)
+        self.menuPlotStyle.setObjectName("menuPlotStyle")
+        self.menuX_axis = QtGui.QMenu(self.menuPlotOptions)
+        self.menuX_axis.setObjectName("menuX_axis")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtGui.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
@@ -181,8 +187,28 @@ class Ui_MainWindow(object):
         self.action_Save.setObjectName("action_Save")
         self.action_About = QtGui.QAction(MainWindow)
         self.action_About.setObjectName("action_About")
+        self.actionPlotStyleBar = QtGui.QAction(MainWindow)
+        self.actionPlotStyleBar.setCheckable(True)
+        self.actionPlotStyleBar.setEnabled(True)
+        self.actionPlotStyleBar.setObjectName("actionPlotStyleBar")
+        self.actionPlotStyleScatter = QtGui.QAction(MainWindow)
+        self.actionPlotStyleScatter.setCheckable(True)
+        self.actionPlotStyleScatter.setObjectName("actionPlotStyleScatter")
+        self.actionPlotAxisTime = QtGui.QAction(MainWindow)
+        self.actionPlotAxisTime.setCheckable(True)
+        self.actionPlotAxisTime.setObjectName("actionPlotAxisTime")
+        self.actionPlotAxisNumber = QtGui.QAction(MainWindow)
+        self.actionPlotAxisNumber.setCheckable(True)
+        self.actionPlotAxisNumber.setObjectName("actionPlotAxisNumber")
         self.menuFile.addAction(self.action_Save)
+        self.menuPlotStyle.addAction(self.actionPlotStyleBar)
+        self.menuPlotStyle.addAction(self.actionPlotStyleScatter)
+        self.menuX_axis.addAction(self.actionPlotAxisTime)
+        self.menuX_axis.addAction(self.actionPlotAxisNumber)
+        self.menuPlotOptions.addAction(self.menuPlotStyle.menuAction())
+        self.menuPlotOptions.addAction(self.menuX_axis.menuAction())
         self.menubar.addAction(self.menuFile.menuAction())
+        self.menubar.addAction(self.menuPlotOptions.menuAction())
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -202,6 +228,13 @@ class Ui_MainWindow(object):
         self.measurePushButton.setText(QtGui.QApplication.translate("MainWindow", "Measure", None, QtGui.QApplication.UnicodeUTF8))
         self.plotPushButton.setText(QtGui.QApplication.translate("MainWindow", "Plot", None, QtGui.QApplication.UnicodeUTF8))
         self.menuFile.setTitle(QtGui.QApplication.translate("MainWindow", "&File", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuPlotOptions.setTitle(QtGui.QApplication.translate("MainWindow", "Plot Options", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuPlotStyle.setTitle(QtGui.QApplication.translate("MainWindow", "style", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuX_axis.setTitle(QtGui.QApplication.translate("MainWindow", "x-axis", None, QtGui.QApplication.UnicodeUTF8))
         self.action_Save.setText(QtGui.QApplication.translate("MainWindow", "&Save...", None, QtGui.QApplication.UnicodeUTF8))
         self.action_About.setText(QtGui.QApplication.translate("MainWindow", "About...", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionPlotStyleBar.setText(QtGui.QApplication.translate("MainWindow", "bar", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionPlotStyleScatter.setText(QtGui.QApplication.translate("MainWindow", "scatter", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionPlotAxisTime.setText(QtGui.QApplication.translate("MainWindow", "time", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionPlotAxisNumber.setText(QtGui.QApplication.translate("MainWindow", "sample number", None, QtGui.QApplication.UnicodeUTF8))
 

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>651</width>
-    <height>760</height>
+    <width>609</width>
+    <height>705</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -331,7 +331,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>651</width>
+     <width>609</width>
      <height>23</height>
     </rect>
    </property>
@@ -341,7 +341,29 @@
     </property>
     <addaction name="action_Save"/>
    </widget>
+   <widget class="QMenu" name="menuPlotOptions">
+    <property name="title">
+     <string>Plot Options</string>
+    </property>
+    <widget class="QMenu" name="menuPlotStyle">
+     <property name="title">
+      <string>style</string>
+     </property>
+     <addaction name="actionPlotStyleBar"/>
+     <addaction name="actionPlotStyleScatter"/>
+    </widget>
+    <widget class="QMenu" name="menuX_axis">
+     <property name="title">
+      <string>x-axis</string>
+     </property>
+     <addaction name="actionPlotAxisTime"/>
+     <addaction name="actionPlotAxisNumber"/>
+    </widget>
+    <addaction name="menuPlotStyle"/>
+    <addaction name="menuX_axis"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuPlotOptions"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="action_Save">
@@ -352,6 +374,41 @@
   <action name="action_About">
    <property name="text">
     <string>About...</string>
+   </property>
+  </action>
+  <action name="actionPlotStyleBar">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>bar</string>
+   </property>
+  </action>
+  <action name="actionPlotStyleScatter">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>scatter</string>
+   </property>
+  </action>
+  <action name="actionPlotAxisTime">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>time</string>
+   </property>
+  </action>
+  <action name="actionPlotAxisNumber">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>sample number</string>
    </property>
   </action>
  </widget>

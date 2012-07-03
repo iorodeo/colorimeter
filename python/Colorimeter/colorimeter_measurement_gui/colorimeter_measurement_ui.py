@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'colorimeter_measurement.ui'
 #
-# Created: Sun Jul  1 19:49:07 2012
+# Created: Mon Jul  2 15:50:59 2012
 #      by: PyQt4 UI code generator 4.7.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -12,7 +12,7 @@ from PyQt4 import QtCore, QtGui
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(609, 705)
+        MainWindow.resize(589, 537)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayout = QtGui.QVBoxLayout(self.centralwidget)
@@ -138,6 +138,7 @@ class Ui_MainWindow(object):
         self.tableWidget = QtGui.QTableWidget(self.frame)
         self.tableWidget.setEditTriggers(QtGui.QAbstractItemView.AnyKeyPressed|QtGui.QAbstractItemView.DoubleClicked|QtGui.QAbstractItemView.SelectedClicked)
         self.tableWidget.setAlternatingRowColors(True)
+        self.tableWidget.setSelectionMode(QtGui.QAbstractItemView.NoSelection)
         self.tableWidget.setRowCount(0)
         self.tableWidget.setColumnCount(0)
         self.tableWidget.setObjectName("tableWidget")
@@ -155,6 +156,9 @@ class Ui_MainWindow(object):
         self.widget_3.setObjectName("widget_3")
         self.horizontalLayout_3 = QtGui.QHBoxLayout(self.widget_3)
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
+        self.calibratePushButton = QtGui.QPushButton(self.widget_3)
+        self.calibratePushButton.setObjectName("calibratePushButton")
+        self.horizontalLayout_3.addWidget(self.calibratePushButton)
         self.clearPushButton = QtGui.QPushButton(self.widget_3)
         self.clearPushButton.setObjectName("clearPushButton")
         self.horizontalLayout_3.addWidget(self.clearPushButton)
@@ -169,7 +173,7 @@ class Ui_MainWindow(object):
         self.verticalLayout.addWidget(self.widget_3)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 609, 23))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 589, 23))
         self.menubar.setObjectName("menubar")
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
@@ -200,7 +204,10 @@ class Ui_MainWindow(object):
         self.actionPlotAxisNumber = QtGui.QAction(MainWindow)
         self.actionPlotAxisNumber.setCheckable(True)
         self.actionPlotAxisNumber.setObjectName("actionPlotAxisNumber")
+        self.action_Load = QtGui.QAction(MainWindow)
+        self.action_Load.setObjectName("action_Load")
         self.menuFile.addAction(self.action_Save)
+        self.menuFile.addAction(self.action_Load)
         self.menuPlotStyle.addAction(self.actionPlotStyleBar)
         self.menuPlotStyle.addAction(self.actionPlotStyleScatter)
         self.menuX_axis.addAction(self.actionPlotAxisTime)
@@ -224,6 +231,7 @@ class Ui_MainWindow(object):
         self.greenRadioButton.setText(QtGui.QApplication.translate("MainWindow", "green", None, QtGui.QApplication.UnicodeUTF8))
         self.blueRadioButton.setText(QtGui.QApplication.translate("MainWindow", "blue", None, QtGui.QApplication.UnicodeUTF8))
         self.whiteRadioButton.setText(QtGui.QApplication.translate("MainWindow", "white", None, QtGui.QApplication.UnicodeUTF8))
+        self.calibratePushButton.setText(QtGui.QApplication.translate("MainWindow", "Calibrate", None, QtGui.QApplication.UnicodeUTF8))
         self.clearPushButton.setText(QtGui.QApplication.translate("MainWindow", "Clear", None, QtGui.QApplication.UnicodeUTF8))
         self.measurePushButton.setText(QtGui.QApplication.translate("MainWindow", "Measure", None, QtGui.QApplication.UnicodeUTF8))
         self.plotPushButton.setText(QtGui.QApplication.translate("MainWindow", "Plot", None, QtGui.QApplication.UnicodeUTF8))
@@ -231,10 +239,11 @@ class Ui_MainWindow(object):
         self.menuPlotOptions.setTitle(QtGui.QApplication.translate("MainWindow", "Plot Options", None, QtGui.QApplication.UnicodeUTF8))
         self.menuPlotStyle.setTitle(QtGui.QApplication.translate("MainWindow", "style", None, QtGui.QApplication.UnicodeUTF8))
         self.menuX_axis.setTitle(QtGui.QApplication.translate("MainWindow", "x-axis", None, QtGui.QApplication.UnicodeUTF8))
-        self.action_Save.setText(QtGui.QApplication.translate("MainWindow", "&Save...", None, QtGui.QApplication.UnicodeUTF8))
+        self.action_Save.setText(QtGui.QApplication.translate("MainWindow", "&Save", None, QtGui.QApplication.UnicodeUTF8))
         self.action_About.setText(QtGui.QApplication.translate("MainWindow", "About...", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPlotStyleBar.setText(QtGui.QApplication.translate("MainWindow", "bar", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPlotStyleScatter.setText(QtGui.QApplication.translate("MainWindow", "scatter", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPlotAxisTime.setText(QtGui.QApplication.translate("MainWindow", "time", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPlotAxisNumber.setText(QtGui.QApplication.translate("MainWindow", "sample number", None, QtGui.QApplication.UnicodeUTF8))
+        self.action_Load.setText(QtGui.QApplication.translate("MainWindow", "&Load", None, QtGui.QApplication.UnicodeUTF8))
 

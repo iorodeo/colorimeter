@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>609</width>
-    <height>705</height>
+    <width>589</width>
+    <height>537</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -261,6 +261,9 @@
          <property name="alternatingRowColors">
           <bool>true</bool>
          </property>
+         <property name="selectionMode">
+          <enum>QAbstractItemView::NoSelection</enum>
+         </property>
          <property name="rowCount">
           <number>0</number>
          </property>
@@ -287,6 +290,13 @@
        </size>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <item>
+        <widget class="QPushButton" name="calibratePushButton">
+         <property name="text">
+          <string>Calibrate</string>
+         </property>
+        </widget>
+       </item>
        <item>
         <widget class="QPushButton" name="clearPushButton">
          <property name="text">
@@ -331,7 +341,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>609</width>
+     <width>589</width>
      <height>23</height>
     </rect>
    </property>
@@ -340,6 +350,7 @@
      <string>&amp;File</string>
     </property>
     <addaction name="action_Save"/>
+    <addaction name="action_Load"/>
    </widget>
    <widget class="QMenu" name="menuPlotOptions">
     <property name="title">
@@ -368,7 +379,7 @@
   <widget class="QStatusBar" name="statusbar"/>
   <action name="action_Save">
    <property name="text">
-    <string>&amp;Save...</string>
+    <string>&amp;Save</string>
    </property>
   </action>
   <action name="action_About">
@@ -409,6 +420,11 @@
    </property>
    <property name="text">
     <string>sample number</string>
+   </property>
+  </action>
+  <action name="action_Load">
+   <property name="text">
+    <string>&amp;Load</string>
    </property>
   </action>
  </widget>

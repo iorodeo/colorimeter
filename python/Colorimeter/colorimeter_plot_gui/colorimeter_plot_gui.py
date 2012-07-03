@@ -5,6 +5,7 @@ import random, re, time
 import matplotlib
 matplotlib.use('Qt4Agg')
 from matplotlib import pylab
+pylab.ion()
 
 from PyQt4 import QtCore
 from PyQt4 import QtGui
@@ -62,8 +63,6 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.currentColor_str = 'red'
         self.statusbar.showMessage('Not Connected')
         self.isCalibrated = False
-
-        pylab.ion()
 
         # Set up data table
         self.cleanDataTable(setup=True)
@@ -163,7 +162,13 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
             tableItem = self.tableWidget.item(i,1)
             x = float(tableItem.text())
             tableItem = self.tableWidget.item(i,0)
-            y = float(tableItem.text())
+            try:
+                y = float(tableItem.text())
+            except ValueError, e:
+                errMsgTitle = 'Plot Error'
+                errMsg = 'Unable to convert concentration value to float.'
+                QtGui.QMessageBox.warning(self,errMsgTitle, errMsg)
+                return
             dataList.append((x,y))
 
         yList = [x for x,y in dataList]
@@ -187,6 +192,7 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.measurePushButton.setEnabled(False)
         self.plotPushButton.setEnabled(False)
         self.clearPushButton.setEnabled(False)
+        self.tableWidget.setEnabled(False)
         self.portLineEdit.setEnabled(True)
         self.statusbar.showMessage('Not Connected')
         self.cleanDataTable()
@@ -198,6 +204,7 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
             self.plotPushButton.setEnabled(True)
             self.clearPushButton.setEnabled(True)
             self.measurePushButton.setEnabled(True)
+            self.tableWidget.setEnabled(True)
         self.portLineEdit.setEnabled(False)
         self.connectPushButton.setFlat(False)
         self.statusbar.showMessage('Connected, Mode: Stopped')
@@ -218,8 +225,6 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
                 QtGui.QMessageBox.warning(self,errMsgTitle, errMsg)
         freq, trans, absorb = self.dev.getMeasurement()
         self.measurePushButton.setFlat(False)
-        transList = []
-        absorbList = []
         if self.currentColor_str=='red':
             transStr = '{0:1.2f}'.format(trans[0])
             absorbStr = '{0:1.2f}'.format(absorb[0])
@@ -237,17 +242,12 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
             absorbStr = '{0:1.2f}'.format(absorb[3])
             print('white: ',absorbStr)
 
-        transList.append(transStr)
-        absorbList.append(absorbStr)
-
         if rowCount > MIN_ROW_COUNT:
             self.tableWidget.setRowCount(rowCount)
 
         tableItem = QtGui.QTableWidgetItem()
         tableItem.setText(absorbStr)
-        tableItem.setFlags(QtCore.Qt.ItemIsSelectable | \
-                           QtCore.Qt.ItemIsEnabled
-                          )
+        tableItem.setFlags(QtCore.Qt.ItemIsSelectable|QtCore.Qt.ItemIsEnabled)
         self.tableWidget.setItem(self.measIndex,1,tableItem)
 
         tableItem = QtGui.QTableWidgetItem()

@@ -1,10 +1,15 @@
 from __future__ import print_function
-import os, sys, platform
+import os 
+import sys 
+import platform
 import functools
-import random, re, time
+import random 
+import time
 import matplotlib
+import yaml
 matplotlib.use('Qt4Agg')
 from matplotlib import pylab
+pylab.ion()
 
 from PyQt4 import QtCore
 from PyQt4 import QtGui
@@ -14,8 +19,9 @@ from colorimeter_serial import Colorimeter
 
 DFLT_PORT_WINDOWS = 'com1' 
 DFLT_PORT_LINUX = '/dev/ttyACM0' 
-MIN_ROW_COUNT = 5
-COL_COUNT = 2
+TABLE_MIN_ROW_COUNT = 1
+TABLE_COL_COUNT = 2 
+COLOR2LED_DICT = {'red':0,'green':1,'blue': 2,'white': 3} 
 
 class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
 
@@ -30,6 +36,8 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.portLineEdit.editingFinished.connect(self.portChanged_Callback)
         self.connectPushButton.pressed.connect(self.connectPressed_Callback)
         self.connectPushButton.clicked.connect(self.connectClicked_Callback)
+        self.calibratePushButton.pressed.connect(self.calibratePressed_Callback)
+        self.calibratePushButton.clicked.connect(self.calibrateClicked_Callback)
         self.measurePushButton.clicked.connect(self.measureClicked_Callback)
         self.measurePushButton.pressed.connect(self.measurePressed_Callback)
         self.clearPushButton.pressed.connect(self.clearPressed_Callback)
@@ -42,20 +50,25 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.plotPushButton.clicked.connect(self.plotPushButton_Clicked)
 
     def initialize(self):
+
+        self.dev = None
+        self.measIndex = 0
+        self.isCalibrated = False
+
+        self.currentColor = 'red'
+        self.redRadioButton.setChecked(True)
+        
         osType = platform.system()
         if osType == 'Linux': 
             self.port = DFLT_PORT_LINUX 
         else: 
             self.port = DFLT_PORT_WINDOWS 
+        self.portLineEdit.setText(self.port) 
+
         self.userHome = os.getenv('USERPROFILE')
         if self.userHome is None:
             self.userHome = os.getenv('HOME')
         self.lastLogDir = self.userHome
-        self.portLineEdit.setText(self.port) 
-        self.measIndex = 0
-        self.dev = None
-        self.redRadioButton.setChecked(True)
-        self.currentColor_str = 'red'
         self.statusbar.showMessage('Not Connected')
 
         # Set up data table
@@ -76,7 +89,24 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.actionPlotAxisNumber.setActionGroup(self.plotAxisActionGrp)
         self.actionPlotAxisTime.setChecked(True)
 
-        pylab.ion()
+        # Load test data
+        self.default_TestDir = getResourcePath('data')
+        self.default_TestFiles = os.listdir(self.default_TestDir)
+        self.default_TestDict = {}
+        for name in self.default_TestFiles:
+            pathName = os.path.join(self.default_TestDir,name)
+            try:
+                with open(pathName,'r') as fid:
+                    data = yaml.load(fid)
+                    print(data['name'])
+            except IOError, e:
+                print('Unable to read data file {0}'.format(name))
+                print(str(e))
+                continue
+            self.default_TestDict[data['name']] = pathName
+            self.testSolutionComboBox.addItem(data['name'])
+
+
 
     def portChanged_Callback(self):
         self.port = str(self.portLineEdit.text())
@@ -138,13 +168,12 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
             return True
 
         if reply == QtGui.QMessageBox.Yes:
-            self.tableWidget.setRowCount(MIN_ROW_COUNT)
-            self.tableWidget.setColumnCount(COL_COUNT)
-            for row in range(MIN_ROW_COUNT+1):
-                for col in range(COL_COUNT+1):
+            self.tableWidget.setRowCount(TABLE_MIN_ROW_COUNT)
+            self.tableWidget.setColumnCount(TABLE_COL_COUNT)
+            for row in range(TABLE_MIN_ROW_COUNT+1):
+                for col in range(TABLE_COL_COUNT+1):
                     tableItem = QtGui.QTableWidgetItem()
-                    tableItem.setFlags(QtCore.Qt.NoItemFlags \
-                                      )
+                    tableItem.setFlags(QtCore.Qt.NoItemFlags)
                     self.tableWidget.setItem(row,col,tableItem)
             self.measIndex = 0
             return True
@@ -156,11 +185,10 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
             chn_msg = "Changing channels will clear all data. Continue?"
             response = self.cleanDataTable(msg=chn_msg)
             if not response:
-                color = self.currentColor_str
+                color = self.currentColor
                 button = getattr(self,'{0}RadioButton'.format(color))
                 button.setChecked(True)
-        self.currentColor_str = color
-        print(color)
+        self.currentColor = color
 
     def plotPushButton_Clicked(self):
         print('plotPushButton_Clicked',self.measIndex)
@@ -182,7 +210,7 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         #pylab.plot(xList,yList,'ob')
         #pylab.grid('on')
         #pylab.xlabel('Concentration')
-        #pylab.ylabel('Absorbance ('+self.currentColor_str+' led)')
+        #pylab.ylabel('Absorbance ('+self.currentColor+' led)')
         #slope = polyFit[0]
         ##pylab.figlegend((hFit,),('slope = {0:1.3f}'.format(slope),), 'upper left')
         #pylab.figtext(0.15,0.85,'slope = {0:1.3f}'.format(slope), color='r')
@@ -190,6 +218,7 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         
     def setWidgetEnabledOnDisconnect(self):
         self.measurePushButton.setEnabled(False)
+        self.calibratePushButton.setEnabled(False)
         self.plotPushButton.setEnabled(False)
         self.clearPushButton.setEnabled(False)
         self.tableWidget.setEnabled(False)
@@ -198,15 +227,34 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.portLineEdit.setEnabled(True)
         self.statusbar.showMessage('Not Connected')
         self.cleanDataTable()
+        self.isCalibrated = False
 
     def setWidgetEnabledOnConnect(self):
-        self.plotPushButton.setEnabled(True)
-        self.clearPushButton.setEnabled(True)
-        self.measurePushButton.setEnabled(True)
-        self.testSolutionWidget.setEnabled(True)
+        self.calibratePushButton.setEnabled(True)
+        if self.isCalibrated:
+            self.plotPushButton.setEnabled(True)
+            self.clearPushButton.setEnabled(True)
+            self.measurePushButton.setEnabled(True)
+            self.tableWidget.setEnabled(True)
+            self.testSolutionWidget.setEnabled(True)
         self.portLineEdit.setEnabled(False)
         self.connectPushButton.setFlat(False)
         self.statusbar.showMessage('Connected, Mode: Stopped')
+
+    def calibratePressed_Callback(self):
+        print('callibratePushButton_Pressed')
+        self.measurePushButton.setEnabled(False)
+        self.plotPushButton.setEnabled(False)
+        self.clearPushButton.setEnabled(False)
+        self.calibratePushButton.setFlat(True)
+        self.statusbar.showMessage('Connected, Mode: Calibrating...')
+
+    def calibrateClicked_Callback(self):
+        print('calibratePushButton_Clicked')
+        self.dev.calibrate()
+        self.isCalibrated = True
+        self.calibratePushButton.setFlat(False)
+        self.setWidgetEnabledOnConnect()
 
     def measurePressed_Callback(self):
         print('measPushButton_Pressed')
@@ -216,49 +264,30 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
 
     def measureClicked_Callback(self):
         rowCount = self.measIndex+1
-        if rowCount == 2:
-            if not len(self.tableWidget.item(0,0).text()):
-                errMsgTitle = 'Missing Value'
-                errMsg = 'Concentration value not entered.'
-                QtGui.QMessageBox.warning(self,errMsgTitle, errMsg)
         freq, trans, absorb = self.dev.getMeasurement()
         self.measurePushButton.setFlat(False)
-        transList = []
-        absorbList = []
-        if self.currentColor_str=='red':
-            transStr = '{0:1.2f}'.format(trans[0])
-            absorbStr = '{0:1.2f}'.format(absorb[0])
-            print('red: ',absorbStr)
-        elif self.currentColor_str=='green':
-            transStr = '{0:1.2f}'.format(trans[1])
-            absorbStr = '{0:1.2f}'.format(absorb[1])
-            print('green: ',absorbStr)
-        elif self.currentColor_str=='blue':
-            transStr = '{0:1.2f}'.format(trans[2])
-            absorbStr = '{0:1.2f}'.format(absorb[2])
-            print('blue: ',absorbStr)
-        elif self.currentColor_str=='white':
-            transStr = '{0:1.2f}'.format(trans[3])
-            absorbStr = '{0:1.2f}'.format(absorb[3])
-            print('white: ',absorbStr)
 
-        transList.append(transStr)
-        absorbList.append(absorbStr)
+        ledNumber = COLOR2LED_DICT[self.currentColor]
+        transStr = '{0:1.2f}'.format(trans[ledNumber])
+        absorbStr = '{0:1.2f}'.format(absorb[ledNumber])
+        print('{0}: {1}'.format(self.currentColor, absorbStr))
 
-        if rowCount > MIN_ROW_COUNT:
+        ts = time.localtime()
+        timeStr = time.strftime('%m/%d/%y %H:%M:%S',ts)
+
+        if rowCount > TABLE_MIN_ROW_COUNT:
             self.tableWidget.setRowCount(rowCount)
 
+        # Put time string into table
         tableItem = QtGui.QTableWidgetItem()
-        tableItem.setText(absorbStr)
-        tableItem.setFlags(QtCore.Qt.ItemIsSelectable|QtCore.Qt.ItemIsEnabled)
-        self.tableWidget.setItem(self.measIndex,1,tableItem)
-
-        tableItem = QtGui.QTableWidgetItem()
-        tableItem.setSelected(True)
+        tableItem.setText(timeStr)
         self.tableWidget.setItem(self.measIndex,0,tableItem)
 
-        self.tableWidget.setCurrentCell(self.measIndex,0)
-        self.tableWidget.editItem(self.tableWidget.currentItem()) 
+        # Put measurement into table
+        tableItem = QtGui.QTableWidgetItem()
+        tableItem.setText(absorbStr)
+        self.tableWidget.setItem(self.measIndex,1,tableItem)
+        self.tableWidget.setCurrentItem(tableItem)
 
         self.measIndex+=1
         self.setWidgetEnabledOnConnect()
@@ -280,7 +309,7 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
     def main(self):
         self.show()
 
-def measurement_gui_main():
+def measurementGuiMain():
     """
     Entry point for measurement gui
     """
@@ -289,8 +318,15 @@ def measurement_gui_main():
     mainWindow.main()
     app.exec_()
 
+def getResourcePath(relative_path): 
+    """
+    Get path of resources file in both deployed and development.
+    """
+    base_path = os.environ.get("_MEIPASS2", os.path.abspath("."))
+    resource_path = os.path.join(base_path, relative_path)
+    return resource_path
 
 # -----------------------------------------------------------------------------
 if __name__ == '__main__':
-    measurement_gui_main()
+    measurementGuiMain()
 

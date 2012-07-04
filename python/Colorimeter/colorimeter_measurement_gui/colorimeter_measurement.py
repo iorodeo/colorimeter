@@ -135,6 +135,28 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         action = menu.exec_(self.tableWidget.mapToGlobal(event.pos()))
         if action == copyAction:
             print("copy")
+            
+            tableList = []
+            for i in range(self.tableWidget.rowCount()): 
+                rowList = []
+                for j in range(self.tableWidget.columnCount()):
+                    item = self.tableWidget.item(i,j)
+                    if self.tableWidget.isItemSelected(item):
+                        rowList.append(str(item.text()))
+                tableList.append(rowList)
+
+            clipboardList = []
+            for rowList in tableList:
+                for i, value in enumerate(rowList):
+                    clipboardList.append(value)
+                    if i < len(rowList)-1:
+                        clipboardList.append(" ")
+                clipboardList.append('\r\n')
+            clipboardStr = ''.join(clipboardList)
+
+            clipboard = QtGui.QApplication.clipboard()
+            clipboard.setText(clipboardStr)
+
         if action == deleteAction:
             print("delete")
 

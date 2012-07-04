@@ -262,7 +262,7 @@
           <bool>true</bool>
          </property>
          <property name="selectionMode">
-          <enum>QAbstractItemView::NoSelection</enum>
+          <enum>QAbstractItemView::ContiguousSelection</enum>
          </property>
          <property name="rowCount">
           <number>0</number>
@@ -354,24 +354,47 @@
    </widget>
    <widget class="QMenu" name="menuPlotOptions">
     <property name="title">
-     <string>Plot Options</string>
+     <string>Options</string>
     </property>
-    <widget class="QMenu" name="menuPlotStyle">
+    <widget class="QMenu" name="menuPlot">
      <property name="title">
-      <string>style</string>
+      <string>Plot</string>
      </property>
-     <addaction name="actionPlotStyleBar"/>
-     <addaction name="actionPlotStyleScatter"/>
+     <widget class="QMenu" name="menuPlotAxis">
+      <property name="title">
+       <string>x-axis</string>
+      </property>
+      <addaction name="actionPlotAxisDatetime"/>
+      <addaction name="actionPlotAxisSampleNumber"/>
+     </widget>
+     <widget class="QMenu" name="menuPlotStyle">
+      <property name="title">
+       <string>style</string>
+      </property>
+      <addaction name="actionPlotStyleBar"/>
+      <addaction name="actionPlotStyleScatter"/>
+     </widget>
+     <addaction name="menuPlotAxis"/>
+     <addaction name="menuPlotStyle"/>
     </widget>
-    <widget class="QMenu" name="menuX_axis">
+    <widget class="QMenu" name="menuTestSolutions">
      <property name="title">
-      <string>x-axis</string>
+      <string>Test Solutions</string>
      </property>
-     <addaction name="actionPlotAxisTime"/>
-     <addaction name="actionPlotAxisNumber"/>
+     <widget class="QMenu" name="menuTestSolutionsInclude">
+      <property name="title">
+       <string>Include</string>
+      </property>
+      <addaction name="actionIncludeDefaultTestSolutions"/>
+      <addaction name="actionIncludeUserTestSolutions"/>
+     </widget>
+     <addaction name="menuTestSolutionsInclude"/>
+     <addaction name="actionTestSolutionsEdit"/>
+     <addaction name="actionTestSolutionsReload"/>
     </widget>
-    <addaction name="menuPlotStyle"/>
-    <addaction name="menuX_axis"/>
+    <addaction name="separator"/>
+    <addaction name="menuTestSolutions"/>
+    <addaction name="menuPlot"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuPlotOptions"/>
@@ -387,11 +410,34 @@
     <string>About...</string>
    </property>
   </action>
-  <action name="actionPlotStyleBar">
+  <action name="action_Load">
+   <property name="text">
+    <string>&amp;Load</string>
+   </property>
+  </action>
+  <action name="actionTestSolutionsReload">
+   <property name="text">
+    <string>Reload</string>
+   </property>
+  </action>
+  <action name="actionPlotAxisDatetime">
    <property name="checkable">
     <bool>true</bool>
    </property>
-   <property name="enabled">
+   <property name="text">
+    <string>datetime</string>
+   </property>
+  </action>
+  <action name="actionPlotAxisSampleNumber">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>sample number</string>
+   </property>
+  </action>
+  <action name="actionPlotStyleBar">
+   <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="text">
@@ -406,25 +452,25 @@
     <string>scatter</string>
    </property>
   </action>
-  <action name="actionPlotAxisTime">
+  <action name="actionIncludeDefaultTestSolutions">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>time</string>
+    <string>default</string>
    </property>
   </action>
-  <action name="actionPlotAxisNumber">
+  <action name="actionIncludeUserTestSolutions">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>sample number</string>
+    <string>user</string>
    </property>
   </action>
-  <action name="action_Load">
+  <action name="actionTestSolutionsEdit">
    <property name="text">
-    <string>&amp;Load</string>
+    <string>Edit</string>
    </property>
   </action>
  </widget>

@@ -29,8 +29,8 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         super(MeasurementMainWindow,self).__init__(parent)
         self.radioButtonColors = ('red', 'green', 'blue', 'white')
         self.setupUi(self)
-        self.connectActions()
         self.initialize()
+        self.connectActions()
 
     def connectActions(self):
         self.portLineEdit.editingFinished.connect(self.portChanged_Callback)
@@ -42,12 +42,23 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.measurePushButton.pressed.connect(self.measurePressed_Callback)
         self.clearPushButton.pressed.connect(self.clearPressed_Callback)
         self.clearPushButton.clicked.connect(self.clearClicked_Callback)
+        self.testSolutionComboBox.currentIndexChanged.connect(
+                self.testSolutionChanged_Callback
+                )
 
         for color in self.radioButtonColors:
             button = getattr(self,'{0}RadioButton'.format(color))
             callback = functools.partial(self.colorRadioButton_Clicked, color)
             button.clicked.connect(callback)
         self.plotPushButton.clicked.connect(self.plotPushButton_Clicked)
+
+        self.actionIncludeDefaultTestSolutions.toggled.connect(
+                self.populateTestSolutionComboBox
+                )
+        self.actionIncludeUserTestSolutions.toggled.connect(
+                self.populateTestSolutionComboBox
+                )
+
 
     def initialize(self):
 
@@ -74,37 +85,65 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         # Set up data table
         self.cleanDataTable(setup=True)
         self.setWidgetEnabledOnDisconnect()
-        self.tableWidget.setHorizontalHeaderLabels(('Datetime', 'Concentration')) 
+        concentrationStr = QtCore.QString.fromUtf8("Concentration (\xc2\xb5M)")
+        self.tableWidget.setHorizontalHeaderLabels(('Datetime', concentrationStr)) 
         self.tableWidget.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
 
+        # Set startup state for including test solution.
+        self.actionIncludeDefaultTestSolutions.setChecked(True)
+        self.actionIncludeUserTestSolutions.setChecked(True)
+
         # Setup plot style action group 
-        self.plotAxisActionGrp = QtGui.QActionGroup(self)
-        self.actionPlotStyleBar.setActionGroup(self.plotAxisActionGrp)
-        self.actionPlotStyleScatter.setActionGroup(self.plotAxisActionGrp)
+        self.plotStyleActionGrp = QtGui.QActionGroup(self)
+        self.actionPlotStyleBar.setActionGroup(self.plotStyleActionGrp)
+        self.actionPlotStyleScatter.setActionGroup(self.plotStyleActionGrp)
         self.actionPlotStyleBar.setChecked(True)
 
         # Setup plot axis action group
         self.plotAxisActionGrp = QtGui.QActionGroup(self)
-        self.actionPlotAxisTime.setActionGroup(self.plotAxisActionGrp)
-        self.actionPlotAxisNumber.setActionGroup(self.plotAxisActionGrp)
-        self.actionPlotAxisTime.setChecked(True)
+        self.actionPlotAxisDatetime.setActionGroup(self.plotAxisActionGrp)
+        self.actionPlotAxisSampleNumber.setActionGroup(self.plotAxisActionGrp)
+        self.actionPlotAxisDatetime.setChecked(True)
 
         # Load test data
-        self.default_TestDir = getResourcePath('data')
-        self.default_TestFiles = os.listdir(self.default_TestDir)
-        self.default_TestDict = {}
-        for name in self.default_TestFiles:
-            pathName = os.path.join(self.default_TestDir,name)
-            try:
-                with open(pathName,'r') as fid:
-                    data = yaml.load(fid)
-                    print(data['name'])
-            except IOError, e:
-                print('Unable to read data file {0}'.format(name))
-                print(str(e))
-                continue
-            self.default_TestDict[data['name']] = pathName
-            self.testSolutionComboBox.addItem(data['name'])
+        self.default_TestSolutionDir = getResourcePath('data')
+        self.default_TestSolutionDict = self.loadTestSolutionsFromDir(
+                self.default_TestSolutionDir, 
+                tag='default',
+                )
+
+        # Load user data
+        self.user_TestSolutionDir = os.path.join(
+                self.userHome,
+                '.iorodeo_colorimeter',
+                'data',
+                )
+        self.user_TestSolutionDict = self.loadTestSolutionsFromDir(
+                self.user_TestSolutionDir,
+                tag='user',
+                )
+
+        self.populateTestSolutionComboBox()
+        self.testSolutionComboBox.setCurrentIndex(1)
+
+        self.tableWidget.contextMenuEvent = self.tableWidgetContextMenu_Callback
+
+    def tableWidgetContextMenu_Callback(self,event):
+        menu = QtGui.QMenu(self)
+        copyAction = menu.addAction("Copy")
+        deleteAction = menu.addAction("Delete")
+        action = menu.exec_(self.tableWidget.mapToGlobal(event.pos()))
+        if action == copyAction:
+            print("copy")
+        if action == deleteAction:
+            print("delete")
+
+    def testSolutionChanged_Callback(self,index):
+        print('testSolutionChanged_Callback', index)
+        if index == 0:
+            self.coeffLEDWidget.setEnabled(True)
+        else:
+            self.coeffLEDWidget.setEnabled(False)
 
 
 
@@ -231,12 +270,12 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
 
     def setWidgetEnabledOnConnect(self):
         self.calibratePushButton.setEnabled(True)
+        self.testSolutionWidget.setEnabled(True)
         if self.isCalibrated:
             self.plotPushButton.setEnabled(True)
             self.clearPushButton.setEnabled(True)
             self.measurePushButton.setEnabled(True)
             self.tableWidget.setEnabled(True)
-            self.testSolutionWidget.setEnabled(True)
         self.portLineEdit.setEnabled(False)
         self.connectPushButton.setFlat(False)
         self.statusbar.showMessage('Connected, Mode: Stopped')
@@ -279,15 +318,19 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
             self.tableWidget.setRowCount(rowCount)
 
         # Put time string into table
+        tableItemFlags = QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled
         tableItem = QtGui.QTableWidgetItem()
         tableItem.setText(timeStr)
+        tableItem.setFlags(tableItemFlags)
         self.tableWidget.setItem(self.measIndex,0,tableItem)
 
         # Put measurement into table
         tableItem = QtGui.QTableWidgetItem()
         tableItem.setText(absorbStr)
+        tableItem.setFlags(tableItemFlags)
         self.tableWidget.setItem(self.measIndex,1,tableItem)
         self.tableWidget.setCurrentItem(tableItem)
+        tableItem.setSelected(False)
 
         self.measIndex+=1
         self.setWidgetEnabledOnConnect()
@@ -305,6 +348,57 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
             self.cleanDataTable(msg=erase_msg)
         self.clearPushButton.setFlat(False)
         self.setWidgetEnabledOnConnect()
+
+    def loadTestSolutionsFromDir(self,loc,tag=''):
+        """
+        Loads all test solutions from the default and user directories.
+        """
+        try:
+            testFiles = os.listdir(loc)
+        except OSError, e:
+            return {} 
+
+        testDict = {}
+        testFiles = [name for name in testFiles if '.yaml' in name]
+        for name in testFiles:
+            pathName = os.path.join(loc,name)
+            try:
+                with open(pathName,'r') as fid:
+                    data = yaml.load(fid)
+                    print(data['name'])
+            except IOError, e:
+                print('Unable to read data file {0}'.format(name))
+                print(str(e))
+                continue
+            if tag:
+                key = '{0} ({1})'.format(data['name'],tag)
+            else:
+                key = data['name']
+
+            testDict[key] = pathName
+        return testDict
+
+    def populateTestSolutionComboBox(self):
+        """
+        Populates the test solution combobox given the 
+
+        """
+        self.testSolutionComboBox.clear()
+        self.testSolutionComboBox.addItem('-- (manually specify) --')
+
+        # Add default test solutions
+        if self.actionIncludeDefaultTestSolutions.isChecked():
+            for name in sorted(self.default_TestSolutionDict):
+                self.testSolutionComboBox.addItem(name)
+
+        # Add user test solutions
+        if self.actionIncludeUserTestSolutions.isChecked():
+            for name in sorted(self.user_TestSolutionDict):
+                self.testSolutionComboBox.addItem(name)
+
+        index = min([1,self.testSolutionComboBox.count()-1])
+        self.testSolutionComboBox.setCurrentIndex(index)
+
 
     def main(self):
         self.show()

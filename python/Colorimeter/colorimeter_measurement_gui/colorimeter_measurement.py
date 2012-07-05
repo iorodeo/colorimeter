@@ -63,6 +63,7 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.actionIncludeUserTestSolutions.toggled.connect(
                 self.populateTestSolutionComboBox
                 )
+        self.tableWidget.contextMenuEvent = self.tableWidgetContextMenu_Callback
 
 
     def initialize(self):
@@ -119,7 +120,6 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.populateTestSolutionComboBox()
         self.testSolutionComboBox.setCurrentIndex(1)
 
-        self.tableWidget.contextMenuEvent = self.tableWidgetContextMenu_Callback
 
     def tableWidgetContextMenu_Callback(self,event):
         menu = QtGui.QMenu(self)
@@ -280,67 +280,7 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         print(concList)
         print(labelList)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-        #dataList = []
-        #for i in range(self.measIndex):
-        #    tableItem = self.tableWidget.item(i,1)
-        #    x = float(tableItem.text())
-        #    tableItem = self.tableWidget.item(i,0)
-        #    y = float(tableItem.text())
-        #    dataList.append((x,y))
-
-        #yList = [x for x,y in dataList]
-        #xList = [y for x,y in dataList]
-        #if len(dataList) > 1:
-        #    polyFit = pylab.polyfit(xList,yList,1)
-        #    xFit = pylab.linspace(min(xList), max(xList), 500)
-        #    yFit = pylab.polyval(polyFit, xFit)
-        #    hFit = pylab.plot(xFit,yFit,'r')
-        #pylab.plot(xList,yList,'ob')
-        #pylab.grid('on')
-        #pylab.xlabel('Concentration')
-        #pylab.ylabel('Absorbance ('+self.currentColor+' led)')
-        #slope = polyFit[0]
-        ##pylab.figlegend((hFit,),('slope = {0:1.3f}'.format(slope),), 'upper left')
-        #pylab.figtext(0.15,0.85,'slope = {0:1.3f}'.format(slope), color='r')
-        #pylab.show()
         
-    def setWidgetEnabledOnDisconnect(self):
-        self.measurePushButton.setEnabled(False)
-        self.calibratePushButton.setEnabled(False)
-        self.plotPushButton.setEnabled(False)
-        self.clearPushButton.setEnabled(False)
-        self.tableWidget.setEnabled(False)
-        self.testSolutionWidget.setEnabled(False)
-        self.coeffLEDWidget.setEnabled(False)
-        self.portLineEdit.setEnabled(True)
-        self.statusbar.showMessage('Not Connected')
-        self.cleanDataTable()
-        self.isCalibrated = False
-
-    def setWidgetEnabledOnConnect(self):
-        self.calibratePushButton.setEnabled(True)
-        self.testSolutionWidget.setEnabled(True)
-        if self.isCalibrated:
-            self.plotPushButton.setEnabled(True)
-            self.clearPushButton.setEnabled(True)
-            self.measurePushButton.setEnabled(True)
-            self.tableWidget.setEnabled(True)
-        self.portLineEdit.setEnabled(False)
-        self.connectPushButton.setFlat(False)
-        self.statusbar.showMessage('Connected, Mode: Stopped')
 
     def calibratePressed_Callback(self):
         print('callibratePushButton_Pressed')
@@ -398,6 +338,31 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
 
         self.measIndex+=1
         self.setWidgetEnabledOnConnect()
+
+    def setWidgetEnabledOnDisconnect(self):
+        self.measurePushButton.setEnabled(False)
+        self.calibratePushButton.setEnabled(False)
+        self.plotPushButton.setEnabled(False)
+        self.clearPushButton.setEnabled(False)
+        self.tableWidget.setEnabled(False)
+        self.testSolutionWidget.setEnabled(False)
+        self.coeffLEDWidget.setEnabled(False)
+        self.portLineEdit.setEnabled(True)
+        self.statusbar.showMessage('Not Connected')
+        self.cleanDataTable()
+        self.isCalibrated = False
+
+    def setWidgetEnabledOnConnect(self):
+        self.calibratePushButton.setEnabled(True)
+        self.testSolutionWidget.setEnabled(True)
+        if self.isCalibrated:
+            self.plotPushButton.setEnabled(True)
+            self.clearPushButton.setEnabled(True)
+            self.measurePushButton.setEnabled(True)
+            self.tableWidget.setEnabled(True)
+        self.portLineEdit.setEnabled(False)
+        self.connectPushButton.setFlat(False)
+        self.statusbar.showMessage('Connected, Mode: Stopped')
 
 
     def clearPressed_Callback(self):

@@ -7,6 +7,11 @@ import random
 import time
 import matplotlib
 import yaml
+# TEMPORARY - FOR DEVELOPMENT ##################
+import random
+################################################
+
+
 matplotlib.use('Qt4Agg')
 from matplotlib import pylab
 pylab.ion()
@@ -86,24 +91,12 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.cleanDataTable(setup=True)
         self.setWidgetEnabledOnDisconnect()
         concentrationStr = QtCore.QString.fromUtf8("Concentration (\xc2\xb5M)")
-        self.tableWidget.setHorizontalHeaderLabels(('Datetime', concentrationStr)) 
+        self.tableWidget.setHorizontalHeaderLabels(('Sample', concentrationStr)) 
         self.tableWidget.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
 
         # Set startup state for including test solution.
         self.actionIncludeDefaultTestSolutions.setChecked(True)
         self.actionIncludeUserTestSolutions.setChecked(True)
-
-        # Setup plot style action group 
-        self.plotStyleActionGrp = QtGui.QActionGroup(self)
-        self.actionPlotStyleBar.setActionGroup(self.plotStyleActionGrp)
-        self.actionPlotStyleScatter.setActionGroup(self.plotStyleActionGrp)
-        self.actionPlotStyleBar.setChecked(True)
-
-        # Setup plot axis action group
-        self.plotAxisActionGrp = QtGui.QActionGroup(self)
-        self.actionPlotAxisDatetime.setActionGroup(self.plotAxisActionGrp)
-        self.actionPlotAxisSampleNumber.setActionGroup(self.plotAxisActionGrp)
-        self.actionPlotAxisDatetime.setChecked(True)
 
         # Load test data
         self.default_TestSolutionDir = getResourcePath('data')
@@ -136,6 +129,7 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         if action == copyAction:
             print("copy")
             
+            # Get data from table
             tableList = []
             for i in range(self.tableWidget.rowCount()): 
                 rowList = []
@@ -145,10 +139,14 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
                         rowList.append(str(item.text()))
                 tableList.append(rowList)
 
+            # Create string to send to clipboard
             clipboardList = []
-            for rowList in tableList:
+            for j, rowList in enumerate(tableList):
                 for i, value in enumerate(rowList):
-                    clipboardList.append(value)
+                    if not value:
+                        clipboardList.append('{0}'.format(j))
+                    else:
+                        clipboardList.append(value)
                     if i < len(rowList)-1:
                         clipboardList.append(" ")
                 clipboardList.append('\r\n')
@@ -220,11 +218,12 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.dev = None
 
     def cleanDataTable(self,setup=False,msg=''):
+        print('cleanDataTable')
         if setup:
             reply = QtGui.QMessageBox.Yes
-        elif len(self.tableWidget.item(0,1).text()):
-            reply = QtGui.QMessageBox.question(self, 'Message', 
-                             msg, QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
+        elif self.tableWidget.rowCount() > 1 and len(self.tableWidget.item(0,1).text()):
+            reply = QtGui.QMessageBox.question( self, 'Message', msg, 
+                    QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
         else: 
             return True
 
@@ -253,6 +252,47 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
 
     def plotPushButton_Clicked(self):
         print('plotPushButton_Clicked',self.measIndex)
+        if self.measIndex == 0:
+            return
+        # Get list of concentration data
+        concList = []
+        for i in range(self.tableWidget.rowCount()):
+            item = self.tableWidget.item(i,1)
+            try:
+                value = float(item.text())
+                concList.append(value)
+            except ValueError, e:
+                errMsgTitle = 'Plot Error'
+                errMsg = 'Unable to convert value to float: {0}'.format(str(e))
+                QtGui.QMessageBox.warning(self,errMsgTitle, errMsg)
+                return
+
+        # Get list of label data
+        labelList = []
+        for i in range(self.tableWidget.rowCount()):
+            item = self.tableWidget.item(i,0)
+            label = str(item.text())
+            if not label:
+                labelList.append('{0}'.format(i))
+            else:
+                labelList.append(label)
+
+        print(concList)
+        print(labelList)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         #dataList = []
         #for i in range(self.measIndex):
         #    tableItem = self.tableWidget.item(i,1)
@@ -326,33 +366,35 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
     def measureClicked_Callback(self):
         rowCount = self.measIndex+1
         freq, trans, absorb = self.dev.getMeasurement()
+        # TEMPORARY - FOR DEVELOPMENT ##################
+        conc = random.random()
+        concStr = '{0:1.2f}'.format(conc)
+        #################################################
         self.measurePushButton.setFlat(False)
 
         ledNumber = COLOR2LED_DICT[self.currentColor]
-        transStr = '{0:1.2f}'.format(trans[ledNumber])
-        absorbStr = '{0:1.2f}'.format(absorb[ledNumber])
-        print('{0}: {1}'.format(self.currentColor, absorbStr))
-
-        ts = time.localtime()
-        timeStr = time.strftime('%m/%d/%y %H:%M:%S',ts)
 
         if rowCount > TABLE_MIN_ROW_COUNT:
             self.tableWidget.setRowCount(rowCount)
 
-        # Put time string into table
+        # Put measurement into table
         tableItemFlags = QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled
         tableItem = QtGui.QTableWidgetItem()
-        tableItem.setText(timeStr)
-        tableItem.setFlags(tableItemFlags)
-        self.tableWidget.setItem(self.measIndex,0,tableItem)
-
-        # Put measurement into table
-        tableItem = QtGui.QTableWidgetItem()
-        tableItem.setText(absorbStr)
+        tableItem.setText(concStr)
         tableItem.setFlags(tableItemFlags)
         self.tableWidget.setItem(self.measIndex,1,tableItem)
         self.tableWidget.setCurrentItem(tableItem)
         tableItem.setSelected(False)
+
+        # Select Sample table cell for data entry
+        tableItemFlags = QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled
+        tableItemFlags |= QtCore.Qt.ItemIsEditable
+        tableItem = QtGui.QTableWidgetItem()
+        tableItem.setFlags(tableItemFlags)
+        tableItem.setSelected(True)
+        self.tableWidget.setItem(self.measIndex,0,tableItem)
+        self.tableWidget.setCurrentCell(self.measIndex,0)
+        self.tableWidget.editItem(self.tableWidget.currentItem()) 
 
         self.measIndex+=1
         self.setWidgetEnabledOnConnect()

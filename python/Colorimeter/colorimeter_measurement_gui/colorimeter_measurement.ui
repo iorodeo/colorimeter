@@ -347,117 +347,38 @@
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>&amp;File</string>
+     <string>File</string>
     </property>
-    <addaction name="action_Save"/>
-    <addaction name="action_Load"/>
+    <addaction name="actionLoad"/>
+    <addaction name="actionSave"/>
    </widget>
-   <widget class="QMenu" name="menuPlotOptions">
+   <widget class="QMenu" name="menuOptions">
     <property name="title">
      <string>Options</string>
     </property>
-    <widget class="QMenu" name="menuPlot">
+    <widget class="QMenu" name="menuInclude">
      <property name="title">
-      <string>Plot</string>
+      <string>Include</string>
      </property>
-     <widget class="QMenu" name="menuPlotAxis">
-      <property name="title">
-       <string>x-axis</string>
-      </property>
-      <addaction name="actionPlotAxisDatetime"/>
-      <addaction name="actionPlotAxisSampleNumber"/>
-     </widget>
-     <widget class="QMenu" name="menuPlotStyle">
-      <property name="title">
-       <string>style</string>
-      </property>
-      <addaction name="actionPlotStyleBar"/>
-      <addaction name="actionPlotStyleScatter"/>
-     </widget>
-     <addaction name="menuPlotAxis"/>
-     <addaction name="menuPlotStyle"/>
+     <addaction name="actionIncludeUserTestSolutions"/>
+     <addaction name="actionIncludeDefaultTestSolutions"/>
     </widget>
-    <widget class="QMenu" name="menuTestSolutions">
-     <property name="title">
-      <string>Test Solutions</string>
-     </property>
-     <widget class="QMenu" name="menuTestSolutionsInclude">
-      <property name="title">
-       <string>Include</string>
-      </property>
-      <addaction name="actionIncludeDefaultTestSolutions"/>
-      <addaction name="actionIncludeUserTestSolutions"/>
-     </widget>
-     <addaction name="menuTestSolutionsInclude"/>
-     <addaction name="actionTestSolutionsEdit"/>
-     <addaction name="actionTestSolutionsReload"/>
-    </widget>
-    <addaction name="separator"/>
-    <addaction name="menuTestSolutions"/>
-    <addaction name="menuPlot"/>
+    <addaction name="menuInclude"/>
+    <addaction name="actionReloadTestSolutions"/>
+    <addaction name="actionEditTestSolutions"/>
    </widget>
    <addaction name="menuFile"/>
-   <addaction name="menuPlotOptions"/>
+   <addaction name="menuOptions"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="action_Save">
+  <action name="actionReloadTestSolutions">
    <property name="text">
-    <string>&amp;Save</string>
+    <string>Reload Test Solutions</string>
    </property>
   </action>
-  <action name="action_About">
+  <action name="actionEditTestSolutions">
    <property name="text">
-    <string>About...</string>
-   </property>
-  </action>
-  <action name="action_Load">
-   <property name="text">
-    <string>&amp;Load</string>
-   </property>
-  </action>
-  <action name="actionTestSolutionsReload">
-   <property name="text">
-    <string>Reload</string>
-   </property>
-  </action>
-  <action name="actionPlotAxisDatetime">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>datetime</string>
-   </property>
-  </action>
-  <action name="actionPlotAxisSampleNumber">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>sample number</string>
-   </property>
-  </action>
-  <action name="actionPlotStyleBar">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>bar</string>
-   </property>
-  </action>
-  <action name="actionPlotStyleScatter">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>scatter</string>
-   </property>
-  </action>
-  <action name="actionIncludeDefaultTestSolutions">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>default</string>
+    <string>Edit Test Solutions</string>
    </property>
   </action>
   <action name="actionIncludeUserTestSolutions">
@@ -465,12 +386,25 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>user</string>
+    <string>User Test Solutions</string>
    </property>
   </action>
-  <action name="actionTestSolutionsEdit">
+  <action name="actionIncludeDefaultTestSolutions">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
-    <string>Edit</string>
+    <string>Default Test Solutions</string>
+   </property>
+  </action>
+  <action name="actionLoad">
+   <property name="text">
+    <string>&amp;Load</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="text">
+    <string>&amp;Save</string>
    </property>
   </action>
  </widget>

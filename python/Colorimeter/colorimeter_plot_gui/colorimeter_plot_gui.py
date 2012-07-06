@@ -1,7 +1,11 @@
 from __future__ import print_function
-import os, sys, platform
+import os 
+import sys 
+import platform
 import functools
-import random, re, time
+import random 
+import time
+import numpy
 import matplotlib
 matplotlib.use('Qt4Agg')
 from matplotlib import pylab
@@ -17,6 +21,7 @@ DFLT_PORT_WINDOWS = 'com1'
 DFLT_PORT_LINUX = '/dev/ttyACM0' 
 MIN_ROW_COUNT = 5
 COL_COUNT = 2
+FIT_TYPE = 'force_zero'
 
 class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
 
@@ -173,19 +178,29 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
 
         yList = [x for x,y in dataList]
         xList = [y for x,y in dataList]
+
         if len(dataList) > 1:
-            polyFit = pylab.polyfit(xList,yList,1)
-            xFit = pylab.linspace(min(xList), max(xList), 500)
-            yFit = pylab.polyval(polyFit, xFit)
+            if FIT_TYPE == 'force_zero': 
+                xArray = numpy.array(xList)
+                yArray = numpy.array(yList)
+                numer = (xArray*yArray).sum()
+                denom = (xArray*xArray).sum()
+                slope = numer/denom
+                xFit = pylab.linspace(min(xList), max(xList), 500)
+                yFit = slope*xFit
+            else:
+                polyFit = pylab.polyfit(xList,yList,1)
+                xFit = pylab.linspace(min(xList), max(xList), 500)
+                yFit = pylab.polyval(polyFit, xFit)
+                slope = polyFit[0]
+
             hFit = pylab.plot(xFit,yFit,'r')
-        pylab.plot(xList,yList,'ob')
-        pylab.grid('on')
-        pylab.xlabel('Concentration')
-        pylab.ylabel('Absorbance ('+self.currentColor_str+' led)')
-        slope = polyFit[0]
-        #pylab.figlegend((hFit,),('slope = {0:1.3f}'.format(slope),), 'upper left')
-        pylab.figtext(0.15,0.85,'slope = {0:1.3f}'.format(slope), color='r')
-        pylab.show()
+            pylab.plot(xList,yList,'ob')
+            pylab.grid('on')
+            pylab.xlabel('Concentration')
+            pylab.ylabel('Absorbance ('+self.currentColor_str+' led)')
+            pylab.figtext(0.15,0.85,'slope = {0:1.3f}'.format(slope), color='r')
+            pylab.show()
         
     def setWidgetEnabledOnDisconnect(self):
         self.calibratePushButton.setEnabled(False)
@@ -223,22 +238,20 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
                 errMsgTitle = 'Missing Value'
                 errMsg = 'Concentration value not entered.'
                 QtGui.QMessageBox.warning(self,errMsgTitle, errMsg)
+
         freq, trans, absorb = self.dev.getMeasurement()
         self.measurePushButton.setFlat(False)
+
         if self.currentColor_str=='red':
-            transStr = '{0:1.2f}'.format(trans[0])
             absorbStr = '{0:1.2f}'.format(absorb[0])
             print('red: ',absorbStr)
         elif self.currentColor_str=='green':
-            transStr = '{0:1.2f}'.format(trans[1])
             absorbStr = '{0:1.2f}'.format(absorb[1])
             print('green: ',absorbStr)
         elif self.currentColor_str=='blue':
-            transStr = '{0:1.2f}'.format(trans[2])
             absorbStr = '{0:1.2f}'.format(absorb[2])
             print('blue: ',absorbStr)
         elif self.currentColor_str=='white':
-            transStr = '{0:1.2f}'.format(trans[3])
             absorbStr = '{0:1.2f}'.format(absorb[3])
             print('white: ',absorbStr)
 

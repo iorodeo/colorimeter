@@ -30,6 +30,13 @@ class BasicMainWindow(QtGui.QMainWindow,Ui_MainWindow):
         self.measurePushButton.clicked.connect(self.measureClicked_Callback)
         self.measurePushButton.pressed.connect(self.measurePressed_Callback)
         self.samplesLineEdit.editingFinished.connect(self.samplesChanged_Callback)
+        self.plotCheckBox.stateChanged.connect(self.plotCheckBox_Callback)
+
+    def plotCheckBox_Callback(self,value):
+        if value == QtCore.Qt.Unchecked:
+            if self.fig is not None:
+                plt.close(self.fig)
+                self.fig = None
 
     def initialize(self):
         self.ledColors = 'red', 'green', 'blue', 'white'
@@ -108,20 +115,17 @@ class BasicMainWindow(QtGui.QMainWindow,Ui_MainWindow):
             ylim = (0,max(1.2*max(absorb),1.0))
 
             plt.clf()
-            fig = plt.figure(1)
-            fig.canvas.manager.set_window_title('Colorimeter Basic: Absorbance Plot')
-            ax = fig.add_subplot(111)
+            self.fig = plt.figure(1)
+            self.fig.canvas.manager.set_window_title('Colorimeter Basic: Absorbance Plot')
+            ax = self.fig.add_subplot(111)
             for y in yticks[1:]:
                 ax.plot(xlim,[y,y],'k:')
             for pos, value, color in zip(posList, absorb,colorList): 
                 ax.bar([pos],[value],width=barWidth,color=color,linewidth=2)
-                ax.text(
-                        pos+0.5*barWidth, 
-                        value+0.01, 
-                        '{0:1.3f}'.format(value), 
-                        ha ='center', 
-                        va ='bottom'
-                        )
+                textXPos = pos+0.5*barWidth
+                textYPos = value+0.01
+                valueStr = '{0:1.3f}'.format(value)
+                ax.text(textXPos,textYPos,valueStr,ha ='center',va ='bottom')
 
             ax.set_xlim(*xlim)
             ax.set_ylim(*ylim)
@@ -132,10 +136,6 @@ class BasicMainWindow(QtGui.QMainWindow,Ui_MainWindow):
             ax.set_xlabel('LED')
             ax.set_yticks(yticks)
             plt.draw() 
-        else:
-            if self.fig is not None:
-                del self.fig
-                self.fig = None
 
 
     def updateResultsDisplay(self,trans,absorb):

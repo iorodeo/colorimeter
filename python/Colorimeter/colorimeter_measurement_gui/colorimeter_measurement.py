@@ -5,16 +5,14 @@ import platform
 import functools
 import random 
 import time
-import matplotlib
 import yaml
 # TEMPORARY - FOR DEVELOPMENT ##################
 import random
 ################################################
 
-
+import matplotlib
 matplotlib.use('Qt4Agg')
-from matplotlib import pylab
-pylab.ion()
+import matplotlib.pyplot as plt 
 
 from PyQt4 import QtCore
 from PyQt4 import QtGui
@@ -26,18 +24,21 @@ DFLT_PORT_WINDOWS = 'com1'
 DFLT_PORT_LINUX = '/dev/ttyACM0' 
 TABLE_MIN_ROW_COUNT = 1
 TABLE_COL_COUNT = 2 
+DEFAULT_LED = 'red'
 COLOR2LED_DICT = {'red':0,'green':1,'blue': 2,'white': 3} 
 
 class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
 
     def __init__(self,parent=None):
         super(MeasurementMainWindow,self).__init__(parent)
-        self.radioButtonColors = ('red', 'green', 'blue', 'white')
         self.setupUi(self)
         self.initialize()
         self.connectActions()
 
     def connectActions(self):
+        """
+        Connect actions for widgets in measurement GUI.
+        """
         self.portLineEdit.editingFinished.connect(self.portChanged_Callback)
         self.connectPushButton.pressed.connect(self.connectPressed_Callback)
         self.connectPushButton.clicked.connect(self.connectClicked_Callback)
@@ -51,7 +52,7 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
                 self.testSolutionChanged_Callback
                 )
 
-        for color in self.radioButtonColors:
+        for color in COLOR2LED_DICT:
             button = getattr(self,'{0}RadioButton'.format(color))
             callback = functools.partial(self.colorRadioButton_Clicked, color)
             button.clicked.connect(callback)
@@ -63,18 +64,24 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.actionIncludeUserTestSolutions.toggled.connect(
                 self.populateTestSolutionComboBox
                 )
-        self.tableWidget.contextMenuEvent = self.tableWidgetContextMenu_Callback
 
+        self.tableWidget.contextMenuEvent = self.tableWidgetContextMenu_Callback
+        self.tableWidget_CopyAction = QtGui.QAction(self.tableWidget)
+        self.tableWidget_CopyAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_C)
+        self.tableWidget_CopyAction.triggered.connect(self.copyTableWidgetData)
+        self.tableWidget.addAction(self.tableWidget_CopyAction)
 
     def initialize(self):
+        """
+        Initializes the measurement GUI. Sets buttons to default data, sets initial port
+        based on OS, get the users home directory. etc. 
+        """
 
         self.dev = None
         self.measIndex = 0
         self.isCalibrated = False
-
-        self.currentColor = 'red'
-        self.redRadioButton.setChecked(True)
         
+        # Set default port based on system
         osType = platform.system()
         if osType == 'Linux': 
             self.port = DFLT_PORT_LINUX 
@@ -82,11 +89,17 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
             self.port = DFLT_PORT_WINDOWS 
         self.portLineEdit.setText(self.port) 
 
+        # Get users home directory
         self.userHome = os.getenv('USERPROFILE')
         if self.userHome is None:
             self.userHome = os.getenv('HOME')
         self.lastLogDir = self.userHome
         self.statusbar.showMessage('Not Connected')
+
+        # Set default value for LED color
+        self.currentColor = DEFAULT_LED 
+        button = getattr(self, '{0}RadioButton'.format(self.currentColor))
+        button.setChecked(True)
 
         # Set up data table
         self.cleanDataTable(setup=True)
@@ -116,47 +129,88 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
                 self.user_TestSolutionDir,
                 tag='user',
                 )
-
         self.populateTestSolutionComboBox()
         self.testSolutionComboBox.setCurrentIndex(1)
 
+        plt.ion()
+        self.fig = None
+
 
     def tableWidgetContextMenu_Callback(self,event):
+        """
+        Callback function for the table widget context menus. Currently
+        handles copy and delete actions.
+        """
         menu = QtGui.QMenu(self)
         copyAction = menu.addAction("Copy")
         deleteAction = menu.addAction("Delete")
         action = menu.exec_(self.tableWidget.mapToGlobal(event.pos()))
         if action == copyAction:
-            print("copy")
-            
-            # Get data from table
-            tableList = []
-            for i in range(self.tableWidget.rowCount()): 
-                rowList = []
-                for j in range(self.tableWidget.columnCount()):
-                    item = self.tableWidget.item(i,j)
-                    if self.tableWidget.isItemSelected(item):
-                        rowList.append(str(item.text()))
-                tableList.append(rowList)
-
-            # Create string to send to clipboard
-            clipboardList = []
-            for j, rowList in enumerate(tableList):
-                for i, value in enumerate(rowList):
-                    if not value:
-                        clipboardList.append('{0}'.format(j))
-                    else:
-                        clipboardList.append(value)
-                    if i < len(rowList)-1:
-                        clipboardList.append(" ")
-                clipboardList.append('\r\n')
-            clipboardStr = ''.join(clipboardList)
-
-            clipboard = QtGui.QApplication.clipboard()
-            clipboard.setText(clipboardStr)
-
+            self.copyTableWidgetData()
         if action == deleteAction:
-            print("delete")
+            self.deleteTableWidgetData()
+
+    def deleteTableWidgetData(self):
+        """
+        Deletes data from the table widget based on the current selection.
+        """
+
+        removeList = []
+        for i in range(self.tableWidget.rowCount()):
+            item0 = self.tableWidget.item(i,0)
+            item1 = self.tableWidget.item(i,1)
+            if self.tableWidget.isItemSelected(item0):
+                if not self.tableWidget.isItemSelected(item1):
+                    item0.setText("")
+            if self.tableWidget.isItemSelected(item1):
+                removeList.append(item1.row())
+
+        for ind in reversed(removeList):
+            print(ind)
+            self.measIndex-=1
+            if self.measIndex > 0:
+                self.tableWidget.removeRow(ind)
+            else:
+                self.tableWidget.item(ind,0).setText('')
+                self.tableWidget.item(ind,1).setText('')
+                
+
+    def copyTableWidgetData(self): 
+        """
+        Copies data from the table widget to the clipboard based on the current
+        selection.
+        """
+        selectedList = self.getTableWidgetSelectedList()
+
+        # Create string to send to clipboard
+        clipboardList = []
+        for j, rowList in enumerate(selectedList):
+            for i, value in enumerate(rowList):
+                if not value:
+                    clipboardList.append('{0}'.format(j))
+                else:
+                    clipboardList.append(value)
+                if i < len(rowList)-1:
+                    clipboardList.append(" ")
+            clipboardList.append('\r\n')
+        clipboardStr = ''.join(clipboardList)
+        clipboard = QtGui.QApplication.clipboard()
+        clipboard.setText(clipboardStr)
+
+    def getTableWidgetSelectedList(self):
+        """
+        Returns list of select items in the table widget. Note, assumes that
+        selection mode for the table is ContiguousSelection.
+        """
+        selectedList = []
+        for i in range(self.tableWidget.rowCount()): 
+            rowList = []
+            for j in range(self.tableWidget.columnCount()):
+                item = self.tableWidget.item(i,j)
+                if self.tableWidget.isItemSelected(item):
+                    rowList.append(str(item.text()))
+            selectedList.append(rowList)
+        return selectedList
 
     def testSolutionChanged_Callback(self,index):
         print('testSolutionChanged_Callback', index)
@@ -164,8 +218,6 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
             self.coeffLEDWidget.setEnabled(True)
         else:
             self.coeffLEDWidget.setEnabled(False)
-
-
 
     def portChanged_Callback(self):
         self.port = str(self.portLineEdit.text())
@@ -218,10 +270,14 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.dev = None
 
     def cleanDataTable(self,setup=False,msg=''):
+        """
+        Removes any existing data from the table widget. If setup is False then
+        I dialog request confirmation if presented. 
+        """
         print('cleanDataTable')
         if setup:
             reply = QtGui.QMessageBox.Yes
-        elif self.tableWidget.rowCount() > 1 and len(self.tableWidget.item(0,1).text()):
+        elif len(self.tableWidget.item(0,1).text()):
             reply = QtGui.QMessageBox.question( self, 'Message', msg, 
                     QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
         else: 
@@ -273,14 +329,36 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
             item = self.tableWidget.item(i,0)
             label = str(item.text())
             if not label:
-                labelList.append('{0}'.format(i))
+                labelList.append('{0}'.format(item.row()+1))
             else:
                 labelList.append(label)
 
-        print(concList)
-        print(labelList)
 
-        
+        # Create plot showing bar graph of data
+        barWidth = 0.8
+        posList = range(1,len(concList)+1)
+        xlim = (posList[0], posList[-1]+barWidth)
+        ylim = (0,1.2*max(concList))
+
+        plt.clf()
+        self.fig = plt.figure(1)
+        self.fig.canvas.manager.set_window_title('Colorimeter Measurement: Concentration Plot')
+        ax = self.fig.add_subplot(111)
+        ax.bar(posList,concList,width=barWidth,color='b',linewidth=2)
+
+        for pos, value in zip(posList, concList): 
+            textXPos = pos+0.5*barWidth
+            textYPos = value+0.01
+            valueStr = '{0:1.3f}'.format(value)
+            ax.text(textXPos,textYPos, valueStr, ha ='center', va ='bottom') 
+
+        ax.set_xlim(*xlim)
+        ax.set_ylim(*ylim)
+        ax.set_xticks([x+0.5*barWidth for x in posList])
+        ax.set_xticklabels(labelList)
+        ax.set_ylabel('Concentration')
+        ax.set_xlabel('Samples')
+        plt.draw() 
 
     def calibratePressed_Callback(self):
         print('callibratePushButton_Pressed')

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'colorimeter_measurement.ui'
 #
-# Created: Wed Jul  4 16:52:33 2012
+# Created: Fri Jul  6 17:47:08 2012
 #      by: PyQt4 UI code generator 4.7.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -80,15 +80,15 @@ class Ui_MainWindow(object):
         self.label_2 = QtGui.QLabel(self.coeffLEDWidget)
         self.label_2.setObjectName("label_2")
         self.horizontalLayout_2.addWidget(self.label_2)
-        self.calibrationLineEdit = QtGui.QLineEdit(self.coeffLEDWidget)
+        self.coefficientLineEdit = QtGui.QLineEdit(self.coeffLEDWidget)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.calibrationLineEdit.sizePolicy().hasHeightForWidth())
-        self.calibrationLineEdit.setSizePolicy(sizePolicy)
-        self.calibrationLineEdit.setMaximumSize(QtCore.QSize(120, 16777215))
-        self.calibrationLineEdit.setObjectName("calibrationLineEdit")
-        self.horizontalLayout_2.addWidget(self.calibrationLineEdit)
+        sizePolicy.setHeightForWidth(self.coefficientLineEdit.sizePolicy().hasHeightForWidth())
+        self.coefficientLineEdit.setSizePolicy(sizePolicy)
+        self.coefficientLineEdit.setMaximumSize(QtCore.QSize(120, 16777215))
+        self.coefficientLineEdit.setObjectName("coefficientLineEdit")
+        self.horizontalLayout_2.addWidget(self.coefficientLineEdit)
         spacerItem2 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout_2.addItem(spacerItem2)
         self.label_3 = QtGui.QLabel(self.coeffLEDWidget)
@@ -199,8 +199,8 @@ class Ui_MainWindow(object):
         self.actionLoad.setObjectName("actionLoad")
         self.actionSave = QtGui.QAction(MainWindow)
         self.actionSave.setObjectName("actionSave")
-        self.menuFile.addAction(self.actionLoad)
         self.menuFile.addAction(self.actionSave)
+        self.menuFile.addAction(self.actionLoad)
         self.menuInclude.addAction(self.actionIncludeUserTestSolutions)
         self.menuInclude.addAction(self.actionIncludeDefaultTestSolutions)
         self.menuOptions.addAction(self.menuInclude.menuAction())

@@ -6,6 +6,7 @@ import functools
 import random 
 import time
 import yaml
+import numpy
 # TEMPORARY - FOR DEVELOPMENT ##################
 import random
 ################################################
@@ -26,6 +27,11 @@ TABLE_MIN_ROW_COUNT = 1
 TABLE_COL_COUNT = 2 
 DEFAULT_LED = 'red'
 COLOR2LED_DICT = {'red':0,'green':1,'blue': 2,'white': 3} 
+
+PLOT_FIGURE_NUM = 1
+PLOT_BAR_WIDTH = 0.8
+PLOT_TEXT_Y_OFFSET = 0.01
+PLOT_YLIM_ADJUST = 1.15
 
 class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
 
@@ -66,10 +72,35 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
                 )
 
         self.tableWidget.contextMenuEvent = self.tableWidgetContextMenu_Callback
+
         self.tableWidget_CopyAction = QtGui.QAction(self.tableWidget)
         self.tableWidget_CopyAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_C)
         self.tableWidget_CopyAction.triggered.connect(self.copyTableWidgetData)
         self.tableWidget.addAction(self.tableWidget_CopyAction)
+
+        self.tableWidget_DeleteAction = QtGui.QAction(self.tableWidget)
+        self.tableWidget_DeleteAction.setShortcut(QtCore.Qt.Key_Delete)
+        self.tableWidget_DeleteAction.triggered.connect(self.deleteTableWidgetData)
+        self.tableWidget.addAction(self.tableWidget_DeleteAction)
+
+        self.tableWidget_BackspaceAction = QtGui.QAction(self.tableWidget)
+        self.tableWidget_BackspaceAction.setShortcut(QtCore.Qt.Key_Backspace)
+        self.tableWidget_BackspaceAction.triggered.connect(self.deleteTableWidgetData)
+        self.tableWidget.addAction(self.tableWidget_BackspaceAction)
+
+        self.tableWidget.itemChanged.connect(self.tableWidgetItemChanged_Callback)
+
+        self.actionSave.triggered.connect(self.saveMenuItem_Callback)
+        self.actionSave.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_S)
+        self.actionLoad.triggered.connect(self.loadMenuItem_Callback)
+        self.actionLoad.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_L)
+
+    def saveMenuItem_Callback(self):
+        print('saveMenuItem_Callback')
+
+    def loadMenuItem_Callback(self):
+        print('loadMenuItem_Callback')
+
 
     def initialize(self):
         """
@@ -80,6 +111,9 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.dev = None
         self.measIndex = 0
         self.isCalibrated = False
+        self.coeff = None
+        self.fig = None
+        plt.ion()
         
         # Set default port based on system
         osType = platform.system()
@@ -129,12 +163,15 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
                 self.user_TestSolutionDir,
                 tag='user',
                 )
+
         self.populateTestSolutionComboBox()
         self.testSolutionComboBox.setCurrentIndex(1)
 
-        plt.ion()
-        self.fig = None
 
+    def tableWidgetItemChanged_Callback(self,item):
+        print('tableWidgetItemChanged_Callback')
+        if item.column() == 0:
+            self.updatePlot()
 
     def tableWidgetContextMenu_Callback(self,event):
         """
@@ -154,7 +191,6 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         """
         Deletes data from the table widget based on the current selection.
         """
-
         removeList = []
         for i in range(self.tableWidget.rowCount()):
             item0 = self.tableWidget.item(i,0)
@@ -166,14 +202,16 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
                 removeList.append(item1.row())
 
         for ind in reversed(removeList):
-            print(ind)
-            self.measIndex-=1
+            if self.measIndex > 0:
+                self.measIndex-=1
             if self.measIndex > 0:
                 self.tableWidget.removeRow(ind)
             else:
                 self.tableWidget.item(ind,0).setText('')
                 self.tableWidget.item(ind,1).setText('')
-                
+
+        if plt.fignum_exists(PLOT_FIGURE_NUM):
+            self.updatePlot()
 
     def copyTableWidgetData(self): 
         """
@@ -214,10 +252,24 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
 
     def testSolutionChanged_Callback(self,index):
         print('testSolutionChanged_Callback', index)
+        self.updateTestSolution(index)
+
+
+    def updateTestSolution(self,index):
         if index == 0:
             self.coeffLEDWidget.setEnabled(True)
+            self.coefficientLineEdit.setText("")
+            self.coeff = None
         else:
             self.coeffLEDWidget.setEnabled(False)
+            itemText = str(self.testSolutionComboBox.itemText(index))
+            testSolutionDict = {}
+            testSolutionDict.update(self.user_TestSolutionDict)
+            testSolutionDict.update(self.default_TestSolutionDict)
+            pathName = testSolutionDict[itemText]
+            data = self.loadTestSolutionData(pathName)
+            self.coeff = getCoefficientFromData(data)
+            self.coefficientLineEdit.setText('{0:1.1f}'.format(1.0e6*self.coeff))
 
     def portChanged_Callback(self):
         self.port = str(self.portLineEdit.text())
@@ -261,6 +313,8 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
             self.setWidgetEnabledOnDisconnect()
 
     def closeEvent(self,event):
+        if self.fig is not None:
+            plt.close(self.fig)
         if self.dev is not None:
             self.cleanUpAndCloseDevice()
         event.accept()
@@ -274,7 +328,6 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         Removes any existing data from the table widget. If setup is False then
         I dialog request confirmation if presented. 
         """
-        print('cleanDataTable')
         if setup:
             reply = QtGui.QMessageBox.Yes
         elif len(self.tableWidget.item(0,1).text()):
@@ -284,6 +337,9 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
             return True
 
         if reply == QtGui.QMessageBox.Yes:
+            if self.fig is not None:
+                plt.close(self.fig)
+                self.fig = None
             self.tableWidget.setRowCount(TABLE_MIN_ROW_COUNT)
             self.tableWidget.setColumnCount(TABLE_COL_COUNT)
             for row in range(TABLE_MIN_ROW_COUNT+1):
@@ -307,58 +363,8 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.currentColor = color
 
     def plotPushButton_Clicked(self):
-        print('plotPushButton_Clicked',self.measIndex)
-        if self.measIndex == 0:
-            return
-        # Get list of concentration data
-        concList = []
-        for i in range(self.tableWidget.rowCount()):
-            item = self.tableWidget.item(i,1)
-            try:
-                value = float(item.text())
-                concList.append(value)
-            except ValueError, e:
-                errMsgTitle = 'Plot Error'
-                errMsg = 'Unable to convert value to float: {0}'.format(str(e))
-                QtGui.QMessageBox.warning(self,errMsgTitle, errMsg)
-                return
+        self.updatePlot(create=True)
 
-        # Get list of label data
-        labelList = []
-        for i in range(self.tableWidget.rowCount()):
-            item = self.tableWidget.item(i,0)
-            label = str(item.text())
-            if not label:
-                labelList.append('{0}'.format(item.row()+1))
-            else:
-                labelList.append(label)
-
-
-        # Create plot showing bar graph of data
-        barWidth = 0.8
-        posList = range(1,len(concList)+1)
-        xlim = (posList[0], posList[-1]+barWidth)
-        ylim = (0,1.2*max(concList))
-
-        plt.clf()
-        self.fig = plt.figure(1)
-        self.fig.canvas.manager.set_window_title('Colorimeter Measurement: Concentration Plot')
-        ax = self.fig.add_subplot(111)
-        ax.bar(posList,concList,width=barWidth,color='b',linewidth=2)
-
-        for pos, value in zip(posList, concList): 
-            textXPos = pos+0.5*barWidth
-            textYPos = value+0.01
-            valueStr = '{0:1.3f}'.format(value)
-            ax.text(textXPos,textYPos, valueStr, ha ='center', va ='bottom') 
-
-        ax.set_xlim(*xlim)
-        ax.set_ylim(*ylim)
-        ax.set_xticks([x+0.5*barWidth for x in posList])
-        ax.set_xticklabels(labelList)
-        ax.set_ylabel('Concentration')
-        ax.set_xlabel('Samples')
-        plt.draw() 
 
     def calibratePressed_Callback(self):
         print('callibratePushButton_Pressed')
@@ -382,6 +388,7 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.statusbar.showMessage('Connected, Mode: Measuring...')
 
     def measureClicked_Callback(self):
+
         rowCount = self.measIndex+1
         freq, trans, absorb = self.dev.getMeasurement()
         # TEMPORARY - FOR DEVELOPMENT ##################
@@ -415,6 +422,23 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.tableWidget.editItem(self.tableWidget.currentItem()) 
 
         self.measIndex+=1
+
+        if plt.fignum_exists(PLOT_FIGURE_NUM):
+            self.updatePlot()
+
+        self.setWidgetEnabledOnConnect()
+
+    def clearPressed_Callback(self):
+        if len(self.tableWidget.item(0,1).text()):
+            self.measurePushButton.setEnabled(False)
+            self.plotPushButton.setEnabled(False)
+        self.clearPushButton.setFlat(True)
+
+    def clearClicked_Callback(self):
+        if len(self.tableWidget.item(0,1).text()):
+            erase_msg = "Clear all data?"
+            self.cleanDataTable(msg=erase_msg)
+        self.clearPushButton.setFlat(False)
         self.setWidgetEnabledOnConnect()
 
     def setWidgetEnabledOnDisconnect(self):
@@ -442,19 +466,66 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.connectPushButton.setFlat(False)
         self.statusbar.showMessage('Connected, Mode: Stopped')
 
+    def updatePlot(self,create=False):
 
-    def clearPressed_Callback(self):
-        if len(self.tableWidget.item(0,1).text()):
-            self.measurePushButton.setEnabled(False)
-            self.plotPushButton.setEnabled(False)
-        self.clearPushButton.setFlat(True)
+        if self.measIndex == 0:
+            #  We don't have any measurements - close any existing plot and
+            #  return
+            if plt.fignum_exists(PLOT_FIGURE_NUM):
+                plt.close(self.fig)
+                self.fig = None
+            return
 
-    def clearClicked_Callback(self):
-        if len(self.tableWidget.item(0,1).text()):
-            erase_msg = "Clear all data?"
-            self.cleanDataTable(msg=erase_msg)
-        self.clearPushButton.setFlat(False)
-        self.setWidgetEnabledOnConnect()
+        if not create and not plt.fignum_exists(PLOT_FIGURE_NUM):
+            return
+
+        # Get list of concentration data
+        concList = []
+        for i in range(self.tableWidget.rowCount()):
+            item = self.tableWidget.item(i,1)
+            try:
+                value = float(item.text())
+                concList.append(value)
+            except ValueError, e:
+                errMsgTitle = 'Plot Error'
+                errMsg = 'Unable to convert value to float: {0}'.format(str(e))
+                QtGui.QMessageBox.warning(self,errMsgTitle, errMsg)
+                return
+
+        # Get list of label data
+        labelList = []
+        for i in range(self.tableWidget.rowCount()):
+            item = self.tableWidget.item(i,0)
+            label = str(item.text())
+            if not label:
+                labelList.append('{0}'.format(item.row()+1))
+            else:
+                labelList.append(label)
+
+        # Create plot showing bar graph of data
+        posList = range(1,len(concList)+1)
+        xlim = (posList[0]-0.5*PLOT_BAR_WIDTH, posList[-1]+1.5*PLOT_BAR_WIDTH)
+        ylim = (0,PLOT_YLIM_ADJUST*max(concList))
+
+        plt.clf()
+        self.fig = plt.figure(PLOT_FIGURE_NUM)
+        self.fig.canvas.manager.set_window_title('Colorimeter Measurement: Concentration Plot')
+        ax = self.fig.add_subplot(111)
+        ax.bar(posList,concList,width=PLOT_BAR_WIDTH,color='b',linewidth=2)
+
+        for pos, value in zip(posList, concList): 
+            textXPos = pos + 0.5*PLOT_BAR_WIDTH
+            textYPos = value + PLOT_TEXT_Y_OFFSET
+            valueStr = '{0:1.3f}'.format(value)
+            ax.text(textXPos,textYPos, valueStr, ha ='center', va ='bottom') 
+
+        ax.set_xlim(*xlim)
+        ax.set_ylim(*ylim)
+        ax.set_xticks([x+0.5*PLOT_BAR_WIDTH for x in posList])
+        ax.set_xticklabels(labelList)
+        ax.set_ylabel('Concentration')
+        ax.set_xlabel('Samples')
+        plt.draw() 
 
     def loadTestSolutionsFromDir(self,loc,tag=''):
         """
@@ -469,26 +540,34 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         testFiles = [name for name in testFiles if '.yaml' in name]
         for name in testFiles:
             pathName = os.path.join(loc,name)
-            try:
-                with open(pathName,'r') as fid:
-                    data = yaml.load(fid)
-                    print(data['name'])
-            except IOError, e:
-                print('Unable to read data file {0}'.format(name))
-                print(str(e))
+            data = self.loadTestSolutionData(pathName)
+            if data is None:
                 continue
             if tag:
                 key = '{0} ({1})'.format(data['name'],tag)
             else:
                 key = data['name']
-
             testDict[key] = pathName
         return testDict
 
+    def loadTestSolutionData(self, pathName): 
+        """
+        Loads test solution data form the given filename
+        """
+        try:
+            with open(pathName,'r') as fid:
+                data = yaml.load(fid)
+        except IOError, e:
+            print('Unable to read data file {0}'.format(name))
+            print(str(e))
+            data = None
+        return data
+        
+
     def populateTestSolutionComboBox(self):
         """
-        Populates the test solution combobox given the 
-
+        Populates the test solution combobox for the currently selected
+        options (via the Options menu).
         """
         self.testSolutionComboBox.clear()
         self.testSolutionComboBox.addItem('-- (manually specify) --')
@@ -505,10 +584,23 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
 
         index = min([1,self.testSolutionComboBox.count()-1])
         self.testSolutionComboBox.setCurrentIndex(index)
-
+        self.updateTestSolution(index)
 
     def main(self):
         self.show()
+
+def getCoefficientFromData(data): 
+    """
+    Compuetes the coefficient (slope of absorbance vs concentration)
+    """
+    values = data['values']
+    xList, yList = zip(*values)
+    xArray = numpy.array(xList)
+    yArray = numpy.array(yList)
+    numer = (xArray*yArray).sum()
+    denom = (xArray*xArray).sum()
+    coeff = numer/denom
+    return coeff 
 
 def measurementGuiMain():
     """

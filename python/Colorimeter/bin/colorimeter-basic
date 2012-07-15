@@ -1,3 +1,3 @@
 #!/usr/bin/env python
-from colorimeter_basic_gui import basic_gui_main
-basic_gui_main()
+from colorimeter_basic_gui import basicGuiMain
+basicGuiMain()

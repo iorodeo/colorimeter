@@ -7,6 +7,8 @@ import random
 import time
 import yaml
 import numpy
+import pkg_resources
+
 # TEMPORARY - FOR DEVELOPMENT ##################
 import random
 ################################################
@@ -146,10 +148,25 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.actionIncludeDefaultTestSolutions.setChecked(True)
         self.actionIncludeUserTestSolutions.setChecked(True)
 
-        # Load test data
-        self.default_TestSolutionDir = getResourcePath('data')
+        ## Works with pyinstaller
+        ## ---------------------------------------------------------------
+        ## Load test data
+        #self.default_TestSolutionDir = getResourcePath('data')
+        #self.default_TestSolutionDict = self.loadTestSolutionsFromDir(
+        #        self.default_TestSolutionDir, 
+        #        tag='default',
+        #        )
+
+        ## Works with setup_tools, not sure about with pyinstaller - check
+        #self.default_TestSolutionDict.update(self.loadTestSolutionsFromDir(
+        #        '',
+        #        tag='default',
+        #        ))
+        ## --------------------------------------------------------------
+
+        # Works with setup_tools, not sure about with pyinstaller - check
         self.default_TestSolutionDict = self.loadTestSolutionsFromDir(
-                self.default_TestSolutionDir, 
+                '',
                 tag='default',
                 )
 
@@ -204,15 +221,18 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         for ind in reversed(removeList):
             if self.measIndex > 0:
                 self.measIndex-=1
-            if self.measIndex > 0:
-                self.tableWidget.removeRow(ind)
-            else:
-                self.tableWidget.item(ind,0).setText('')
-                self.tableWidget.item(ind,1).setText('')
+            self.tableWidget.removeRow(ind)
+
+        if self.tableWidget.rowCount() < TABLE_MIN_ROW_COUNT:
+            self.tableWidget.setRowCount(TABLE_MIN_ROW_COUNT)
+            for row in range(self.measIndex,TABLE_MIN_ROW_COUNT): 
+                for col in range(0,TABLE_COL_COUNT): 
+                    tableItem = QtGui.QTableWidgetItem() 
+                    tableItem.setFlags(QtCore.Qt.NoItemFlags) 
+                    self.tableWidget.setItem(row,col,tableItem)
 
         if plt.fignum_exists(PLOT_FIGURE_NUM):
             self.updatePlot()
-
     def copyTableWidgetData(self): 
         """
         Copies data from the table widget to the clipboard based on the current
@@ -527,14 +547,22 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         ax.set_xlabel('Samples')
         plt.draw() 
 
+
     def loadTestSolutionsFromDir(self,loc,tag=''):
         """
         Loads all test solutions from the default and user directories.
         """
-        try:
-            testFiles = os.listdir(loc)
-        except OSError, e:
-            return {} 
+        if not loc:
+            fileNames = pkg_resources.resource_listdir(__name__,'data')
+            testFiles = []
+            for name in fileNames:
+                pathName = pkg_resources.resource_filename(__name__,'data/{0}'.format(name))
+                testFiles.append(pathName)
+        else:
+            try:
+                testFiles = os.listdir(loc)
+            except OSError, e:
+                return {} 
 
         testDict = {}
         testFiles = [name for name in testFiles if '.yaml' in name]
@@ -602,6 +630,14 @@ def getCoefficientFromData(data):
     coeff = numer/denom
     return coeff 
 
+def getResourcePath(relative_path): 
+    """
+    Get path of resources file in both deployed and development.
+    """
+    base_path = os.environ.get("_MEIPASS2", os.path.abspath("."))
+    resource_path = os.path.join(base_path, relative_path)
+    return resource_path
+
 def measurementGuiMain():
     """
     Entry point for measurement gui
@@ -610,14 +646,6 @@ def measurementGuiMain():
     mainWindow = MeasurementMainWindow()
     mainWindow.main()
     app.exec_()
-
-def getResourcePath(relative_path): 
-    """
-    Get path of resources file in both deployed and development.
-    """
-    base_path = os.environ.get("_MEIPASS2", os.path.abspath("."))
-    resource_path = os.path.join(base_path, relative_path)
-    return resource_path
 
 # -----------------------------------------------------------------------------
 if __name__ == '__main__':

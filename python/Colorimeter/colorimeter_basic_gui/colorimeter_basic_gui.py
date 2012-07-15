@@ -211,7 +211,7 @@ class BasicMainWindow(QtGui.QMainWindow,Ui_MainWindow):
     def main(self):
         self.show()
 
-def basic_gui_main():
+def basicGuiMain():
     app = QtGui.QApplication(sys.argv)
     mainWindow = BasicMainWindow()
     mainWindow.main()
@@ -219,5 +219,5 @@ def basic_gui_main():
 
 # -----------------------------------------------------------------------------
 if __name__ == '__main__':
-    basic_gui_main()
+    basicGuiMain()
 

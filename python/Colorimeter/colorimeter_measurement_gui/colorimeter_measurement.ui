@@ -132,7 +132,7 @@
        <item>
         <widget class="QLabel" name="label_2">
          <property name="text">
-          <string>Coefficient: </string>
+          <string>Coefficient</string>
          </property>
         </widget>
        </item>

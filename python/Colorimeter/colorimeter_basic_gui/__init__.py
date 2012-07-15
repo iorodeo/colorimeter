@@ -1,1 +1,1 @@
-from colorimeter_basic_gui import basic_gui_main
+from colorimeter_basic_gui import basicGuiMain

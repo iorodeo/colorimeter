@@ -20,7 +20,7 @@ from colorimeter_plot_gui_ui import Ui_MainWindow
 from colorimeter_serial import Colorimeter
 from colorimeter_common import file_tools
 
-DEVEL_FAKE_MEASURE = True 
+DEVEL_FAKE_MEASURE = False 
 DFLT_PORT_WINDOWS = 'com1' 
 DFLT_PORT_LINUX = '/dev/ttyACM0' 
 TABLE_MIN_ROW_COUNT = 4

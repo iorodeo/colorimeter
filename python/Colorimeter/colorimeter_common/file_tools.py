@@ -1,6 +1,7 @@
 from __future__ import print_function
 import os
 import yaml
+import time
 
 def getUserTestSolutionDir(userHome): 
     return os.path.join(userHome,'.iorodeo_colorimeter','data')
@@ -19,7 +20,10 @@ def loadTestSolutionDict(fileList,tag=''):
     testDict = {}
     testFiles = [name for name in fileList if '.yaml' in name]
     for name in testFiles:
-        data = importTestSolutionData(name)
+        try:
+            data = importTestSolutionData(name)
+        except IOError, e:
+            continue
         if data is None:
             continue
         if tag:
@@ -38,26 +42,29 @@ def loadUserTestSolutionDict(userHome):
     testDict = loadTestSolutionDict(fileList)
     return testDict
 
-def importTestSolutionData(pathName): 
+def importTestSolutionData(fileName): 
     """
     Imports the test solution data with the given filename from the users
     test solutions directory.
     """
-    try:
-        with open(pathName,'r') as fid:
-            data = yaml.load(fid)
-    except IOError, e:
-        print('Unable to read data file {0}'.format(name))
-        print(str(e))
-        data = None
+    with open(fileName,'r') as fid:
+        data = yaml.load(fid)
     return data
 
-def exportTestSolutionData(userHome, solutionName, dataList):
+def exportTestSolutionData(userHome, solutionName, dataList, color, dateStr):
     """
     Exports test solution data to the users directory. Data is saved 
     as a yaml file.
     """
-    filename = getUniqueSolutionFileName(userHome, solutionName)
+    fileName = getUniqueSolutionFileName(userHome, solutionName)
+    dataDict = {
+            'name': solutionName,
+            'date': dateStr,
+            'led' : color,
+            'values': [list(x) for x in dataList],
+            }
+    with open(fileName,'w') as fid: 
+        yaml.dump(dataDict,fid)
 
 def deleteTestSolution(userHome, solutionName):
     """

@@ -24,13 +24,15 @@ from colorimeter_measurement_ui import Ui_MainWindow
 from colorimeter_serial import Colorimeter
 from colorimeter_common import file_tools
 
-DEVEL_FAKE_MEASURE = True 
+DEVEL_FAKE_MEASURE = False 
+
 DFLT_PORT_WINDOWS = 'com1' 
 DFLT_PORT_LINUX = '/dev/ttyACM0' 
+DFLT_LED_COLOR = 'red'
+COLOR2LED_DICT = {'red':0,'green':1,'blue': 2,'white': 3} 
+
 TABLE_MIN_ROW_COUNT = 1
 TABLE_COL_COUNT = 2 
-DEFAULT_LED = 'red'
-COLOR2LED_DICT = {'red':0,'green':1,'blue': 2,'white': 3} 
 
 PLOT_FIGURE_NUM = 1
 PLOT_BAR_WIDTH = 0.8
@@ -103,7 +105,6 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
 
         self.tableWidget.itemChanged.connect(self.tableWidgetItemChanged_Callback)
 
-
     def saveFile_Callback(self):
         print('saveFile_Callback')
 
@@ -145,9 +146,7 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.statusbar.showMessage('Not Connected')
 
         # Set default value for LED color
-        self.currentColor = DEFAULT_LED 
-        button = getattr(self, '{0}RadioButton'.format(self.currentColor))
-        button.setChecked(True)
+        self.setLEDColor(DFLT_LED_COLOR)
 
         # Set up data table
         self.cleanDataTable(setup=True)
@@ -165,6 +164,12 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
 
         self.populateTestSolutionComboBox()
         self.testSolutionComboBox.setCurrentIndex(1)
+
+    def setLEDColor(self,color):
+        self.currentColor = color
+        button = getattr(self, '{0}RadioButton'.format(self.currentColor))
+        button.setChecked(True)
+        
 
 
     def tableWidgetItemChanged_Callback(self,item):
@@ -272,6 +277,8 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
             data = file_tools.importTestSolutionData(pathName)
             self.coeff = getCoefficientFromData(data)
             self.coefficientLineEdit.setText('{0:1.1f}'.format(1.0e6*self.coeff))
+            self.setLEDColor(data['led'])
+        self.setWidgetEnabledOnConnect()
 
     def portChanged_Callback(self):
         self.port = str(self.portLineEdit.text())
@@ -393,14 +400,17 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
     def measureClicked_Callback(self):
 
         rowCount = self.measIndex+1
+        ledNumber = COLOR2LED_DICT[self.currentColor]
+
         if DEVEL_FAKE_MEASURE:  
             conc = random.random()
-            concStr = '{0:1.2f}'.format(conc)
         else:
             freq, trans, absorb = self.dev.getMeasurement()
+            conc = absorb[ledNumber]/self.coeff
+
+        concStr = '{0:1.2f}'.format(conc)
         self.measurePushButton.setFlat(False)
 
-        ledNumber = COLOR2LED_DICT[self.currentColor]
 
         if rowCount > TABLE_MIN_ROW_COUNT:
             self.tableWidget.setRowCount(rowCount)
@@ -458,13 +468,21 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.isCalibrated = False
 
     def setWidgetEnabledOnConnect(self):
-        self.calibratePushButton.setEnabled(True)
         self.testSolutionWidget.setEnabled(True)
-        if self.isCalibrated:
+        if self.coeff is None:
+            self.calibratePushButton.setEnabled(False)
+        else:
+            self.calibratePushButton.setEnabled(True)
+        if self.isCalibrated and self.coeff is not None:
             self.plotPushButton.setEnabled(True)
             self.clearPushButton.setEnabled(True)
             self.measurePushButton.setEnabled(True)
             self.tableWidget.setEnabled(True)
+        else:
+            self.plotPushButton.setEnabled(False)
+            self.clearPushButton.setEnabled(False)
+            self.measurePushButton.setEnabled(False)
+            self.tableWidget.setEnabled(False)
         self.portLineEdit.setEnabled(False)
         self.connectPushButton.setFlat(False)
         self.statusbar.showMessage('Connected, Mode: Stopped')
@@ -532,20 +550,31 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
 
 
     def loadDefaultTestSolutionDict(self):
+        """
+        Load the dictionary mapping the test solution name to the test solution
+        data from the default location.
+        """
         ## Works with pyinstaller
         ## ---------------------------------------------------------------
         #default_TestSolutionDir = getResourcePath('data')
         #fileList = getTestSolutionFilesFromDir(default_TestSolutionDir)
         ## ---------------------------------------------------------------
         fileList = self.getTestSolutionFilesFromResources()
-        return file_tools.loadTestSolutionDict(fileList,tag='default')
+        return file_tools.loadTestSolutionDict(fileList,tag='D')
 
     def loadUserTestSolutionDict(self):
+        """
+        Load the dictionary mapping test solution name to test solution data
+        file from the user's directory.
+        """
         userTestSolutionDir = file_tools.getUserTestSolutionDir(self.userHome)
         fileList = file_tools.getTestSolutionFilesFromDir(userTestSolutionDir)
-        return file_tools.loadTestSolutionDict(fileList,tag='user')
+        return file_tools.loadTestSolutionDict(fileList,tag='U')
 
     def getTestSolutionFilesFromResources(self): 
+        """
+        Get the list of test solution files form the package resources.
+        """
         fileNames = pkg_resources.resource_listdir(__name__,'data')
         testFiles = []
         for name in fileNames:
@@ -560,14 +589,20 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         """
         self.testSolutionComboBox.clear()
         self.testSolutionComboBox.addItem('-- (manually specify) --')
+        includeDflt = self.actionIncludeDefaultTestSolutions.isChecked()
+        includeUser = self.actionIncludeUserTestSolutions.isChecked()
 
         # Add default test solutions
-        if self.actionIncludeDefaultTestSolutions.isChecked():
+        if includeDflt:
             for name in sorted(self.default_TestSolutionDict):
                 self.testSolutionComboBox.addItem(name)
 
+        if includeDflt and includeUser:
+            count = self.testSolutionComboBox.count()+1
+            self.testSolutionComboBox.insertSeparator(count)
+
         # Add user test solutions
-        if self.actionIncludeUserTestSolutions.isChecked():
+        if includeUser:
             for name in sorted(self.user_TestSolutionDict):
                 self.testSolutionComboBox.addItem(name)
 

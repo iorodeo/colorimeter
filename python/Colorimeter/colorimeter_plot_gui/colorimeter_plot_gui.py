@@ -404,6 +404,11 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.setTableData(dataList)
 
     def exportData_Callback(self):
+        """
+        Export data to yaml file stored in the users colorimeter data
+        directory.  This data will then be available for use with the
+        colorimeter measurement program.
+        """
         dataList = self.getTableData()
 
         if not dataList:
@@ -436,8 +441,14 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
             else:
                 file_tools.deleteTestSolution(self.userHome,solutionName)
 
-        file_tools.exportTestSolutionData(self.userHome,solutionName,dataList)
-
+        dateStr = time.strftime('%Y-%m-%d %H:%M:%S %Z')
+        file_tools.exportTestSolutionData(
+                self.userHome,
+                solutionName,
+                dataList,
+                self.currentColor,
+                dateStr,
+                )
 
     def importData_Callback(self):
         print('importData_Callback')

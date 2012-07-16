@@ -68,6 +68,7 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
 
         self.actionImport.triggered.connect(self.importData_Callback)
         self.actionImport.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_I)
+        self.actionEditTestSolutions.triggered.connect(self.editTestSolutions_Callback)
 
         itemDelegate = DoubleItemDelegate(self.tableWidget)
         self.tableWidget.setItemDelegateForColumn(0,itemDelegate)
@@ -88,6 +89,9 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.tableWidget_BackspaceAction.setShortcut(QtCore.Qt.Key_Backspace)
         self.tableWidget_BackspaceAction.triggered.connect(self.deleteTableWidgetData)
         self.tableWidget.addAction(self.tableWidget_BackspaceAction)
+
+    def editTestSolutions_Callback(self):
+        print('editTestSolutions_Callback')
 
         
     def initialize(self):

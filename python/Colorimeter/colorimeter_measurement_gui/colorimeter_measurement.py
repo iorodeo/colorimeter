@@ -81,10 +81,7 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.actionSave.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_S)
         self.actionLoad.triggered.connect(self.loadFile_Callback)
         self.actionLoad.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_L)
-        self.actionImportTestSolution.triggered.connect(self.importTestSolution_Callback)
-        self.actionImportTestSolution.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_I)
-        self.actionRemoveTestSolution.triggered.connect(self.removeTestSolution_Callback)
-        self.actionRemoveTestSolution.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_R)
+        self.actionEditTestSolutions.triggered.connect(self.editTestSolutions_Callback)
 
         self.tableWidget.contextMenuEvent = self.tableWidgetContextMenu_Callback
 
@@ -111,11 +108,8 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
     def loadFile_Callback(self):
         print('loadFile_Callback')
 
-    def importTestSolution_Callback(self):
-        print('importTestSolution_Callback')
-
-    def removeTestSolution_Callback(self):
-        print('removeTestSolution_Callback')
+    def editTestSolutions_Callback(self):
+        print('editTestSolutions_Callback')
 
     def initialize(self):
         """

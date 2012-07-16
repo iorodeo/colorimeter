@@ -364,8 +364,7 @@
      <addaction name="actionIncludeDefaultTestSolutions"/>
     </widget>
     <addaction name="menuInclude"/>
-    <addaction name="actionImportTestSolution"/>
-    <addaction name="actionRemoveTestSolution"/>
+    <addaction name="actionEditTestSolutions"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuOptions"/>
@@ -374,11 +373,6 @@
   <action name="actionReloadTestSolutions">
    <property name="text">
     <string>Reload Test Solutions</string>
-   </property>
-  </action>
-  <action name="actionEditTestSolutions">
-   <property name="text">
-    <string>Edit Test Solutions</string>
    </property>
   </action>
   <action name="actionIncludeUserTestSolutions">
@@ -415,6 +409,11 @@
   <action name="actionRemoveTestSolution">
    <property name="text">
     <string>Remove Test Solution...</string>
+   </property>
+  </action>
+  <action name="actionEditTestSolutions">
+   <property name="text">
+    <string>Edit Test Solutions...</string>
    </property>
   </action>
  </widget>

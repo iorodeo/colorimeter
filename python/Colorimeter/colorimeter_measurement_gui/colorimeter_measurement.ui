@@ -347,14 +347,14 @@
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>File</string>
+     <string>&amp;File</string>
     </property>
     <addaction name="actionSave"/>
     <addaction name="actionLoad"/>
    </widget>
    <widget class="QMenu" name="menuOptions">
     <property name="title">
-     <string>Options</string>
+     <string>&amp;Options</string>
     </property>
     <widget class="QMenu" name="menuInclude">
      <property name="title">
@@ -364,8 +364,8 @@
      <addaction name="actionIncludeDefaultTestSolutions"/>
     </widget>
     <addaction name="menuInclude"/>
-    <addaction name="actionReloadTestSolutions"/>
-    <addaction name="actionEditTestSolutions"/>
+    <addaction name="actionImportTestSolution"/>
+    <addaction name="actionRemoveTestSolution"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuOptions"/>
@@ -399,12 +399,22 @@
   </action>
   <action name="actionLoad">
    <property name="text">
-    <string>&amp;Load</string>
+    <string>Load</string>
    </property>
   </action>
   <action name="actionSave">
    <property name="text">
-    <string>&amp;Save</string>
+    <string>Save</string>
+   </property>
+  </action>
+  <action name="actionImportTestSolution">
+   <property name="text">
+    <string>Import Test Solution...</string>
+   </property>
+  </action>
+  <action name="actionRemoveTestSolution">
+   <property name="text">
+    <string>Remove Test Solution...</string>
    </property>
   </action>
  </widget>

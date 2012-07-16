@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'colorimeter_plot_gui.ui'
 #
-# Created: Fri Jul 13 11:28:16 2012
+# Created: Sun Jul 15 20:23:20 2012
 #      by: PyQt4 UI code generator 4.7.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -135,20 +135,28 @@ class Ui_MainWindow(object):
         self.menubar.setObjectName("menubar")
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
-        self.menuAbout = QtGui.QMenu(self.menubar)
-        self.menuAbout.setObjectName("menuAbout")
+        self.menuOptions = QtGui.QMenu(self.menubar)
+        self.menuOptions.setObjectName("menuOptions")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtGui.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
-        self.action_Save = QtGui.QAction(MainWindow)
-        self.action_Save.setObjectName("action_Save")
+        self.actionSave = QtGui.QAction(MainWindow)
+        self.actionSave.setObjectName("actionSave")
         self.action_About = QtGui.QAction(MainWindow)
         self.action_About.setObjectName("action_About")
-        self.menuFile.addAction(self.action_Save)
-        self.menuAbout.addAction(self.action_About)
+        self.actionLoad = QtGui.QAction(MainWindow)
+        self.actionLoad.setObjectName("actionLoad")
+        self.actionExport = QtGui.QAction(MainWindow)
+        self.actionExport.setObjectName("actionExport")
+        self.actionImport = QtGui.QAction(MainWindow)
+        self.actionImport.setObjectName("actionImport")
+        self.menuFile.addAction(self.actionSave)
+        self.menuFile.addAction(self.actionLoad)
+        self.menuOptions.addAction(self.actionExport)
+        self.menuOptions.addAction(self.actionImport)
         self.menubar.addAction(self.menuFile.menuAction())
-        self.menubar.addAction(self.menuAbout.menuAction())
+        self.menubar.addAction(self.menuOptions.menuAction())
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -166,7 +174,10 @@ class Ui_MainWindow(object):
         self.measurePushButton.setText(QtGui.QApplication.translate("MainWindow", "Measure", None, QtGui.QApplication.UnicodeUTF8))
         self.plotPushButton.setText(QtGui.QApplication.translate("MainWindow", "Plot", None, QtGui.QApplication.UnicodeUTF8))
         self.menuFile.setTitle(QtGui.QApplication.translate("MainWindow", "&File", None, QtGui.QApplication.UnicodeUTF8))
-        self.menuAbout.setTitle(QtGui.QApplication.translate("MainWindow", "&Help", None, QtGui.QApplication.UnicodeUTF8))
-        self.action_Save.setText(QtGui.QApplication.translate("MainWindow", "&Save...", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuOptions.setTitle(QtGui.QApplication.translate("MainWindow", "Options", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionSave.setText(QtGui.QApplication.translate("MainWindow", "Save...", None, QtGui.QApplication.UnicodeUTF8))
         self.action_About.setText(QtGui.QApplication.translate("MainWindow", "About...", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionLoad.setText(QtGui.QApplication.translate("MainWindow", "Load...", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionExport.setText(QtGui.QApplication.translate("MainWindow", "Export...", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionImport.setText(QtGui.QApplication.translate("MainWindow", "Import...", None, QtGui.QApplication.UnicodeUTF8))
 

@@ -20,8 +20,13 @@ setup(
     version='0.1.0',
     author='Will Dickson',
     author_email='will@iorodeo.com',
-    packages=['colorimeter_serial', 'colorimeter_basic_gui', 'colorimeter_plot_gui','colorimeter_measurement_gui'],
-    #data_files= [('test_solutions', ['colorimeter_measurement_gui/data/*.yaml'],)], 
+    packages=[
+        'colorimeter_serial', 
+        'colorimeter_basic_gui', 
+        'colorimeter_plot_gui',
+        'colorimeter_measurement_gui',
+        'colorimeter_common', 
+        ],
     package_data = {
         'colorimeter_measurement_gui': ['colorimeter_measurement_gui/data/*.yaml'],
         },

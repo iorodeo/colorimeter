@@ -13,6 +13,7 @@ from colorimeter_serial import Colorimeter
 DFLT_PORT_WINDOWS = 'com1' 
 DFLT_PORT_LINUX = '/dev/ttyACM0' 
 
+
 class BasicMainWindow(QtGui.QMainWindow,Ui_MainWindow):
 
     def __init__(self,parent=None):

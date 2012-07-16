@@ -1,12 +1,14 @@
 from __future__ import print_function
 import os 
 import sys 
+import math
 import platform
 import functools
 import random 
 import time
 import numpy
 import matplotlib
+import yaml
 matplotlib.use('Qt4Agg')
 import matplotlib.pyplot as plt 
 plt.ion()
@@ -16,7 +18,7 @@ from PyQt4 import QtGui
 
 from colorimeter_plot_gui_ui import Ui_MainWindow 
 from colorimeter_serial import Colorimeter
-
+from colorimeter_common import file_tools
 
 DEVEL_FAKE_MEASURE = True 
 DFLT_PORT_WINDOWS = 'com1' 
@@ -27,6 +29,7 @@ FIT_TYPE = 'force_zero'
 DEFAULT_LED = 'red'
 COLOR2LED_DICT = {'red':0,'green':1,'blue': 2,'white': 3} 
 PLOT_FIGURE_NUM = 1
+NO_VALUE_SYMB = 'nan'
 
 class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
 
@@ -38,7 +41,6 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.initialize()
 
     def connectActions(self):
-        self.action_Save.triggered.connect(self.saveFile_Callback)
         self.portLineEdit.editingFinished.connect(self.portChanged_Callback)
         self.connectPushButton.pressed.connect(self.connectPressed_Callback)
         self.connectPushButton.clicked.connect(self.connectClicked_Callback)
@@ -54,6 +56,18 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
             callback = functools.partial(self.colorRadioButtonClicked_Callback, color)
             button.clicked.connect(callback)
         self.plotPushButton.clicked.connect(self.plotPushButtonClicked_Callback)
+
+        self.actionSave.triggered.connect(self.saveFile_Callback)
+        self.actionSave.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_S)
+
+        self.actionLoad.triggered.connect(self.loadFile_Callback)
+        self.actionLoad.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_L)
+
+        self.actionExport.triggered.connect(self.exportData_Callback)
+        self.actionExport.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_E)
+
+        self.actionImport.triggered.connect(self.importData_Callback)
+        self.actionImport.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_I)
 
         itemDelegate = DoubleItemDelegate(self.tableWidget)
         self.tableWidget.setItemDelegateForColumn(0,itemDelegate)
@@ -74,7 +88,41 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.tableWidget_BackspaceAction.setShortcut(QtCore.Qt.Key_Backspace)
         self.tableWidget_BackspaceAction.triggered.connect(self.deleteTableWidgetData)
         self.tableWidget.addAction(self.tableWidget_BackspaceAction)
+
         
+    def initialize(self):
+        osType = platform.system()
+        if osType == 'Linux': 
+            self.port = DFLT_PORT_LINUX 
+        else: 
+            self.port = DFLT_PORT_WINDOWS 
+        self.userHome = os.getenv('USERPROFILE')
+        if self.userHome is None:
+            self.userHome = os.getenv('HOME')
+        self.lastLogDir = self.userHome
+            
+        self.portLineEdit.setText(self.port) 
+        self.measIndex = 0
+        self.dev = None
+        self.redRadioButton.setChecked(True)
+        self.currentColor = 'red'
+        self.statusbar.showMessage('Not Connected')
+        self.isCalibrated = False
+        self.fig = None
+
+        # Set up data table
+        self.cleanDataTable(setup=True)
+        self.setWidgetEnabledOnDisconnect()
+
+        self.tableWidget.setHorizontalHeaderLabels(('Concentration','Absorbance')) 
+        self.tableWidget.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
+
+        self.user_TestSolutionDir = os.path.join(
+                self.userHome,
+                '.iorodeo_colorimeter',
+                'data',
+                )
+
     def tableWidgetContextMenu_Callback(self,event):
         """
         Callback function for the table widget context menus. Currently
@@ -136,7 +184,7 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
                     clipboardList.append(value)
                 if i < len(rowList)-1:
                     clipboardList.append(" ")
-            clipboardList.append('\r\n')
+            clipboardList.append(os.linesep)
         clipboardStr = ''.join(clipboardList)
         clipboard = QtGui.QApplication.clipboard()
         clipboard.setText(clipboardStr)
@@ -156,32 +204,6 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
             selectedList.append(rowList)
         return selectedList
 
-    def initialize(self):
-        osType = platform.system()
-        if osType == 'Linux': 
-            self.port = DFLT_PORT_LINUX 
-        else: 
-            self.port = DFLT_PORT_WINDOWS 
-        self.userHome = os.getenv('USERPROFILE')
-        if self.userHome is None:
-            self.userHome = os.getenv('HOME')
-        self.lastLogDir = self.userHome
-            
-        self.portLineEdit.setText(self.port) 
-        self.measIndex = 0
-        self.dev = None
-        self.redRadioButton.setChecked(True)
-        self.currentColor = 'red'
-        self.statusbar.showMessage('Not Connected')
-        self.isCalibrated = False
-        self.fig = None
-
-        # Set up data table
-        self.cleanDataTable(setup=True)
-        self.setWidgetEnabledOnDisconnect()
-
-        self.tableWidget.setHorizontalHeaderLabels(('Concentration','Absorbance')) 
-        self.tableWidget.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
 
     def portChanged_Callback(self):
         self.port = str(self.portLineEdit.text())
@@ -194,6 +216,9 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
             self.statusbar.showMessage('Connecting...')
 
     def connectClicked_Callback(self):
+        """
+        Connect/Disconnect to colorimeter device.
+        """
         if self.dev == None:
             try:
                 self.dev = Colorimeter(self.port)
@@ -224,16 +249,10 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         else:
             self.setWidgetEnabledOnDisconnect()
 
-    def closeEvent(self,event):
-        if self.dev is not None:
-            self.cleanUpAndCloseDevice()
-        event.accept()
-
-    def cleanUpAndCloseDevice(self):
-        self.dev.close()
-        self.dev = None
-
     def colorRadioButtonClicked_Callback(self,color):
+        """
+        Callback for selecting the LED color used by the colorimeter.
+        """
         if len(self.tableWidget.item(0,1).text()):
             chn_msg = "Changing channels will clear all data. Continue?"
             response = self.cleanDataTable(msg=chn_msg)
@@ -245,59 +264,42 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         print(color)
 
     def plotPushButtonClicked_Callback(self):
-
-        # ---------------------------------------------------------------------
-        # Need to check that we have all concentration values and give 
-        # reasonable message if we don't.
-        # ---------------------------------------------------------------------
-
-        print('plotPushButtonClicked_Callback',self.measIndex)
-        dataList = []
-        for i in range(self.measIndex):
-            tableItem = self.tableWidget.item(i,1)
-            x = float(tableItem.text())
-            tableItem = self.tableWidget.item(i,0)
-            try:
-                y = float(tableItem.text())
-            except ValueError, e:
-                errMsgTitle = 'Plot Error'
-                errMsg = 'Unable to convert concentration value to float.'
-                QtGui.QMessageBox.warning(self,errMsgTitle, errMsg)
-                return
-            dataList.append((x,y))
-
+        """
+        Plots the data in the table widget. 
+        """
+        dataList = self.getTableData()
+        if not dataList:
+            return
         yList = [x for x,y in dataList]
         xList = [y for x,y in dataList]
 
-        if len(dataList) > 1:
-            if FIT_TYPE == 'force_zero': 
-                xArray = numpy.array(xList)
-                yArray = numpy.array(yList)
-                numer = (xArray*yArray).sum()
-                denom = (xArray*xArray).sum()
-                slope = numer/denom
-                xFit = numpy.linspace(min(xList), max(xList), 500)
-                yFit = slope*xFit
-            else:
-                polyFit = numpy.polyfit(xList,yList,1)
-                xFit = numpy.linspace(min(xList), max(xList), 500)
-                yFit = numpy.polyval(polyFit, xFit)
-                slope = polyFit[0]
+        if FIT_TYPE == 'force_zero': 
+            xArray = numpy.array(xList)
+            yArray = numpy.array(yList)
+            numer = (xArray*yArray).sum()
+            denom = (xArray*xArray).sum()
+            slope = numer/denom
+            xFit = numpy.linspace(min(xList), max(xList), 500)
+            yFit = slope*xFit
+        else:
+            polyFit = numpy.polyfit(xList,yList,1)
+            xFit = numpy.linspace(min(xList), max(xList), 500)
+            yFit = numpy.polyval(polyFit, xFit)
+            slope = polyFit[0]
 
-            plt.clf()
-            self.fig = plt.figure(PLOT_FIGURE_NUM)
-            self.fig.canvas.manager.set_window_title('Colorimeter Plot')
-            ax = self.fig.add_subplot(111)
-            hFit = ax.plot(xFit,yFit,'r')
+        plt.clf()
+        self.fig = plt.figure(PLOT_FIGURE_NUM)
+        self.fig.canvas.manager.set_window_title('Colorimeter Plot')
+        ax = self.fig.add_subplot(111)
+        hFit = ax.plot(xFit,yFit,'r')
 
-            ax.plot(xList,yList,'ob')
-            ax.grid('on')
-            ax.set_xlabel('Concentration')
-            ax.set_ylabel('Absorbance ('+self.currentColor+' led)')
-            self.fig.text(0.15,0.85,'slope = {0:1.3f}'.format(slope), color='r')
-            plt.draw()
+        ax.plot(xList,yList,'ob')
+        ax.grid('on')
+        ax.set_xlabel('Concentration')
+        ax.set_ylabel('Absorbance ('+self.currentColor+' led)')
+        self.fig.text(0.15,0.85,'slope = {0:1.3f}'.format(slope), color='r')
+        plt.draw()
         
-
     def measurePressed_Callback(self):
         print('measPushButton_Pressed')
         self.calibratePushButton.setEnabled(False)
@@ -306,42 +308,16 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.statusbar.showMessage('Connected, Mode: Measuring...')
 
     def measureClicked_Callback(self):
-
-        rowCount = self.measIndex+1
-        
-        # ---------------------------------------------------------------------
-        #if rowCount == 2:
-        #    if not len(self.tableWidget.item(0,0).text()):
-        #        errMsgTitle = 'Missing Value'
-        #        errMsg = 'Concentration value not entered.'
-        #        QtGui.QMessageBox.warning(self,errMsgTitle, errMsg)
-        # --------------------------------------------------------------------
-
+        """
+        Takes a measurement from the colorimeter. 
+        """
         if DEVEL_FAKE_MEASURE:
-            absorb = (random.random(),)*4
+            abso = (random.random(),)*4
         else:
-            freq, trans, absorb = self.dev.getMeasurement()
-
+            freq, trans, abso = self.dev.getMeasurement()
         self.measurePushButton.setFlat(False)
         ledNumber = COLOR2LED_DICT[self.currentColor]
-        absorbStr = '{0:1.2f}'.format(absorb[ledNumber])
-
-        if rowCount > TABLE_MIN_ROW_COUNT:
-            self.tableWidget.setRowCount(rowCount)
-
-        tableItem = QtGui.QTableWidgetItem()
-        tableItem.setText(absorbStr)
-        tableItem.setFlags(QtCore.Qt.ItemIsSelectable|QtCore.Qt.ItemIsEnabled)
-        self.tableWidget.setItem(self.measIndex,1,tableItem)
-
-        tableItem = QtGui.QTableWidgetItem()
-        tableItem.setSelected(True)
-        self.tableWidget.setItem(self.measIndex,0,tableItem)
-
-        self.tableWidget.setCurrentCell(self.measIndex,0)
-        self.tableWidget.editItem(self.tableWidget.currentItem()) 
-
-        self.measIndex+=1
+        self.addDataToTable(abso[ledNumber],'',selectEdit=True)
         self.setWidgetEnabledOnConnect()
 
     def calibratePressed_Callback(self):
@@ -373,51 +349,167 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.setWidgetEnabledOnConnect()
 
     def saveFile_Callback(self):
-        print('savePushButton_Clicked',self.measIndex)
-        
-        # ---------------------------------------------------------------------
-        # Need to check that we have all concentrations values
-        # --------------------------------------------------------------------- 
-
-        if 1:#self.measIndex > 1:
-            dialog = QtGui.QFileDialog()
-            dialog.setFileMode(QtGui.QFileDialog.AnyFile) 
-            filename = dialog.getSaveFileName(
-                       None,
-                       'Select log file',
-                       self.lastLogDir,
-                       options=QtGui.QFileDialog.DontUseNativeDialog,
-                       )              
-            filename = str(filename)
-            self.lastLogDir =  os.path.split(filename)[0]
-            dataList = []
-            for i in range(self.measIndex):
-                tableItem = self.tableWidget.item(i,1)
-                x = float(tableItem.text())
-                tableItem = self.tableWidget.item(i,0)
-                y = float(tableItem.text())
-                dataList.append((x,y))
-            header = [
-                      time.strftime('# %Y-%m-%d %H:%M:%S %Z'), \
-                      '# IO Rodeo\'s Plot Slammer v0.1', \
-                      '# -----------------------------', \
-                      '# Absorbance  |  Concentration', \
-                    ]
-
-            with open(filename,'w') as f:
-                f.write("\n".join(header))
-                for x,y in dataList:
-                    f.write("\n%s\t\t  %s" % (x,y))
-        else:
-            print('No data to save')
-
-    def haveConcentrationData(self):
         """
-        Checks to see if there is a concetration value for every absorbance 
-        measurement.
+        Save data in table to a text file.
         """
+        dataList = self.getTableData(addNoValueSymb=True)
+        if not dataList:
+            msgTitle = 'Save Error'
+            msgText = 'No data to save.'
+            QtGui.QMessageBox.warning(self,msgTitle, msgText)
+            return
+        dialog = QtGui.QFileDialog()
+        dialog.setFileMode(QtGui.QFileDialog.AnyFile) 
+        filename = dialog.getSaveFileName(
+                   None,
+                   'Select data file',
+                   self.lastLogDir,
+                   options=QtGui.QFileDialog.DontUseNativeDialog,
+                   )              
+        filename = str(filename)
+        if not filename:
+            return
+        self.lastLogDir =  os.path.split(filename)[0]
+
+        timeStr = time.strftime('%Y-%m-%d %H:%M:%S %Z') 
+        header = [
+                '# {0}'.format(timeStr),
+                '# Colorimeter Data', 
+                '# -----------------------------', 
+                '# Absorbance  |  Concentration', 
+                ]
+
+        with open(filename,'w') as f:
+            f.write(os.linesep.join(header))
+            for x,y in dataList:
+                f.write("%s%s\t\t%s"%(os.linesep,x,y))
+
+    def loadFile_Callback(self):
+        """
+        Load data in table from a text file.
+        """
+        print('loadFile_Callback')
+        dialog = QtGui.QFileDialog()
+        dialog.setFileMode(QtGui.QFileDialog.AnyFile) 
+        filename = dialog.getOpenFileName(
+                   None,
+                   'Select data file',
+                   self.lastLogDir,
+                   options=QtGui.QFileDialog.DontUseNativeDialog,
+                   )              
+        filename = str(filename)
+        if not filename:
+            return 
+        dataList = self.loadDataFromFile(filename)
+        self.setTableData(dataList)
+
+    def exportData_Callback(self):
+        dataList = self.getTableData()
+
+        if not dataList:
+            msgTitle = 'Export Error'
+            msgText = 'insufficient data for export'
+            QtGui.QMessageBox.warning(self,msgTitle, msgText)
+            return
+
+        solutionName, flag = QtGui.QInputDialog.getText(
+                self,
+                'Export: Test Solultion Data',
+                'Enter name for test solution:',
+                )
+
+        if not flag:
+            return
+
+        solutionName = str(solutionName)
+        if not file_tools.isUniqueSolutionName(self.userHome,solutionName):
+            msg = 'User Test solution, {0}, already exists - overwrite?'.format(solutionName)
+            reply = QtGui.QMessageBox.question(
+                    self,
+                    'Export Warning', 
+                    msg,
+                    QtGui.QMessageBox.Yes, 
+                    QtGui.QMessageBox.No
+                    )
+            if reply == QtGui.QMessageBox.No:
+                return
+            else:
+                file_tools.deleteTestSolution(self.userHome,solutionName)
+
+        file_tools.exportTestSolutionData(self.userHome,solutionName,dataList)
+
+
+    def importData_Callback(self):
+        print('importData_Callback')
+
+    def getTableData(self,addNoValueSymb=False):
+        """
+        Get data items from table widget - replace missing concentratino
+        values with the no value symbol.
+        """
+        dataList = []
+        for i in range(self.measIndex):
+            concTableItem = self.tableWidget.item(i,0)
+            absoTableItem = self.tableWidget.item(i,1)
+            try:
+                abso = float(absoTableItem.text())
+            except ValueError, e:
+                continue
+            try:
+                conc = float(concTableItem.text())
+            except ValueError, e:
+                if addNoValueSymb:
+                    conc = NO_VALUE_SYMB 
+                else:
+                    continue
+            dataList.append((abso,conc))
+        return dataList
+
+    def setTableData(self,dataList):
+        """
+        Set data item in the table widget from the given dataList.
+        """
+        self.cleanDataTable(setup=True)
+        for abso, conc in dataList:
+            self.addDataToTable(abso,conc)
+
+    def loadDataFromFile(self,filename):
+        """
+        Load absorbance and concentration data from data file.
+        """
+        try:
+            fileLines = []
+            with open(filename,'r') as f:
+                fileLines = f.readlines()
+        except IOError, e:
+            msgTitle = 'File Load Error'
+            msgText = 'Unable to load data file: {0}'.format(str(e))
+            QtGui.QMessageBox.warning(self,msgTitle, msgText)
+            return 
+
+        dataList = []
+        for line in fileLines:
+            if not line:
+                continue
+            line = line.split()
+            if line[0] == '#':
+                continue
+            try:
+                abso = float(line[0])
+            except ValueError, e:
+                continue
+            try:
+                conc = float(line[1])
+            except ValueError:
+                conc = ''
+            dataList.append((abso,conc))
+        return dataList
 
     def setWidgetEnabledOnDisconnect(self):
+        """
+        Enables/Disables the appropriate widgets for the when the device
+        is disconnected from the colorimeter.
+        """
         self.calibratePushButton.setEnabled(False)
         self.measurePushButton.setEnabled(False)
         self.plotPushButton.setEnabled(False)
@@ -429,6 +521,10 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.isCalibrated = False
 
     def setWidgetEnabledOnConnect(self):
+        """
+        Enables/Disables the appropriate widgets for the case where the 
+        device is connected to the colorimeter.
+        """
         self.calibratePushButton.setEnabled(True)
         if self.isCalibrated:
             self.plotPushButton.setEnabled(True)
@@ -439,7 +535,38 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.connectPushButton.setFlat(False)
         self.statusbar.showMessage('Connected, Mode: Stopped')
 
+    def addDataToTable(self,abso,conc,selectEdit=False):
+        """
+        Added data to table widget. If selectEdit is set to True then the
+        concetration element is selected and opened for editing by the
+        user.
+        """
+        rowCount = self.measIndex+1
+        absoStr = '{0:1.2f}'.format(abso)
+        if type(conc) == float and not math.isnan(conc):
+            concStr = '{0:f}'.format(conc)
+        else:
+            concStr = ''
+        if rowCount > TABLE_MIN_ROW_COUNT:
+            self.tableWidget.setRowCount(rowCount)
+        tableItem = QtGui.QTableWidgetItem()
+        tableItem.setText(absoStr)
+        tableItem.setFlags(QtCore.Qt.ItemIsSelectable|QtCore.Qt.ItemIsEnabled)
+        self.tableWidget.setItem(self.measIndex,1,tableItem)
+        tableItem = QtGui.QTableWidgetItem()
+        tableItem.setText(concStr)
+        self.tableWidget.setItem(self.measIndex,0,tableItem)
+        if selectEdit:
+            tableItem.setSelected(True)
+            self.tableWidget.setCurrentCell(self.measIndex,0)
+            self.tableWidget.editItem(self.tableWidget.currentItem()) 
+        self.measIndex+=1
+
     def cleanDataTable(self,setup=False,msg=''):
+        """
+        Removes all data form the data table widget. If setup is False the user
+        is prompted and asked if they really want to clear all data.
+        """
         if setup:
             reply = QtGui.QMessageBox.Yes
         elif len(self.tableWidget.item(0,1).text()):
@@ -447,7 +574,6 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
                     QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
         else: 
             return True
-
         if reply == QtGui.QMessageBox.Yes:
             self.tableWidget.setRowCount(TABLE_MIN_ROW_COUNT)
             self.tableWidget.setColumnCount(TABLE_COL_COUNT)
@@ -461,6 +587,15 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         else:
             return False
 
+    def closeEvent(self,event):
+        if self.dev is not None:
+            self.cleanUpAndCloseDevice()
+        event.accept()
+
+    def cleanUpAndCloseDevice(self):
+        self.dev.close()
+        self.dev = None
+
     def main(self):
         self.show()
 
@@ -473,30 +608,21 @@ def plotGuiMain():
     mainWindow.main()
     app.exec_()
 
-
-
 class DoubleItemDelegate(QtGui.QStyledItemDelegate):
+    """
+    Item delegate for double items - assigns a validator to the editor to
+    check/limit inputs.
+    """
 
     def __init__(self,*args,**kwargs):
         super(DoubleItemDelegate,self).__init__(*args,**kwargs)
 
     def createEditor(self,parent,option,index):
         editor = super(DoubleItemDelegate,self).createEditor(parent,option,index)
-        validator = DoubleValidator(editor)
+        validator = QtGui.QDoubleValidator(editor)
         validator.setBottom(0.0)
         editor.setValidator(validator)
         return editor
-
-class DoubleValidator(QtGui.QDoubleValidator):
-
-    def __init__(self,*args,**kwargs):
-        print('__init__')
-        super(DoubleValidator,self).__init__(*args,**kwargs)
-
-    def fixup(self,value):
-        print('fixup')
-        super(DoubleValidator,self).fixup(value)
-
 
 # -----------------------------------------------------------------------------
 if __name__ == '__main__':

@@ -22,7 +22,9 @@ from PyQt4 import QtGui
 
 from colorimeter_measurement_ui import Ui_MainWindow 
 from colorimeter_serial import Colorimeter
+from colorimeter_common import file_tools
 
+DEVEL_FAKE_MEASURE = True 
 DFLT_PORT_WINDOWS = 'com1' 
 DFLT_PORT_LINUX = '/dev/ttyACM0' 
 TABLE_MIN_ROW_COUNT = 1
@@ -73,6 +75,15 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
                 self.populateTestSolutionComboBox
                 )
 
+        self.actionSave.triggered.connect(self.saveFile_Callback)
+        self.actionSave.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_S)
+        self.actionLoad.triggered.connect(self.loadFile_Callback)
+        self.actionLoad.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_L)
+        self.actionImportTestSolution.triggered.connect(self.importTestSolution_Callback)
+        self.actionImportTestSolution.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_I)
+        self.actionRemoveTestSolution.triggered.connect(self.removeTestSolution_Callback)
+        self.actionRemoveTestSolution.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_R)
+
         self.tableWidget.contextMenuEvent = self.tableWidgetContextMenu_Callback
 
         self.tableWidget_CopyAction = QtGui.QAction(self.tableWidget)
@@ -92,17 +103,18 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
 
         self.tableWidget.itemChanged.connect(self.tableWidgetItemChanged_Callback)
 
-        self.actionSave.triggered.connect(self.saveMenuItem_Callback)
-        self.actionSave.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_S)
-        self.actionLoad.triggered.connect(self.loadMenuItem_Callback)
-        self.actionLoad.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_L)
 
-    def saveMenuItem_Callback(self):
-        print('saveMenuItem_Callback')
+    def saveFile_Callback(self):
+        print('saveFile_Callback')
 
-    def loadMenuItem_Callback(self):
-        print('loadMenuItem_Callback')
+    def loadFile_Callback(self):
+        print('loadFile_Callback')
 
+    def importTestSolution_Callback(self):
+        print('importTestSolution_Callback')
+
+    def removeTestSolution_Callback(self):
+        print('removeTestSolution_Callback')
 
     def initialize(self):
         """
@@ -148,38 +160,8 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.actionIncludeDefaultTestSolutions.setChecked(True)
         self.actionIncludeUserTestSolutions.setChecked(True)
 
-        ## Works with pyinstaller
-        ## ---------------------------------------------------------------
-        ## Load test data
-        #self.default_TestSolutionDir = getResourcePath('data')
-        #self.default_TestSolutionDict = self.loadTestSolutionsFromDir(
-        #        self.default_TestSolutionDir, 
-        #        tag='default',
-        #        )
-
-        ## Works with setup_tools, not sure about with pyinstaller - check
-        #self.default_TestSolutionDict.update(self.loadTestSolutionsFromDir(
-        #        '',
-        #        tag='default',
-        #        ))
-        ## --------------------------------------------------------------
-
-        # Works with setup_tools, not sure about with pyinstaller - check
-        self.default_TestSolutionDict = self.loadTestSolutionsFromDir(
-                '',
-                tag='default',
-                )
-
-        # Load user data
-        self.user_TestSolutionDir = os.path.join(
-                self.userHome,
-                '.iorodeo_colorimeter',
-                'data',
-                )
-        self.user_TestSolutionDict = self.loadTestSolutionsFromDir(
-                self.user_TestSolutionDir,
-                tag='user',
-                )
+        self.user_TestSolutionDict = self.loadUserTestSolutionDict()
+        self.default_TestSolutionDict = self.loadDefaultTestSolutionDict()
 
         self.populateTestSolutionComboBox()
         self.testSolutionComboBox.setCurrentIndex(1)
@@ -276,7 +258,7 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
 
 
     def updateTestSolution(self,index):
-        if index == 0:
+        if index <= 0:
             self.coeffLEDWidget.setEnabled(True)
             self.coefficientLineEdit.setText("")
             self.coeff = None
@@ -287,7 +269,7 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
             testSolutionDict.update(self.user_TestSolutionDict)
             testSolutionDict.update(self.default_TestSolutionDict)
             pathName = testSolutionDict[itemText]
-            data = self.loadTestSolutionData(pathName)
+            data = file_tools.importTestSolutionData(pathName)
             self.coeff = getCoefficientFromData(data)
             self.coefficientLineEdit.setText('{0:1.1f}'.format(1.0e6*self.coeff))
 
@@ -396,7 +378,8 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
 
     def calibrateClicked_Callback(self):
         print('calibratePushButton_Clicked')
-        self.dev.calibrate()
+        if not DEVEL_FAKE_MEASURE:
+            self.dev.calibrate()
         self.isCalibrated = True
         self.calibratePushButton.setFlat(False)
         self.setWidgetEnabledOnConnect()
@@ -410,11 +393,11 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
     def measureClicked_Callback(self):
 
         rowCount = self.measIndex+1
-        freq, trans, absorb = self.dev.getMeasurement()
-        # TEMPORARY - FOR DEVELOPMENT ##################
-        conc = random.random()
-        concStr = '{0:1.2f}'.format(conc)
-        #################################################
+        if DEVEL_FAKE_MEASURE:  
+            conc = random.random()
+            concStr = '{0:1.2f}'.format(conc)
+        else:
+            freq, trans, absorb = self.dev.getMeasurement()
         self.measurePushButton.setFlat(False)
 
         ledNumber = COLOR2LED_DICT[self.currentColor]
@@ -548,49 +531,27 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         plt.draw() 
 
 
-    def loadTestSolutionsFromDir(self,loc,tag=''):
-        """
-        Loads all test solutions from the default and user directories.
-        """
-        if not loc:
-            fileNames = pkg_resources.resource_listdir(__name__,'data')
-            testFiles = []
-            for name in fileNames:
-                pathName = pkg_resources.resource_filename(__name__,'data/{0}'.format(name))
-                testFiles.append(pathName)
-        else:
-            try:
-                testFiles = os.listdir(loc)
-            except OSError, e:
-                return {} 
+    def loadDefaultTestSolutionDict(self):
+        ## Works with pyinstaller
+        ## ---------------------------------------------------------------
+        #default_TestSolutionDir = getResourcePath('data')
+        #fileList = getTestSolutionFilesFromDir(default_TestSolutionDir)
+        ## ---------------------------------------------------------------
+        fileList = self.getTestSolutionFilesFromResources()
+        return file_tools.loadTestSolutionDict(fileList,tag='default')
 
-        testDict = {}
-        testFiles = [name for name in testFiles if '.yaml' in name]
-        for name in testFiles:
-            pathName = os.path.join(loc,name)
-            data = self.loadTestSolutionData(pathName)
-            if data is None:
-                continue
-            if tag:
-                key = '{0} ({1})'.format(data['name'],tag)
-            else:
-                key = data['name']
-            testDict[key] = pathName
-        return testDict
+    def loadUserTestSolutionDict(self):
+        userTestSolutionDir = file_tools.getUserTestSolutionDir(self.userHome)
+        fileList = file_tools.getTestSolutionFilesFromDir(userTestSolutionDir)
+        return file_tools.loadTestSolutionDict(fileList,tag='user')
 
-    def loadTestSolutionData(self, pathName): 
-        """
-        Loads test solution data form the given filename
-        """
-        try:
-            with open(pathName,'r') as fid:
-                data = yaml.load(fid)
-        except IOError, e:
-            print('Unable to read data file {0}'.format(name))
-            print(str(e))
-            data = None
-        return data
-        
+    def getTestSolutionFilesFromResources(self): 
+        fileNames = pkg_resources.resource_listdir(__name__,'data')
+        testFiles = []
+        for name in fileNames:
+            pathName = pkg_resources.resource_filename(__name__,'data/{0}'.format(name))
+            testFiles.append(pathName)
+        return testFiles
 
     def populateTestSolutionComboBox(self):
         """

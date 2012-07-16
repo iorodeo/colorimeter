@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'colorimeter_measurement.ui'
 #
-# Created: Fri Jul  6 19:13:30 2012
+# Created: Sun Jul 15 20:40:58 2012
 #      by: PyQt4 UI code generator 4.7.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -199,13 +199,17 @@ class Ui_MainWindow(object):
         self.actionLoad.setObjectName("actionLoad")
         self.actionSave = QtGui.QAction(MainWindow)
         self.actionSave.setObjectName("actionSave")
+        self.actionImportTestSolution = QtGui.QAction(MainWindow)
+        self.actionImportTestSolution.setObjectName("actionImportTestSolution")
+        self.actionRemoveTestSolution = QtGui.QAction(MainWindow)
+        self.actionRemoveTestSolution.setObjectName("actionRemoveTestSolution")
         self.menuFile.addAction(self.actionSave)
         self.menuFile.addAction(self.actionLoad)
         self.menuInclude.addAction(self.actionIncludeUserTestSolutions)
         self.menuInclude.addAction(self.actionIncludeDefaultTestSolutions)
         self.menuOptions.addAction(self.menuInclude.menuAction())
-        self.menuOptions.addAction(self.actionReloadTestSolutions)
-        self.menuOptions.addAction(self.actionEditTestSolutions)
+        self.menuOptions.addAction(self.actionImportTestSolution)
+        self.menuOptions.addAction(self.actionRemoveTestSolution)
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuOptions.menuAction())
 
@@ -227,13 +231,15 @@ class Ui_MainWindow(object):
         self.clearPushButton.setText(QtGui.QApplication.translate("MainWindow", "Clear", None, QtGui.QApplication.UnicodeUTF8))
         self.measurePushButton.setText(QtGui.QApplication.translate("MainWindow", "Measure", None, QtGui.QApplication.UnicodeUTF8))
         self.plotPushButton.setText(QtGui.QApplication.translate("MainWindow", "Plot", None, QtGui.QApplication.UnicodeUTF8))
-        self.menuFile.setTitle(QtGui.QApplication.translate("MainWindow", "File", None, QtGui.QApplication.UnicodeUTF8))
-        self.menuOptions.setTitle(QtGui.QApplication.translate("MainWindow", "Options", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuFile.setTitle(QtGui.QApplication.translate("MainWindow", "&File", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuOptions.setTitle(QtGui.QApplication.translate("MainWindow", "&Options", None, QtGui.QApplication.UnicodeUTF8))
         self.menuInclude.setTitle(QtGui.QApplication.translate("MainWindow", "Include", None, QtGui.QApplication.UnicodeUTF8))
         self.actionReloadTestSolutions.setText(QtGui.QApplication.translate("MainWindow", "Reload Test Solutions", None, QtGui.QApplication.UnicodeUTF8))
         self.actionEditTestSolutions.setText(QtGui.QApplication.translate("MainWindow", "Edit Test Solutions", None, QtGui.QApplication.UnicodeUTF8))
         self.actionIncludeUserTestSolutions.setText(QtGui.QApplication.translate("MainWindow", "User Test Solutions", None, QtGui.QApplication.UnicodeUTF8))
         self.actionIncludeDefaultTestSolutions.setText(QtGui.QApplication.translate("MainWindow", "Default Test Solutions", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionLoad.setText(QtGui.QApplication.translate("MainWindow", "&Load", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionSave.setText(QtGui.QApplication.translate("MainWindow", "&Save", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionLoad.setText(QtGui.QApplication.translate("MainWindow", "Load", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionSave.setText(QtGui.QApplication.translate("MainWindow", "Save", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionImportTestSolution.setText(QtGui.QApplication.translate("MainWindow", "Import Test Solution...", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionRemoveTestSolution.setText(QtGui.QApplication.translate("MainWindow", "Remove Test Solution...", None, QtGui.QApplication.UnicodeUTF8))
 

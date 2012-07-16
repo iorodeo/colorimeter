@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 import os 
 import sys 
 import math
@@ -20,14 +20,14 @@ from colorimeter_plot_gui_ui import Ui_MainWindow
 from colorimeter_serial import Colorimeter
 from colorimeter_common import file_tools
 
-DEVEL_FAKE_MEASURE = False 
+DEVEL_FAKE_MEASURE = True 
 DFLT_PORT_WINDOWS = 'com1' 
 DFLT_PORT_LINUX = '/dev/ttyACM0' 
+DFLT_LED_COLOR = 'red'
+COLOR2LED_DICT = {'red':0,'green':1,'blue': 2,'white': 3} 
 TABLE_MIN_ROW_COUNT = 4
 TABLE_COL_COUNT = 2
 FIT_TYPE = 'force_zero'
-DEFAULT_LED = 'red'
-COLOR2LED_DICT = {'red':0,'green':1,'blue': 2,'white': 3} 
 PLOT_FIGURE_NUM = 1
 NO_VALUE_SYMB = 'nan'
 
@@ -108,15 +108,13 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.portLineEdit.setText(self.port) 
         self.measIndex = 0
         self.dev = None
-        self.redRadioButton.setChecked(True)
-        self.currentColor = 'red'
         self.statusbar.showMessage('Not Connected')
         self.isCalibrated = False
         self.fig = None
+        self.setLEDColor(DFLT_LED_COLOR)
 
         # Set up data table
         self.cleanDataTable(setup=True)
-        self.setWidgetEnabled()
         self.cleanDataTable()
         self.isCalibrated = False
 
@@ -128,6 +126,7 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
                 '.iorodeo_colorimeter',
                 'data',
                 )
+        self.updateWidgetEnabled()
 
     def tableWidgetContextMenu_Callback(self,event):
         """
@@ -244,7 +243,7 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
                 QtGui.QMessageBox.critical(self,'Error', str(e))
             connected = False
             self.isCalibrated = False
-        self.setWidgetEnabled()
+        self.updateWidgetEnabled()
 
     def colorRadioButtonClicked_Callback(self,color):
         """
@@ -315,7 +314,7 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.measurePushButton.setFlat(False)
         ledNumber = COLOR2LED_DICT[self.currentColor]
         self.addDataToTable(abso[ledNumber],'',selectEdit=True)
-        self.setWidgetEnabled()
+        self.updateWidgetEnabled()
 
     def calibratePressed_Callback(self):
         self.measurePushButton.setEnabled(False)
@@ -329,7 +328,7 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
             self.dev.calibrate()
         self.isCalibrated = True
         self.calibratePushButton.setFlat(False)
-        self.setWidgetEnabled()
+        self.updateWidgetEnabled()
 
     def clearPressed_Callback(self):
         if len(self.tableWidget.item(0,1).text()):
@@ -343,7 +342,7 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
             erase_msg = "Clear all data?"
             self.cleanDataTable(msg=erase_msg)
         self.clearPushButton.setFlat(False)
-        self.setWidgetEnabled()
+        self.updateWidgetEnabled()
 
     def saveFile_Callback(self):
         """
@@ -372,14 +371,17 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         header = [
                 '# {0}'.format(timeStr),
                 '# Colorimeter Data', 
+                '# LED {0}'.format(self.currentColor),
                 '# -----------------------------', 
                 '# Absorbance  |  Concentration', 
                 ]
 
         with open(filename,'w') as f:
             f.write(os.linesep.join(header))
+            f.write(os.linessep)
             for x,y in dataList:
-                f.write("%s%s\t\t%s"%(os.linesep,x,y))
+                f.write('{0}\t\t{1}{2}'.format(x,y,os.linesep))
+            f.write('{0}'.format(os.linesep))
 
     def loadFile_Callback(self):
         """
@@ -397,12 +399,15 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         filename = str(filename)
         if not filename:
             return 
-        dataList = self.loadDataFromFile(filename)
-        self.setTableData(dataList)
-        if self.dev is None:
-            self.setWidgetEnabled()
+        dataList, ledColor = self.loadDataFromFile(filename)
+        if ledColor is None:
+            msgTitle = 'Import Warning'
+            msgText = 'Unable to determine LED color from data file'
+            QtGui.QMessageBox.warning(self,msgTitle, msgText)
         else:
-            self.setWidgetEnabled()
+            self.setLEDColor(ledColor)
+        self.setTableData(dataList)
+        self.updateWidgetEnabled()
 
     def exportData_Callback(self):
         """
@@ -412,7 +417,7 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         """
         dataList = self.getTableData()
 
-        if not dataList:
+        if len(dataList) < 2:
             msgTitle = 'Export Error'
             msgText = 'insufficient data for export'
             QtGui.QMessageBox.warning(self,msgTitle, msgText)
@@ -500,10 +505,20 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
             return 
 
         dataList = []
+        ledColor = None
+
         for line in fileLines:
             if not line:
                 continue
             line = line.split()
+            if 'LED' in line:
+                try:
+                    color = line[line.index('LED')+1].lower()
+                except IndexError, e:
+                    continue
+                if color in COLOR2LED_DICT:
+                    ledColor = color
+                continue
             if line[0] == '#':
                 continue
             try:
@@ -515,18 +530,18 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
             except ValueError:
                 conc = ''
             dataList.append((abso,conc))
-        return dataList
+
+        return dataList, ledColor
 
 
-    def setWidgetEnabled(self):
+    def updateWidgetEnabled(self):
         """
         Kind of messay -  perhaps this could be cleaned up a bit.
         """
         if self.dev is None:
-
             self.calibratePushButton.setEnabled(False)
             self.measurePushButton.setEnabled(False)
-            print(self.measIndex)
+            self.ledColorWidget.setEnabled(False)
             if self.measIndex > 0:
                 self.tableWidget.setEnabled(True)
                 self.plotPushButton.setEnabled(True)
@@ -537,10 +552,9 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
                 self.clearPushButton.setEnabled(False)
             self.portLineEdit.setEnabled(True)
             self.statusbar.showMessage('Not Connected')
-
         else:
-
             self.calibratePushButton.setEnabled(True)
+            self.ledColorWidget.setEnabled(True)
             if self.isCalibrated:
                 self.plotPushButton.setEnabled(True)
                 self.clearPushButton.setEnabled(True)
@@ -555,47 +569,15 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
                     self.tableWidget.setEnabled(False)
                     self.plotPushButton.setEnabled(False)
                     self.clearPushButton.setEnabled(False)
-
             self.portLineEdit.setEnabled(False)
             self.connectPushButton.setFlat(False)
             self.statusbar.showMessage('Connected, Mode: Stopped')
 
-    #def setWidgetEnabledOnDisconnect(self):
-
-    #    """
-    #    Enables/Disables the appropriate widgets for the when the device
-    #    is disconnected from the colorimeter.
-    #    """
-    #    self.calibratePushButton.setEnabled(False)
-    #    self.measurePushButton.setEnabled(False)
-    #    self.clearPushButton.setEnabled(False)
-    #    if self.measIndex > 0:
-    #        self.tableWidget.setEnabled(True)
-    #        self.plotPushButton.setEnabled(True)
-    #    else:
-    #        self.tableWidget.setEnabled(False)
-    #        self.plotPushButton.setEnabled(False)
-    #    self.portLineEdit.setEnabled(True)
-    #    self.statusbar.showMessage('Not Connected')
-
-    #def setWidgetEnabledOnConnect(self):
-    #    """
-    #    Enables/Disables the appropriate widgets for the case where the 
-    #    device is connected to the colorimeter.
-    #    """
-    #    self.calibratePushButton.setEnabled(True)
-    #    if self.isCalibrated:
-    #        self.plotPushButton.setEnabled(True)
-    #        self.clearPushButton.setEnabled(True)
-    #        self.measurePushButton.setEnabled(True)
-    #        self.tableWidget.setEnabled(True)
-    #    else:
-    #        if self.measIndex > 0:
-    #            self.tableWidget.setEnabled(True)
-    #            self.plotPushButton.setEnabled(True)
-    #    self.portLineEdit.setEnabled(False)
-    #    self.connectPushButton.setFlat(False)
-    #    self.statusbar.showMessage('Connected, Mode: Stopped')
+    def setLEDColor(self,color):
+        button = getattr(self,'{0}RadioButton'.format(color))
+        button.setChecked(True)
+        self.currentColor = color
+        
 
     def addDataToTable(self,abso,conc,selectEdit=False):
         """

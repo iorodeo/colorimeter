@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'colorimeter_plot_gui.ui'
 #
-# Created: Mon Jul 16 12:22:04 2012
+# Created: Mon Jul 16 13:15:31 2012
 #      by: PyQt4 UI code generator 4.7.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -49,16 +49,16 @@ class Ui_MainWindow(object):
         self.line.setFrameShadow(QtGui.QFrame.Sunken)
         self.line.setObjectName("line")
         self.verticalLayout.addWidget(self.line)
-        self.widget_2 = QtGui.QWidget(self.centralwidget)
+        self.ledColorWidget = QtGui.QWidget(self.centralwidget)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.widget_2.sizePolicy().hasHeightForWidth())
-        self.widget_2.setSizePolicy(sizePolicy)
-        self.widget_2.setObjectName("widget_2")
-        self.horizontalLayout_2 = QtGui.QHBoxLayout(self.widget_2)
+        sizePolicy.setHeightForWidth(self.ledColorWidget.sizePolicy().hasHeightForWidth())
+        self.ledColorWidget.setSizePolicy(sizePolicy)
+        self.ledColorWidget.setObjectName("ledColorWidget")
+        self.horizontalLayout_2 = QtGui.QHBoxLayout(self.ledColorWidget)
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
-        self.redRadioButton = QtGui.QRadioButton(self.widget_2)
+        self.redRadioButton = QtGui.QRadioButton(self.ledColorWidget)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -66,7 +66,7 @@ class Ui_MainWindow(object):
         self.redRadioButton.setSizePolicy(sizePolicy)
         self.redRadioButton.setObjectName("redRadioButton")
         self.horizontalLayout_2.addWidget(self.redRadioButton)
-        self.greenRadioButton = QtGui.QRadioButton(self.widget_2)
+        self.greenRadioButton = QtGui.QRadioButton(self.ledColorWidget)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -74,7 +74,7 @@ class Ui_MainWindow(object):
         self.greenRadioButton.setSizePolicy(sizePolicy)
         self.greenRadioButton.setObjectName("greenRadioButton")
         self.horizontalLayout_2.addWidget(self.greenRadioButton)
-        self.blueRadioButton = QtGui.QRadioButton(self.widget_2)
+        self.blueRadioButton = QtGui.QRadioButton(self.ledColorWidget)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -82,12 +82,12 @@ class Ui_MainWindow(object):
         self.blueRadioButton.setSizePolicy(sizePolicy)
         self.blueRadioButton.setObjectName("blueRadioButton")
         self.horizontalLayout_2.addWidget(self.blueRadioButton)
-        self.whiteRadioButton = QtGui.QRadioButton(self.widget_2)
+        self.whiteRadioButton = QtGui.QRadioButton(self.ledColorWidget)
         self.whiteRadioButton.setObjectName("whiteRadioButton")
         self.horizontalLayout_2.addWidget(self.whiteRadioButton)
         spacerItem1 = QtGui.QSpacerItem(134, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout_2.addItem(spacerItem1)
-        self.verticalLayout.addWidget(self.widget_2)
+        self.verticalLayout.addWidget(self.ledColorWidget)
         self.frame = QtGui.QFrame(self.centralwidget)
         self.frame.setFrameShape(QtGui.QFrame.StyledPanel)
         self.frame.setFrameShadow(QtGui.QFrame.Raised)

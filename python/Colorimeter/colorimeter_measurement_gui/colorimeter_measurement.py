@@ -24,7 +24,7 @@ from colorimeter_measurement_ui import Ui_MainWindow
 from colorimeter_serial import Colorimeter
 from colorimeter_common import file_tools
 
-DEVEL_FAKE_MEASURE = False 
+DEVEL_FAKE_MEASURE = True 
 
 DFLT_PORT_WINDOWS = 'com1' 
 DFLT_PORT_LINUX = '/dev/ttyACM0' 
@@ -38,6 +38,8 @@ PLOT_FIGURE_NUM = 1
 PLOT_BAR_WIDTH = 0.8
 PLOT_TEXT_Y_OFFSET = 0.01
 PLOT_YLIM_ADJUST = 1.15
+
+NO_VALUE_SYMBOL = '_NV_'
 
 class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
 
@@ -102,14 +104,6 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
 
         self.tableWidget.itemChanged.connect(self.tableWidgetItemChanged_Callback)
 
-    def saveFile_Callback(self):
-        print('saveFile_Callback')
-
-    def loadFile_Callback(self):
-        print('loadFile_Callback')
-
-    def editTestSolutions_Callback(self):
-        print('editTestSolutions_Callback')
 
     def initialize(self):
         """
@@ -136,7 +130,7 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.userHome = os.getenv('USERPROFILE')
         if self.userHome is None:
             self.userHome = os.getenv('HOME')
-        self.lastLogDir = self.userHome
+        self.lastSaveDir = self.userHome
         self.statusbar.showMessage('Not Connected')
 
         # Set default value for LED color
@@ -144,7 +138,6 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
 
         # Set up data table
         self.cleanDataTable(setup=True)
-        self.setWidgetEnabledOnDisconnect()
         concentrationStr = QtCore.QString.fromUtf8("Concentration (\xc2\xb5M)")
         self.tableWidget.setHorizontalHeaderLabels(('Sample', concentrationStr)) 
         self.tableWidget.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
@@ -159,12 +152,7 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.populateTestSolutionComboBox()
         self.testSolutionComboBox.setCurrentIndex(1)
 
-    def setLEDColor(self,color):
-        self.currentColor = color
-        button = getattr(self, '{0}RadioButton'.format(self.currentColor))
-        button.setChecked(True)
-        
-
+        self.updateWidgetEnabled()
 
     def tableWidgetItemChanged_Callback(self,item):
         print('tableWidgetItemChanged_Callback')
@@ -214,6 +202,7 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
 
         if plt.fignum_exists(PLOT_FIGURE_NUM):
             self.updatePlot()
+
     def copyTableWidgetData(self): 
         """
         Copies data from the table widget to the clipboard based on the current
@@ -272,7 +261,7 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
             self.coeff = getCoefficientFromData(data)
             self.coefficientLineEdit.setText('{0:1.1f}'.format(1.0e6*self.coeff))
             self.setLEDColor(data['led'])
-        self.setWidgetEnabledOnConnect()
+        self.updateWidgetEnabled()
 
     def portChanged_Callback(self):
         self.port = str(self.portLineEdit.text())
@@ -297,34 +286,14 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
                 self.portLineEdit.setEnabled(True)
                 connected = False
         else:
-            disconnect_msg = "Disconnecting will clear all data. Continue?"
-            response = self.cleanDataTable(msg=disconnect_msg)
-            if response == True:
-                self.connectPushButton.setText('Connect')
-                try:
-                    self.cleanUpAndCloseDevice()
-                except Exception, e:
-                    QtGui.QMessageBox.critical(self,'Error', str(e))
-                self.measIndex = 0
-                connected = False
-            if response == False:
-                connected = True
+            self.connectPushButton.setText('Connect')
+            try:
+                self.cleanUpAndCloseDevice()
+            except Exception, e:
+                QtGui.QMessageBox.critical(self,'Error', str(e))
+            connected = False
+        self.updateWidgetEnabled()
 
-        if connected:
-            self.setWidgetEnabledOnConnect()
-        else:
-            self.setWidgetEnabledOnDisconnect()
-
-    def closeEvent(self,event):
-        if self.fig is not None:
-            plt.close(self.fig)
-        if self.dev is not None:
-            self.cleanUpAndCloseDevice()
-        event.accept()
-
-    def cleanUpAndCloseDevice(self):
-        self.dev.close()
-        self.dev = None
 
     def cleanDataTable(self,setup=False,msg=''):
         """
@@ -368,7 +337,6 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
     def plotPushButton_Clicked(self):
         self.updatePlot(create=True)
 
-
     def calibratePressed_Callback(self):
         print('callibratePushButton_Pressed')
         self.measurePushButton.setEnabled(False)
@@ -383,7 +351,7 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
             self.dev.calibrate()
         self.isCalibrated = True
         self.calibratePushButton.setFlat(False)
-        self.setWidgetEnabledOnConnect()
+        self.updateWidgetEnabled()
 
     def measurePressed_Callback(self):
         print('measPushButton_Pressed')
@@ -432,8 +400,7 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
 
         if plt.fignum_exists(PLOT_FIGURE_NUM):
             self.updatePlot()
-
-        self.setWidgetEnabledOnConnect()
+        self.updateWidgetEnabled()
 
     def clearPressed_Callback(self):
         if len(self.tableWidget.item(0,1).text()):
@@ -445,41 +412,93 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         if len(self.tableWidget.item(0,1).text()):
             erase_msg = "Clear all data?"
             self.cleanDataTable(msg=erase_msg)
-        self.clearPushButton.setFlat(False)
-        self.setWidgetEnabledOnConnect()
+        self.clearPushButton.setFlat(False) 
+        self.updateWidgetEnabled()
 
-    def setWidgetEnabledOnDisconnect(self):
-        self.measurePushButton.setEnabled(False)
-        self.calibratePushButton.setEnabled(False)
-        self.plotPushButton.setEnabled(False)
-        self.clearPushButton.setEnabled(False)
-        self.tableWidget.setEnabled(False)
-        self.testSolutionWidget.setEnabled(False)
-        self.coeffLEDWidget.setEnabled(False)
-        self.portLineEdit.setEnabled(True)
-        self.statusbar.showMessage('Not Connected')
-        self.cleanDataTable()
-        self.isCalibrated = False
+    def saveFile_Callback(self):
+        # Ensure that there is data to save.
+        if self.measIndex <= 0: 
+            errMsgTitle = 'Save Error'
+            errMsg = 'No data to save'
+            QtGui.QMessageBox.warning(self,errMsgTitle, errMsg)
+            return
 
-    def setWidgetEnabledOnConnect(self):
-        self.testSolutionWidget.setEnabled(True)
-        if self.coeff is None:
-            self.calibratePushButton.setEnabled(False)
-        else:
-            self.calibratePushButton.setEnabled(True)
-        if self.isCalibrated and self.coeff is not None:
-            self.plotPushButton.setEnabled(True)
-            self.clearPushButton.setEnabled(True)
-            self.measurePushButton.setEnabled(True)
-            self.tableWidget.setEnabled(True)
-        else:
-            self.plotPushButton.setEnabled(False)
-            self.clearPushButton.setEnabled(False)
+        # Get filename
+        dialog = QtGui.QFileDialog()
+        dialog.setFileMode(QtGui.QFileDialog.AnyFile) 
+        fileName = dialog.getSaveFileName(
+                   None,
+                   'Select data file',
+                   self.lastSaveDir,
+                   options=QtGui.QFileDialog.DontUseNativeDialog,
+                   )              
+        fileName = str(fileName)
+        if not fileName:
+            return
+        self.lastSaveDir =  os.path.split(fileName)[0]
+        print(fileName)
+
+        dataList = self.getTableData(noValueSymb=NO_VALUE_SYMBOL) 
+        timeStr = time.strftime('%Y-%m-%d %H:%M:%S %Z') 
+        headerList = [ 
+                '# {0}%s'.format(timeStr), 
+                '# Colorimeter Data', 
+                '# LED {0}'.format(self.currentColor),
+                '# ----------------------------', 
+                '# Label    |    Concentration ',
+                ]
+        headerStr = os.linesep.join(headerList)
+
+        with open(fileName,'w') as fid:
+            fid.write('{0}{1}'.format(headerStr,os.linesep))
+            for x,y in dataList:
+                fid.write('{0} {1}{2}'.format(x,y,os.linesep))
+
+    def loadFile_Callback(self):
+        print('loadFile_Callback')
+
+    def editTestSolutions_Callback(self):
+        print('editTestSolutions_Callback')
+
+    def updateWidgetEnabled(self):
+        """
+        Updates the GUI widgets enabled properties based on the current
+        state of the program.
+        """
+        if self.dev is None:
             self.measurePushButton.setEnabled(False)
-            self.tableWidget.setEnabled(False)
-        self.portLineEdit.setEnabled(False)
-        self.connectPushButton.setFlat(False)
-        self.statusbar.showMessage('Connected, Mode: Stopped')
+            self.calibratePushButton.setEnabled(False)
+            if self.measIndex > 0:
+                self.clearPushButton.setEnabled(True)
+                self.plotPushButton.setEnabled(True)
+                self.tableWidget.setEnabled(True)
+            else:
+                self.clearPushButton.setEnabled(False)
+                self.plotPushButton.setEnabled(False)
+                self.tableWidget.setEnabled(False)
+            self.testSolutionWidget.setEnabled(False)
+            self.coeffLEDWidget.setEnabled(False)
+            self.portLineEdit.setEnabled(True)
+            self.statusbar.showMessage('Not Connected')
+        else:
+            self.testSolutionWidget.setEnabled(True)
+            if self.coeff is None:
+                self.calibratePushButton.setEnabled(False)
+            else:
+                self.calibratePushButton.setEnabled(True)
+            if self.isCalibrated and self.coeff is not None:
+                self.plotPushButton.setEnabled(True)
+                self.clearPushButton.setEnabled(True)
+                self.measurePushButton.setEnabled(True)
+                self.tableWidget.setEnabled(True)
+            else:
+                self.plotPushButton.setEnabled(False)
+                self.clearPushButton.setEnabled(False)
+                self.measurePushButton.setEnabled(False)
+                self.tableWidget.setEnabled(False)
+            self.portLineEdit.setEnabled(False)
+            self.connectPushButton.setFlat(False)
+            self.statusbar.showMessage('Connected, Mode: Stopped')
 
     def updatePlot(self,create=False):
 
@@ -494,28 +513,8 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         if not create and not plt.fignum_exists(PLOT_FIGURE_NUM):
             return
 
-        # Get list of concentration data
-        concList = []
-        for i in range(self.tableWidget.rowCount()):
-            item = self.tableWidget.item(i,1)
-            try:
-                value = float(item.text())
-                concList.append(value)
-            except ValueError, e:
-                errMsgTitle = 'Plot Error'
-                errMsg = 'Unable to convert value to float: {0}'.format(str(e))
-                QtGui.QMessageBox.warning(self,errMsgTitle, errMsg)
-                return
-
-        # Get list of label data
-        labelList = []
-        for i in range(self.tableWidget.rowCount()):
-            item = self.tableWidget.item(i,0)
-            label = str(item.text())
-            if not label:
-                labelList.append('{0}'.format(item.row()+1))
-            else:
-                labelList.append(label)
+        dataList = self.getTableData()
+        labelList, concList = zip(*dataList)
 
         # Create plot showing bar graph of data
         posList = range(1,len(concList)+1)
@@ -542,6 +541,39 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         ax.set_xlabel('Samples')
         plt.draw() 
 
+    def getTableData(self,noValueSymb=None):
+
+        concList = []
+        for i in range(self.tableWidget.rowCount()):
+            item = self.tableWidget.item(i,1)
+            try:
+                value = float(item.text())
+                concList.append(value)
+            except ValueError, e:
+                errMsgTitle = 'Plot Error'
+                errMsg = 'Unable to convert value to float: {0}'.format(str(e))
+                QtGui.QMessageBox.warning(self,errMsgTitle, errMsg)
+                return
+
+        labelList = []
+        for i in range(self.tableWidget.rowCount()):
+            item = self.tableWidget.item(i,0)
+            label = str(item.text())
+            if not label:
+                if noValueSymb is None:
+                    labelList.append('{0}'.format(item.row()+1))
+                else:
+                    labelList.append(NO_VALUE_SYMBOL)
+            else:
+                labelList.append(label)
+
+        dataList = zip(labelList, concList)
+        return dataList
+
+    def setLEDColor(self,color):
+        self.currentColor = color
+        button = getattr(self, '{0}RadioButton'.format(self.currentColor))
+        button.setChecked(True)
 
     def loadDefaultTestSolutionDict(self):
         """
@@ -603,6 +635,17 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         index = min([1,self.testSolutionComboBox.count()-1])
         self.testSolutionComboBox.setCurrentIndex(index)
         self.updateTestSolution(index)
+
+    def closeEvent(self,event):
+        if self.fig is not None:
+            plt.close(self.fig)
+        if self.dev is not None:
+            self.cleanUpAndCloseDevice()
+        event.accept()
+
+    def cleanUpAndCloseDevice(self):
+        self.dev.close()
+        self.dev = None
 
     def main(self):
         self.show()

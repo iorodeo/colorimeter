@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'colorimeter_plot_gui.ui'
 #
-# Created: Sun Jul 15 20:23:20 2012
+# Created: Mon Jul 16 12:22:04 2012
 #      by: PyQt4 UI code generator 4.7.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -151,10 +151,13 @@ class Ui_MainWindow(object):
         self.actionExport.setObjectName("actionExport")
         self.actionImport = QtGui.QAction(MainWindow)
         self.actionImport.setObjectName("actionImport")
+        self.actionEditTestSolutions = QtGui.QAction(MainWindow)
+        self.actionEditTestSolutions.setObjectName("actionEditTestSolutions")
         self.menuFile.addAction(self.actionSave)
         self.menuFile.addAction(self.actionLoad)
         self.menuOptions.addAction(self.actionExport)
         self.menuOptions.addAction(self.actionImport)
+        self.menuOptions.addAction(self.actionEditTestSolutions)
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuOptions.menuAction())
 
@@ -178,6 +181,7 @@ class Ui_MainWindow(object):
         self.actionSave.setText(QtGui.QApplication.translate("MainWindow", "Save...", None, QtGui.QApplication.UnicodeUTF8))
         self.action_About.setText(QtGui.QApplication.translate("MainWindow", "About...", None, QtGui.QApplication.UnicodeUTF8))
         self.actionLoad.setText(QtGui.QApplication.translate("MainWindow", "Load...", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionExport.setText(QtGui.QApplication.translate("MainWindow", "Export...", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionImport.setText(QtGui.QApplication.translate("MainWindow", "Import...", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionExport.setText(QtGui.QApplication.translate("MainWindow", "Export Test Solution...", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionImport.setText(QtGui.QApplication.translate("MainWindow", "Import Test Solution...", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionEditTestSolutions.setText(QtGui.QApplication.translate("MainWindow", "Edit Test Solutions...", None, QtGui.QApplication.UnicodeUTF8))
 

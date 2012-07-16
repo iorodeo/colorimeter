@@ -259,6 +259,7 @@
     </property>
     <addaction name="actionExport"/>
     <addaction name="actionImport"/>
+    <addaction name="actionEditTestSolutions"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuOptions"/>
@@ -281,12 +282,17 @@
   </action>
   <action name="actionExport">
    <property name="text">
-    <string>Export...</string>
+    <string>Export Test Solution...</string>
    </property>
   </action>
   <action name="actionImport">
    <property name="text">
-    <string>Import...</string>
+    <string>Import Test Solution...</string>
+   </property>
+  </action>
+  <action name="actionEditTestSolutions">
+   <property name="text">
+    <string>Edit Test Solutions...</string>
    </property>
   </action>
  </widget>

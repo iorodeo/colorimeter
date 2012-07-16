@@ -623,7 +623,8 @@ def getCoefficientFromData(data):
     yArray = numpy.array(yList)
     numer = (xArray*yArray).sum()
     denom = (xArray*xArray).sum()
-    coeff = numer/denom
+    slope = numer/denom
+    coeff = 1.0/slope
     return coeff 
 
 def getResourcePath(relative_path): 

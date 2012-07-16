@@ -112,7 +112,9 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
 
         # Set up data table
         self.cleanDataTable(setup=True)
-        self.setWidgetEnabledOnDisconnect()
+        self.setWidgetEnabled()
+        self.cleanDataTable()
+        self.isCalibrated = False
 
         self.tableWidget.setHorizontalHeaderLabels(('Concentration','Absorbance')) 
         self.tableWidget.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
@@ -231,23 +233,14 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
                 self.portLineEdit.setEnabled(True)
                 connected = False
         else:
-            disconnect_msg = "Disconnecting will clear all data. Continue?"
-            response = self.cleanDataTable(msg=disconnect_msg)
-            if response == True:
-                self.connectPushButton.setText('Connect')
-                try:
-                    self.cleanUpAndCloseDevice()
-                except Exception, e:
-                    QtGui.QMessageBox.critical(self,'Error', str(e))
-                self.measIndex = 0
-                connected = False
-            if response == False:
-                connected = True
-
-        if connected:
-            self.setWidgetEnabledOnConnect()
-        else:
-            self.setWidgetEnabledOnDisconnect()
+            self.connectPushButton.setText('Connect')
+            try:
+                self.cleanUpAndCloseDevice()
+            except Exception, e:
+                QtGui.QMessageBox.critical(self,'Error', str(e))
+            connected = False
+            self.isCalibrated = False
+        self.setWidgetEnabled()
 
     def colorRadioButtonClicked_Callback(self,color):
         """
@@ -318,7 +311,7 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.measurePushButton.setFlat(False)
         ledNumber = COLOR2LED_DICT[self.currentColor]
         self.addDataToTable(abso[ledNumber],'',selectEdit=True)
-        self.setWidgetEnabledOnConnect()
+        self.setWidgetEnabled()
 
     def calibratePressed_Callback(self):
         self.measurePushButton.setEnabled(False)
@@ -332,7 +325,7 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
             self.dev.calibrate()
         self.isCalibrated = True
         self.calibratePushButton.setFlat(False)
-        self.setWidgetEnabledOnConnect()
+        self.setWidgetEnabled()
 
     def clearPressed_Callback(self):
         if len(self.tableWidget.item(0,1).text()):
@@ -346,7 +339,7 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
             erase_msg = "Clear all data?"
             self.cleanDataTable(msg=erase_msg)
         self.clearPushButton.setFlat(False)
-        self.setWidgetEnabledOnConnect()
+        self.setWidgetEnabled()
 
     def saveFile_Callback(self):
         """
@@ -402,6 +395,10 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
             return 
         dataList = self.loadDataFromFile(filename)
         self.setTableData(dataList)
+        if self.dev is None:
+            self.setWidgetEnabled()
+        else:
+            self.setWidgetEnabled()
 
     def exportData_Callback(self):
         """
@@ -516,35 +513,85 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
             dataList.append((abso,conc))
         return dataList
 
-    def setWidgetEnabledOnDisconnect(self):
-        """
-        Enables/Disables the appropriate widgets for the when the device
-        is disconnected from the colorimeter.
-        """
-        self.calibratePushButton.setEnabled(False)
-        self.measurePushButton.setEnabled(False)
-        self.plotPushButton.setEnabled(False)
-        self.clearPushButton.setEnabled(False)
-        self.tableWidget.setEnabled(False)
-        self.portLineEdit.setEnabled(True)
-        self.statusbar.showMessage('Not Connected')
-        self.cleanDataTable()
-        self.isCalibrated = False
 
-    def setWidgetEnabledOnConnect(self):
+    def setWidgetEnabled(self):
         """
-        Enables/Disables the appropriate widgets for the case where the 
-        device is connected to the colorimeter.
+        Kind of messay -  perhaps this could be cleaned up a bit.
         """
-        self.calibratePushButton.setEnabled(True)
-        if self.isCalibrated:
-            self.plotPushButton.setEnabled(True)
-            self.clearPushButton.setEnabled(True)
-            self.measurePushButton.setEnabled(True)
-            self.tableWidget.setEnabled(True)
-        self.portLineEdit.setEnabled(False)
-        self.connectPushButton.setFlat(False)
-        self.statusbar.showMessage('Connected, Mode: Stopped')
+        if self.dev is None:
+
+            self.calibratePushButton.setEnabled(False)
+            self.measurePushButton.setEnabled(False)
+            print(self.measIndex)
+            if self.measIndex > 0:
+                self.tableWidget.setEnabled(True)
+                self.plotPushButton.setEnabled(True)
+                self.clearPushButton.setEnabled(True)
+            else:
+                self.tableWidget.setEnabled(False)
+                self.plotPushButton.setEnabled(False)
+                self.clearPushButton.setEnabled(False)
+            self.portLineEdit.setEnabled(True)
+            self.statusbar.showMessage('Not Connected')
+
+        else:
+
+            self.calibratePushButton.setEnabled(True)
+            if self.isCalibrated:
+                self.plotPushButton.setEnabled(True)
+                self.clearPushButton.setEnabled(True)
+                self.measurePushButton.setEnabled(True)
+                self.tableWidget.setEnabled(True)
+            else:
+                if self.measIndex > 0:
+                    self.tableWidget.setEnabled(True)
+                    self.plotPushButton.setEnabled(True)
+                    self.clearPushButton.setEnabled(True)
+                else:
+                    self.tableWidget.setEnabled(False)
+                    self.plotPushButton.setEnabled(False)
+                    self.clearPushButton.setEnabled(False)
+
+            self.portLineEdit.setEnabled(False)
+            self.connectPushButton.setFlat(False)
+            self.statusbar.showMessage('Connected, Mode: Stopped')
+
+    #def setWidgetEnabledOnDisconnect(self):
+
+    #    """
+    #    Enables/Disables the appropriate widgets for the when the device
+    #    is disconnected from the colorimeter.
+    #    """
+    #    self.calibratePushButton.setEnabled(False)
+    #    self.measurePushButton.setEnabled(False)
+    #    self.clearPushButton.setEnabled(False)
+    #    if self.measIndex > 0:
+    #        self.tableWidget.setEnabled(True)
+    #        self.plotPushButton.setEnabled(True)
+    #    else:
+    #        self.tableWidget.setEnabled(False)
+    #        self.plotPushButton.setEnabled(False)
+    #    self.portLineEdit.setEnabled(True)
+    #    self.statusbar.showMessage('Not Connected')
+
+    #def setWidgetEnabledOnConnect(self):
+    #    """
+    #    Enables/Disables the appropriate widgets for the case where the 
+    #    device is connected to the colorimeter.
+    #    """
+    #    self.calibratePushButton.setEnabled(True)
+    #    if self.isCalibrated:
+    #        self.plotPushButton.setEnabled(True)
+    #        self.clearPushButton.setEnabled(True)
+    #        self.measurePushButton.setEnabled(True)
+    #        self.tableWidget.setEnabled(True)
+    #    else:
+    #        if self.measIndex > 0:
+    #            self.tableWidget.setEnabled(True)
+    #            self.plotPushButton.setEnabled(True)
+    #    self.portLineEdit.setEnabled(False)
+    #    self.connectPushButton.setFlat(False)
+    #    self.statusbar.showMessage('Connected, Mode: Stopped')
 
     def addDataToTable(self,abso,conc,selectEdit=False):
         """

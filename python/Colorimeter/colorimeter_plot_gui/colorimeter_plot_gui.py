@@ -591,12 +591,14 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
             concStr = '{0:f}'.format(conc)
         else:
             concStr = ''
+
         if rowCount > TABLE_MIN_ROW_COUNT:
             self.tableWidget.setRowCount(rowCount)
         tableItem = QtGui.QTableWidgetItem()
         tableItem.setText(absoStr)
         tableItem.setFlags(QtCore.Qt.ItemIsSelectable|QtCore.Qt.ItemIsEnabled)
         self.tableWidget.setItem(self.measIndex,1,tableItem)
+
         tableItem = QtGui.QTableWidgetItem()
         tableItem.setText(concStr)
         self.tableWidget.setItem(self.measIndex,0,tableItem)

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'colorimeter_measurement.ui'
 #
-# Created: Mon Jul 16 12:29:00 2012
+# Created: Mon Jul 16 18:35:04 2012
 #      by: PyQt4 UI code generator 4.7.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -135,7 +135,7 @@ class Ui_MainWindow(object):
         self.frame.setObjectName("frame")
         self.horizontalLayout_4 = QtGui.QHBoxLayout(self.frame)
         self.horizontalLayout_4.setObjectName("horizontalLayout_4")
-        self.tableWidget = QtGui.QTableWidget(self.frame)
+        self.tableWidget = ColorimeterTableWidget(self.frame)
         self.tableWidget.setEditTriggers(QtGui.QAbstractItemView.AnyKeyPressed|QtGui.QAbstractItemView.DoubleClicked|QtGui.QAbstractItemView.SelectedClicked)
         self.tableWidget.setAlternatingRowColors(True)
         self.tableWidget.setSelectionMode(QtGui.QAbstractItemView.ContiguousSelection)
@@ -242,3 +242,4 @@ class Ui_MainWindow(object):
         self.actionRemoveTestSolution.setText(QtGui.QApplication.translate("MainWindow", "Remove Test Solution...", None, QtGui.QApplication.UnicodeUTF8))
         self.actionEditTestSolutions.setText(QtGui.QApplication.translate("MainWindow", "Edit Test Solutions...", None, QtGui.QApplication.UnicodeUTF8))
 
+from colorimeter_common.table_widget import ColorimeterTableWidget

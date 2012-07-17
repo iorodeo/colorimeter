@@ -85,24 +85,24 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.actionLoad.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_L)
         self.actionEditTestSolutions.triggered.connect(self.editTestSolutions_Callback)
 
-        self.tableWidget.contextMenuEvent = self.tableWidgetContextMenu_Callback
+        #self.tableWidget.contextMenuEvent = self.tableWidgetContextMenu_Callback
 
-        self.tableWidget_CopyAction = QtGui.QAction(self.tableWidget)
-        self.tableWidget_CopyAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_C)
-        self.tableWidget_CopyAction.triggered.connect(self.copyTableWidgetData)
-        self.tableWidget.addAction(self.tableWidget_CopyAction)
+        #self.tableWidget_CopyAction = QtGui.QAction(self.tableWidget)
+        #self.tableWidget_CopyAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_C)
+        #self.tableWidget_CopyAction.triggered.connect(self.copyTableWidgetData)
+        #self.tableWidget.addAction(self.tableWidget_CopyAction)
 
-        self.tableWidget_DeleteAction = QtGui.QAction(self.tableWidget)
-        self.tableWidget_DeleteAction.setShortcut(QtCore.Qt.Key_Delete)
-        self.tableWidget_DeleteAction.triggered.connect(self.deleteTableWidgetData)
-        self.tableWidget.addAction(self.tableWidget_DeleteAction)
+        #self.tableWidget_DeleteAction = QtGui.QAction(self.tableWidget)
+        #self.tableWidget_DeleteAction.setShortcut(QtCore.Qt.Key_Delete)
+        #self.tableWidget_DeleteAction.triggered.connect(self.deleteTableWidgetData)
+        #self.tableWidget.addAction(self.tableWidget_DeleteAction)
 
-        self.tableWidget_BackspaceAction = QtGui.QAction(self.tableWidget)
-        self.tableWidget_BackspaceAction.setShortcut(QtCore.Qt.Key_Backspace)
-        self.tableWidget_BackspaceAction.triggered.connect(self.deleteTableWidgetData)
-        self.tableWidget.addAction(self.tableWidget_BackspaceAction)
+        #self.tableWidget_BackspaceAction = QtGui.QAction(self.tableWidget)
+        #self.tableWidget_BackspaceAction.setShortcut(QtCore.Qt.Key_Backspace)
+        #self.tableWidget_BackspaceAction.triggered.connect(self.deleteTableWidgetData)
+        #self.tableWidget.addAction(self.tableWidget_BackspaceAction)
 
-        self.tableWidget.itemChanged.connect(self.tableWidgetItemChanged_Callback)
+        #self.tableWidget.itemChanged.connect(self.tableWidgetItemChanged_Callback)
 
 
     def initialize(self):
@@ -112,7 +112,7 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         """
 
         self.dev = None
-        self.measIndex = 0
+        #self.measIndex = 0
         self.isCalibrated = False
         self.coeff = None
         self.fig = None
@@ -137,7 +137,8 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.setLEDColor(DFLT_LED_COLOR)
 
         # Set up data table
-        self.cleanDataTable(setup=True)
+        self.tableWidget.updateFunc = self.updatePlot
+        self.tableWidget.cleanDataTable(setup=True)
         concentrationStr = QtCore.QString.fromUtf8("Concentration (\xc2\xb5M)")
         self.tableWidget.setHorizontalHeaderLabels(('Sample', concentrationStr)) 
         self.tableWidget.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
@@ -154,91 +155,91 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
 
         self.updateWidgetEnabled()
 
-    def tableWidgetItemChanged_Callback(self,item):
-        print('tableWidgetItemChanged_Callback')
-        if item.column() == 0:
-            self.updatePlot()
+    #def tableWidgetItemChanged_Callback(self,item):
+    #    print('tableWidgetItemChanged_Callback')
+    #    if item.column() == 0:
+    #        self.updatePlot()
 
-    def tableWidgetContextMenu_Callback(self,event):
-        """
-        Callback function for the table widget context menus. Currently
-        handles copy and delete actions.
-        """
-        menu = QtGui.QMenu(self)
-        copyAction = menu.addAction("Copy")
-        deleteAction = menu.addAction("Delete")
-        action = menu.exec_(self.tableWidget.mapToGlobal(event.pos()))
-        if action == copyAction:
-            self.copyTableWidgetData()
-        if action == deleteAction:
-            self.deleteTableWidgetData()
+    #def tableWidgetContextMenu_Callback(self,event):
+    #    """
+    #    Callback function for the table widget context menus. Currently
+    #    handles copy and delete actions.
+    #    """
+    #    menu = QtGui.QMenu(self)
+    #    copyAction = menu.addAction("Copy")
+    #    deleteAction = menu.addAction("Delete")
+    #    action = menu.exec_(self.tableWidget.mapToGlobal(event.pos()))
+    #    if action == copyAction:
+    #        self.copyTableWidgetData()
+    #    if action == deleteAction:
+    #        self.deleteTableWidgetData()
 
-    def deleteTableWidgetData(self):
-        """
-        Deletes data from the table widget based on the current selection.
-        """
-        removeList = []
-        for i in range(self.tableWidget.rowCount()):
-            item0 = self.tableWidget.item(i,0)
-            item1 = self.tableWidget.item(i,1)
-            if self.tableWidget.isItemSelected(item0):
-                if not self.tableWidget.isItemSelected(item1):
-                    item0.setText("")
-            if self.tableWidget.isItemSelected(item1):
-                removeList.append(item1.row())
+    #def deleteTableWidgetData(self):
+    #    """
+    #    Deletes data from the table widget based on the current selection.
+    #    """
+    #    removeList = []
+    #    for i in range(self.tableWidget.rowCount()):
+    #        item0 = self.tableWidget.item(i,0)
+    #        item1 = self.tableWidget.item(i,1)
+    #        if self.tableWidget.isItemSelected(item0):
+    #            if not self.tableWidget.isItemSelected(item1):
+    #                item0.setText("")
+    #        if self.tableWidget.isItemSelected(item1):
+    #            removeList.append(item1.row())
 
-        for ind in reversed(removeList):
-            if self.measIndex > 0:
-                self.measIndex-=1
-            self.tableWidget.removeRow(ind)
+    #    for ind in reversed(removeList):
+    #        if self.measIndex > 0:
+    #            self.measIndex-=1
+    #        self.tableWidget.removeRow(ind)
 
-        if self.tableWidget.rowCount() < TABLE_MIN_ROW_COUNT:
-            self.tableWidget.setRowCount(TABLE_MIN_ROW_COUNT)
-            for row in range(self.measIndex,TABLE_MIN_ROW_COUNT): 
-                for col in range(0,TABLE_COL_COUNT): 
-                    tableItem = QtGui.QTableWidgetItem() 
-                    tableItem.setFlags(QtCore.Qt.NoItemFlags) 
-                    self.tableWidget.setItem(row,col,tableItem)
+    #    if self.tableWidget.rowCount() < TABLE_MIN_ROW_COUNT:
+    #        self.tableWidget.setRowCount(TABLE_MIN_ROW_COUNT)
+    #        for row in range(self.measIndex,TABLE_MIN_ROW_COUNT): 
+    #            for col in range(0,TABLE_COL_COUNT): 
+    #                tableItem = QtGui.QTableWidgetItem() 
+    #                tableItem.setFlags(QtCore.Qt.NoItemFlags) 
+    #                self.tableWidget.setItem(row,col,tableItem)
 
-        if plt.fignum_exists(PLOT_FIGURE_NUM):
-            self.updatePlot()
+    #    if plt.fignum_exists(PLOT_FIGURE_NUM):
+    #        self.updatePlot()
 
-    def copyTableWidgetData(self): 
-        """
-        Copies data from the table widget to the clipboard based on the current
-        selection.
-        """
-        selectedList = self.getTableWidgetSelectedList()
+    #def copyTableWidgetData(self): 
+    #    """
+    #    Copies data from the table widget to the clipboard based on the current
+    #    selection.
+    #    """
+    #    selectedList = self.getTableWidgetSelectedList()
 
-        # Create string to send to clipboard
-        clipboardList = []
-        for j, rowList in enumerate(selectedList):
-            for i, value in enumerate(rowList):
-                if not value:
-                    clipboardList.append('{0}'.format(j))
-                else:
-                    clipboardList.append(value)
-                if i < len(rowList)-1:
-                    clipboardList.append(" ")
-            clipboardList.append('\r\n')
-        clipboardStr = ''.join(clipboardList)
-        clipboard = QtGui.QApplication.clipboard()
-        clipboard.setText(clipboardStr)
+    #    # Create string to send to clipboard
+    #    clipboardList = []
+    #    for j, rowList in enumerate(selectedList):
+    #        for i, value in enumerate(rowList):
+    #            if not value:
+    #                clipboardList.append('{0}'.format(j))
+    #            else:
+    #                clipboardList.append(value)
+    #            if i < len(rowList)-1:
+    #                clipboardList.append(" ")
+    #        clipboardList.append('\r\n')
+    #    clipboardStr = ''.join(clipboardList)
+    #    clipboard = QtGui.QApplication.clipboard()
+    #    clipboard.setText(clipboardStr)
 
-    def getTableWidgetSelectedList(self):
-        """
-        Returns list of select items in the table widget. Note, assumes that
-        selection mode for the table is ContiguousSelection.
-        """
-        selectedList = []
-        for i in range(self.tableWidget.rowCount()): 
-            rowList = []
-            for j in range(self.tableWidget.columnCount()):
-                item = self.tableWidget.item(i,j)
-                if self.tableWidget.isItemSelected(item):
-                    rowList.append(str(item.text()))
-            selectedList.append(rowList)
-        return selectedList
+    #def getTableWidgetSelectedList(self):
+    #    """
+    #    Returns list of select items in the table widget. Note, assumes that
+    #    selection mode for the table is ContiguousSelection.
+    #    """
+    #    selectedList = []
+    #    for i in range(self.tableWidget.rowCount()): 
+    #        rowList = []
+    #        for j in range(self.tableWidget.columnCount()):
+    #            item = self.tableWidget.item(i,j)
+    #            if self.tableWidget.isItemSelected(item):
+    #                rowList.append(str(item.text()))
+    #        selectedList.append(rowList)
+    #    return selectedList
 
     def testSolutionChanged_Callback(self,index):
         print('testSolutionChanged_Callback', index)
@@ -295,43 +296,41 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.updateWidgetEnabled()
 
 
-    def cleanDataTable(self,setup=False,msg=''):
-        """
-        Removes any existing data from the table widget. If setup is False then
-        I dialog request confirmation if presented. 
-        """
-        if setup:
-            reply = QtGui.QMessageBox.Yes
-        elif len(self.tableWidget.item(0,1).text()):
-            reply = QtGui.QMessageBox.question( self, 'Message', msg, 
-                    QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
-        else: 
-            return True
-
-        if reply == QtGui.QMessageBox.Yes:
-            if self.fig is not None:
-                plt.close(self.fig)
-                self.fig = None
-            self.tableWidget.setRowCount(TABLE_MIN_ROW_COUNT)
-            self.tableWidget.setColumnCount(TABLE_COL_COUNT)
-            for row in range(TABLE_MIN_ROW_COUNT+1):
-                for col in range(TABLE_COL_COUNT+1):
-                    tableItem = QtGui.QTableWidgetItem()
-                    tableItem.setFlags(QtCore.Qt.NoItemFlags)
-                    self.tableWidget.setItem(row,col,tableItem)
-            self.measIndex = 0
-            return True
-        else:
-            return False
+#    def cleanDataTable(self,setup=False,msg=''):
+#        """
+#        Removes any existing data from the table widget. If setup is False then
+#        I dialog request confirmation if presented. 
+#        """
+#        if setup:
+#            reply = QtGui.QMessageBox.Yes
+#        elif len(self.tableWidget.item(0,1).text()):
+#            reply = QtGui.QMessageBox.question( self, 'Message', msg, 
+#                    QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
+#        else: 
+#            return True
+#
+#        if reply == QtGui.QMessageBox.Yes:
+#            if self.fig is not None:
+#                plt.close(self.fig)
+#                self.fig = None
+#            self.tableWidget.setRowCount(TABLE_MIN_ROW_COUNT)
+#            #self.tableWidget.setColumnCount(TABLE_COL_COUNT)
+#            for row in range(TABLE_MIN_ROW_COUNT+1):
+#                for col in range(TABLE_COL_COUNT+1):
+#                    tableItem = QtGui.QTableWidgetItem()
+#                    tableItem.setFlags(QtCore.Qt.NoItemFlags)
+#                    self.tableWidget.setItem(row,col,tableItem)
+#            self.measIndex = 0
+#            return True
+#        else:
+#            return False
 
     def colorRadioButton_Clicked(self,color):
         if len(self.tableWidget.item(0,1).text()):
             chn_msg = "Changing channels will clear all data. Continue?"
-            response = self.cleanDataTable(msg=chn_msg)
+            response = self.tableWidget.cleanDataTable(msg=chn_msg)
             if not response:
-                color = self.currentColor
-                button = getattr(self,'{0}RadioButton'.format(color))
-                button.setChecked(True)
+                self.setLEDColor(self.currentColor)
         self.currentColor = color
 
     def plotPushButton_Clicked(self):
@@ -361,7 +360,7 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
 
     def measureClicked_Callback(self):
 
-        rowCount = self.measIndex+1
+        rowCount = self.tableWidget.measIndex+1
         ledNumber = COLOR2LED_DICT[self.currentColor]
 
         if DEVEL_FAKE_MEASURE:  
@@ -411,7 +410,7 @@ class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
     def clearClicked_Callback(self):
         if len(self.tableWidget.item(0,1).text()):
             erase_msg = "Clear all data?"
-            self.cleanDataTable(msg=erase_msg)
+            self.tableWidget.cleanDataTable(msg=erase_msg)
         self.clearPushButton.setFlat(False) 
         self.updateWidgetEnabled()
 

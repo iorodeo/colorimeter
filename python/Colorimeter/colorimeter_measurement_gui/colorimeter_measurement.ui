@@ -254,7 +254,7 @@
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_4">
        <item>
-        <widget class="QTableWidget" name="tableWidget">
+        <widget class="ColorimeterTableWidget" name="tableWidget">
          <property name="editTriggers">
           <set>QAbstractItemView::AnyKeyPressed|QAbstractItemView::DoubleClicked|QAbstractItemView::SelectedClicked</set>
          </property>
@@ -417,6 +417,13 @@
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ColorimeterTableWidget</class>
+   <extends>QTableWidget</extends>
+   <header>colorimeter_common.table_widget</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

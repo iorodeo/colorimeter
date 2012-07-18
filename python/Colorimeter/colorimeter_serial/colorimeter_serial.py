@@ -15,7 +15,7 @@ RSP_SUCCESS = 1
 
 class Colorimeter(serial.Serial):
 
-    def __init__(self, port, timeout=10.0, debug=False):
+    def __init__(self, port, timeout=10.0, debug=True):
         params = {'baudrate': 9600, 'timeout': timeout}
         super(Colorimeter,self).__init__(port,**params)
         time.sleep(RESET_SLEEP_T)
@@ -38,7 +38,11 @@ class Colorimeter(serial.Serial):
         if self.debug:
             print('cmd: ', cmd)
             print('rsp: ', rsp)
-        rsp = eval(rsp.strip())
+        try:
+            rsp = eval(rsp.strip())
+        except SyntaxError:
+            raise IOError, 'bad response unable to parse result'
+
         if rsp[0] == RSP_ERROR:
             raise IOError, 'bad response: {0}'.format(rsp)
         return rsp
@@ -47,7 +51,7 @@ class Colorimeter(serial.Serial):
         """
         Calibrate the colorimeter.
         """
-        cmd = '[{0}]'.format(CMD_CALIBRATE)
+        cmd = '[{0}]'.format(CMD_CALIBRATE) 
         rsp = self.sendCmd(cmd)
 
     def getCalibration(self):

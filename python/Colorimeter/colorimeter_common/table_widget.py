@@ -1,15 +1,15 @@
 from PyQt4 import QtCore
 from PyQt4 import QtGui
+from constants import TABLE_MIN_ROW_COUNT
+from constants import TABLE_COL_COUNT
 
-MIN_ROW_COUNT = 1
-COL_COUNT = 2 
 
 class ColorimeterTableWidget(QtGui.QTableWidget):
 
     def __init__(self,parent=None):
         super(ColorimeterTableWidget,self).__init__(parent=parent)
         self.measIndex = 0
-        self.minRowCount = MIN_ROW_COUNT
+        self.minRowCount = TABLE_MIN_ROW_COUNT
         self.contextMenuEvent = self.ContextMenu_Callback
         self.copyAction = QtGui.QAction(self)
         self.copyAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_C)
@@ -25,11 +25,12 @@ class ColorimeterTableWidget(QtGui.QTableWidget):
         self.addAction(self.backspaceAction)
         self.itemChanged.connect(self.itemChanged_Callback)
 
-        self.setColumnCount(COL_COUNT)
+        self.setColumnCount(TABLE_COL_COUNT)
         self.setRowCount(self.minRowCount)
+        self.updateFlag = True
 
     def itemChanged_Callback(self,item):
-        if item.column() == 0:
+        if self.updateFlag:
             self.updateFunc()
 
     def ContextMenu_Callback(self,event):
@@ -65,10 +66,10 @@ class ColorimeterTableWidget(QtGui.QTableWidget):
                 self.measIndex-=1
             self.removeRow(ind)
 
-        if self.rowCount() < MIN_ROW_COUNT:
-            self.setRowCount(MIN_ROW_COUNT)
-            for row in range(self.measIndex,MIN_ROW_COUNT): 
-                for col in range(0,COL_COUNT): 
+        if self.rowCount() < TABLE_MIN_ROW_COUNT:
+            self.setRowCount(TABLE_MIN_ROW_COUNT)
+            for row in range(self.measIndex,TABLE_MIN_ROW_COUNT): 
+                for col in range(0,TABLE_COL_COUNT): 
                     tableItem = QtGui.QTableWidgetItem() 
                     tableItem.setFlags(QtCore.Qt.NoItemFlags) 
                     self.setItem(row,col,tableItem)
@@ -80,7 +81,7 @@ class ColorimeterTableWidget(QtGui.QTableWidget):
         Copies data from the table widget to the clipboard based on the current
         selection.
         """
-        selectedList = self.getTableWidgetSelectedList()
+        selectedList = self.getSelectedList()
 
         # Create string to send to clipboard
         clipboardList = []
@@ -112,7 +113,7 @@ class ColorimeterTableWidget(QtGui.QTableWidget):
             selectedList.append(rowList)
         return selectedList
 
-    def cleanDataTable(self,setup=False,msg=''):
+    def clean(self,setup=False,msg=''):
         """
         Removes any existing data from the table widget. If setup is False then
         I dialog request confirmation if presented. 
@@ -126,43 +127,74 @@ class ColorimeterTableWidget(QtGui.QTableWidget):
             return True
 
         if reply == QtGui.QMessageBox.Yes:
-            #if self.fig is not None:
-            #    plt.close(self.fig)
-            #    self.fig = None
-            self.setRowCount(MIN_ROW_COUNT)
-            self.setColumnCount(COL_COUNT)
-            for row in range(MIN_ROW_COUNT+1):
-                for col in range(COL_COUNT+1):
+            self.updateFlag = False
+            self.setRowCount(TABLE_MIN_ROW_COUNT)
+            self.setColumnCount(TABLE_COL_COUNT)
+            for row in range(TABLE_MIN_ROW_COUNT+1):
+                for col in range(TABLE_COL_COUNT+1):
                     tableItem = QtGui.QTableWidgetItem()
                     tableItem.setFlags(QtCore.Qt.NoItemFlags)
                     self.setItem(row,col,tableItem)
             self.measIndex = 0
+            self.updateFlag = True
             return True
         else:
             return False
 
-    def addDataToTable(self,item0,item1,selectEdit=False):
+    def addData(self,item0,item1,selectAndEdit=False):
         """
         Added data to table widget. If selectEdit is set to True then the
         concetration element is selected and opened for editing by the
         user.
         """
+        self.updateFlag = False
         rowCount = self.measIndex+1
         if rowCount > self.minRowCount:
-            self.tableWidget.setRowCount(rowCount)
+            self.setRowCount(rowCount)
         tableItem = QtGui.QTableWidgetItem()
         tableItem.setText(item1)
         tableItem.setFlags(QtCore.Qt.ItemIsSelectable|QtCore.Qt.ItemIsEnabled)
-        self.tableWidget.setItem(self.measIndex,1,tableItem)
+        self.setItem(self.measIndex,1,tableItem)
 
         tableItem = QtGui.QTableWidgetItem()
         tableItem.setText(item0)
-        self.tableWidget.setItem(self.measIndex,0,tableItem)
-        if selectEdit:
+        self.setItem(self.measIndex,0,tableItem)
+        if selectAndEdit:
             tableItem.setSelected(True)
-            self.tableWidget.setCurrentCell(self.measIndex,0)
-            self.tableWidget.editItem(self.tableWidget.currentItem()) 
+            self.setCurrentCell(self.measIndex,0)
+            self.editItem(self.currentItem()) 
         self.measIndex+=1
+        self.updateFlag = True
+
+    def getData(self,noValueInclude=True,noValueSymb=None):
+        """
+        Get data from table widget. Data is returned as a list as rows
+        from the data table.
+        """
+        dataList = []
+        for i in range(self.measIndex):
+            item0 = self.item(i,0)
+            try:
+                value0 = str(item0.text())
+            except AttributeError:
+                value0 = None
+            if not value0: 
+                if noValueInclude: 
+                    if noValueSymb is None:
+                        value0 = '{0}'.format(item0.row()+1)
+                    else:
+                        value0 = NO_VALUE_SYMBOL
+                else:
+                    continue
+            item1 = self.item(i,1)
+            if item1 is None:
+                continue
+            try:
+                value1 = str(item1.text())
+            except AttributeError:
+                continue
+            dataList.append((value0,value1))
+        return dataList
 
     def updateFunc(self):
         pass

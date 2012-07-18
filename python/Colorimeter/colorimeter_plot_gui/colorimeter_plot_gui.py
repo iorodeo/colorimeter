@@ -1,8 +1,7 @@
-
 import os 
 import sys 
 import math
-import platform
+#import platform
 import functools
 import random 
 import time
@@ -17,106 +16,81 @@ from PyQt4 import QtCore
 from PyQt4 import QtGui
 
 from colorimeter_plot_gui_ui import Ui_MainWindow 
-from colorimeter_serial import Colorimeter
-from colorimeter_common import file_tools
+#from colorimeter_serial import Colorimeter
+from colorimeter_common import constants
+from colorimeter_common import import_export 
+from colorimeter_common import standard_curve
+from colorimeter_common.main_window import MainWindowCommon
 
-DEVEL_FAKE_MEASURE = True 
-DFLT_PORT_WINDOWS = 'com1' 
-DFLT_PORT_LINUX = '/dev/ttyACM0' 
-DFLT_LED_COLOR = 'red'
-COLOR2LED_DICT = {'red':0,'green':1,'blue': 2,'white': 3} 
-TABLE_MIN_ROW_COUNT = 4
-TABLE_COL_COUNT = 2
-FIT_TYPE = 'force_zero'
-PLOT_FIGURE_NUM = 1
-NO_VALUE_SYMB = 'nan'
-
-class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
+#class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
+class ColorimeterPlotMainWindow(MainWindowCommon, Ui_MainWindow):
 
     def __init__(self,parent=None):
         super(ColorimeterPlotMainWindow,self).__init__(parent)
-        self.color2LED_Dict = COLOR2LED_DICT
         self.setupUi(self)
         self.connectActions()
         self.initialize()
 
     def connectActions(self):
-        self.portLineEdit.editingFinished.connect(self.portChanged_Callback)
-        self.connectPushButton.pressed.connect(self.connectPressed_Callback)
-        self.connectPushButton.clicked.connect(self.connectClicked_Callback)
-        self.calibratePushButton.pressed.connect(self.calibratePressed_Callback)
-        self.calibratePushButton.clicked.connect(self.calibrateClicked_Callback)
-        self.measurePushButton.clicked.connect(self.measureClicked_Callback)
-        self.measurePushButton.pressed.connect(self.measurePressed_Callback)
-        self.clearPushButton.pressed.connect(self.clearPressed_Callback)
-        self.clearPushButton.clicked.connect(self.clearClicked_Callback)
+        super(ColorimeterPlotMainWindow,self).connectActions()
+        #self.portLineEdit.editingFinished.connect(self.portChanged_Callback)
+        #self.connectPushButton.pressed.connect(self.connectPressed_Callback)
+        #self.connectPushButton.clicked.connect(self.connectClicked_Callback)
+        #self.calibratePushButton.pressed.connect(self.calibratePressed_Callback)
+        #self.calibratePushButton.clicked.connect(self.calibrateClicked_Callback)
+        #self.measurePushButton.clicked.connect(self.measureClicked_Callback)
+        #self.measurePushButton.pressed.connect(self.measurePressed_Callback)
+        #self.clearPushButton.pressed.connect(self.clearPressed_Callback)
+        #self.clearPushButton.clicked.connect(self.clearClicked_Callback)
 
-        for color in self.color2LED_Dict:
-            button = getattr(self,'{0}RadioButton'.format(color))
-            callback = functools.partial(self.colorRadioButtonClicked_Callback, color)
-            button.clicked.connect(callback)
-        self.plotPushButton.clicked.connect(self.plotPushButtonClicked_Callback)
+        #for color in constants.COLOR2LED_DICT:
+        #    button = getattr(self,'{0}RadioButton'.format(color))
+        #    callback = functools.partial(self.colorRadioButtonClicked_Callback, color)
+        #    button.clicked.connect(callback)
+        #self.plotPushButton.clicked.connect(self.plotPushButtonClicked_Callback)
 
-        self.actionSave.triggered.connect(self.saveFile_Callback)
-        self.actionSave.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_S)
-
-        self.actionLoad.triggered.connect(self.loadFile_Callback)
-        self.actionLoad.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_L)
+        #self.actionSave.triggered.connect(self.saveFile_Callback)
+        #self.actionSave.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_S)
+        #self.actionLoad.triggered.connect(self.loadFile_Callback)
+        #self.actionLoad.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_L)
+        #self.actionEditTestSolutions.triggered.connect(self.editTestSolutions_Callback)
 
         self.actionExport.triggered.connect(self.exportData_Callback)
         self.actionExport.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_E)
-
         self.actionImport.triggered.connect(self.importData_Callback)
         self.actionImport.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_I)
-        self.actionEditTestSolutions.triggered.connect(self.editTestSolutions_Callback)
-
         itemDelegate = DoubleItemDelegate(self.tableWidget)
         self.tableWidget.setItemDelegateForColumn(0,itemDelegate)
 
-        self.tableWidget.contextMenuEvent = self.tableWidgetContextMenu_Callback
-
-        self.tableWidget_CopyAction = QtGui.QAction(self.tableWidget)
-        self.tableWidget_CopyAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_C)
-        self.tableWidget_CopyAction.triggered.connect(self.copyTableWidgetData)
-        self.tableWidget.addAction(self.tableWidget_CopyAction)
-
-        self.tableWidget_DeleteAction = QtGui.QAction(self.tableWidget)
-        self.tableWidget_DeleteAction.setShortcut(QtCore.Qt.Key_Delete)
-        self.tableWidget_DeleteAction.triggered.connect(self.deleteTableWidgetData)
-        self.tableWidget.addAction(self.tableWidget_DeleteAction)
-
-        self.tableWidget_BackspaceAction = QtGui.QAction(self.tableWidget)
-        self.tableWidget_BackspaceAction.setShortcut(QtCore.Qt.Key_Backspace)
-        self.tableWidget_BackspaceAction.triggered.connect(self.deleteTableWidgetData)
-        self.tableWidget.addAction(self.tableWidget_BackspaceAction)
 
     def editTestSolutions_Callback(self):
         print('editTestSolutions_Callback')
 
+    def importData_Callback(self):
+        print('importData_Callback')
+
         
     def initialize(self):
-        osType = platform.system()
-        if osType == 'Linux': 
-            self.port = DFLT_PORT_LINUX 
-        else: 
-            self.port = DFLT_PORT_WINDOWS 
-        self.userHome = os.getenv('USERPROFILE')
-        if self.userHome is None:
-            self.userHome = os.getenv('HOME')
-        self.lastLogDir = self.userHome
-            
-        self.portLineEdit.setText(self.port) 
-        self.measIndex = 0
-        self.dev = None
-        self.statusbar.showMessage('Not Connected')
-        self.isCalibrated = False
-        self.fig = None
-        self.setLEDColor(DFLT_LED_COLOR)
+        super(ColorimeterPlotMainWindow,self).initialize()
+        #self.dev = None
+        #self.fig = None
+        #self.isCalibrated = False
+
+        #osType = platform.system()
+        #if osType == 'Linux': 
+        #    self.port = constants.DFLT_PORT_LINUX 
+        #else: 
+        #    self.port = constants.DFLT_PORT_WINDOWS 
+        #self.userHome = os.getenv('USERPROFILE')
+        #if self.userHome is None:
+        #    self.userHome = os.getenv('HOME')
+        #self.lastSaveDir = self.userHome
+        #self.statusbar.showMessage('Not Connected')
+        #self.portLineEdit.setText(self.port) 
+        #self.setLEDColor(constants.DFLT_LED_COLOR)
 
         # Set up data table
-        self.cleanDataTable(setup=True)
-        self.cleanDataTable()
-        self.isCalibrated = False
+        self.tableWidget.clean(setup=True)
 
         self.tableWidget.setHorizontalHeaderLabels(('Concentration','Absorbance')) 
         self.tableWidget.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
@@ -128,122 +102,40 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
                 )
         self.updateWidgetEnabled()
 
-    def tableWidgetContextMenu_Callback(self,event):
-        """
-        Callback function for the table widget context menus. Currently
-        handles copy and delete actions.
-        """
-        menu = QtGui.QMenu(self)
-        copyAction = menu.addAction("Copy")
-        deleteAction = menu.addAction("Delete")
-        action = menu.exec_(self.tableWidget.mapToGlobal(event.pos()))
-        if action == copyAction:
-            self.copyTableWidgetData()
-        if action == deleteAction:
-            self.deleteTableWidgetData()
+#    def portChanged_Callback(self):
+#        self.port = str(self.portLineEdit.text())
 
-    def deleteTableWidgetData(self):
-        """
-        Deletes data from the table widget based on the current selection.
-        """
-        removeList = []
-        for i in range(self.tableWidget.rowCount()):
-            item0 = self.tableWidget.item(i,0)
-            item1 = self.tableWidget.item(i,1)
-            if self.tableWidget.isItemSelected(item0):
-                if not self.tableWidget.isItemSelected(item1):
-                    item0.setText("")
-            if self.tableWidget.isItemSelected(item1):
-                removeList.append(item1.row())
+#    def connectPressed_Callback(self):
+#        if self.dev == None:
+#            self.connectPushButton.setText('Disconnect')
+#            self.connectPushButton.setFlat(True)
+#            self.portLineEdit.setEnabled(False)
+#            self.statusbar.showMessage('Connecting...')
 
-        for ind in reversed(removeList):
-            if self.measIndex > 0:
-                self.measIndex-=1
-            self.tableWidget.removeRow(ind)
-
-        if self.tableWidget.rowCount() < TABLE_MIN_ROW_COUNT:
-            self.tableWidget.setRowCount(TABLE_MIN_ROW_COUNT)
-            for row in range(self.measIndex,TABLE_MIN_ROW_COUNT): 
-                for col in range(0,TABLE_COL_COUNT): 
-                    tableItem = QtGui.QTableWidgetItem() 
-                    tableItem.setFlags(QtCore.Qt.NoItemFlags) 
-                    self.tableWidget.setItem(row,col,tableItem)
-
-        if plt.fignum_exists(PLOT_FIGURE_NUM):
-            self.updatePlot()
-
-    def copyTableWidgetData(self): 
-        """
-        Copies data from the table widget to the clipboard based on the current
-        selection.
-        """
-        selectedList = self.getTableWidgetSelectedList()
-
-        # Create string to send to clipboard
-        clipboardList = []
-        for j, rowList in enumerate(selectedList):
-            for i, value in enumerate(rowList):
-                if not value:
-                    clipboardList.append('{0}'.format(j))
-                else:
-                    clipboardList.append(value)
-                if i < len(rowList)-1:
-                    clipboardList.append(" ")
-            clipboardList.append(os.linesep)
-        clipboardStr = ''.join(clipboardList)
-        clipboard = QtGui.QApplication.clipboard()
-        clipboard.setText(clipboardStr)
-
-    def getTableWidgetSelectedList(self):
-        """
-        Returns list of select items in the table widget. Note, assumes that
-        selection mode for the table is ContiguousSelection.
-        """
-        selectedList = []
-        for i in range(self.tableWidget.rowCount()): 
-            rowList = []
-            for j in range(self.tableWidget.columnCount()):
-                item = self.tableWidget.item(i,j)
-                if self.tableWidget.isItemSelected(item):
-                    rowList.append(str(item.text()))
-            selectedList.append(rowList)
-        return selectedList
-
-
-    def portChanged_Callback(self):
-        self.port = str(self.portLineEdit.text())
-
-    def connectPressed_Callback(self):
-        if self.dev == None:
-            self.connectPushButton.setText('Disconnect')
-            self.connectPushButton.setFlat(True)
-            self.portLineEdit.setEnabled(False)
-            self.statusbar.showMessage('Connecting...')
-
-    def connectClicked_Callback(self):
-        """
-        Connect/Disconnect to colorimeter device.
-        """
-        if self.dev == None:
-            try:
-                self.dev = Colorimeter(self.port)
-                self.numSamples = self.dev.getNumSamples()
-                connected = True
-            except Exception, e:
-                QtGui.QMessageBox.critical(self,'Error', str(e))
-                self.connectPushButton.setText('Connect')
-                self.statusbar.showMessage('Not Connected')
-                self.portLineEdit.setEnabled(True)
-                connected = False
-        else:
-            self.connectPushButton.setText('Connect')
-            try:
-                self.cleanUpAndCloseDevice()
-            except Exception, e:
-                QtGui.QMessageBox.critical(self,'Error', str(e))
-            connected = False
-            self.isCalibrated = False
-        self.updateWidgetEnabled()
+#    def connectClicked_Callback(self):
+#        """
+#        Connect/Disconnect to colorimeter device.
+#        """
+#        if self.dev == None:
+#            try:
+#                self.dev = Colorimeter(self.port)
+#                self.numSamples = self.dev.getNumSamples()
+#                connected = True
+#            except Exception, e:
+#                QtGui.QMessageBox.critical(self,'Error', str(e))
+#                self.connectPushButton.setText('Connect')
+#                self.statusbar.showMessage('Not Connected')
+#                self.portLineEdit.setEnabled(True)
+#                connected = False
+#        else:
+#            self.connectPushButton.setText('Connect')
+#            try:
+#                self.cleanUpAndCloseDevice()
+#            except Exception, e:
+#                QtGui.QMessageBox.critical(self,'Error', str(e))
+#            connected = False
+#            self.isCalibrated = False
+#        self.updateWidgetEnabled()
 
     def colorRadioButtonClicked_Callback(self,color):
         """
@@ -251,25 +143,25 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         """
         if len(self.tableWidget.item(0,1).text()):
             chn_msg = "Changing channels will clear all data. Continue?"
-            response = self.cleanDataTable(msg=chn_msg)
+            response = self.tableWidget.clean(msg=chn_msg)
             if not response:
                 color = self.currentColor
-                button = getattr(self,'{0}RadioButton'.format(color))
-                button.setChecked(True)
+                self.setLEDColor(color)
         self.currentColor = color
-        print(color)
 
     def plotPushButtonClicked_Callback(self):
         """
         Plots the data in the table widget. 
         """
-        dataList = self.getTableData()
+        dataList = self.tableWidget.getData(noValueInclude=False)
+        dataList = dataListToFloat(dataList)
         if not dataList:
             return
-        yList = [x for x,y in dataList]
-        xList = [y for x,y in dataList]
 
-        if FIT_TYPE == 'force_zero': 
+        xList = [x for x,y in dataList]
+        yList = [y for x,y in dataList]
+
+        if constants.FIT_TYPE == 'force_zero': 
             xArray = numpy.array(xList)
             yArray = numpy.array(yList)
             numer = (xArray*yArray).sum()
@@ -284,7 +176,7 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
             slope = polyFit[0]
 
         plt.clf()
-        self.fig = plt.figure(PLOT_FIGURE_NUM)
+        self.fig = plt.figure(constants.PLOT_FIGURE_NUM)
         self.fig.canvas.manager.set_window_title('Colorimeter Plot')
         ax = self.fig.add_subplot(111)
         hFit = ax.plot(xFit,yFit,'r')
@@ -307,13 +199,14 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         """
         Takes a measurement from the colorimeter. 
         """
-        if DEVEL_FAKE_MEASURE:
+        if constants.DEVEL_FAKE_MEASURE:
             abso = (random.random(),)*4
         else:
             freq, trans, abso = self.dev.getMeasurement()
         self.measurePushButton.setFlat(False)
-        ledNumber = COLOR2LED_DICT[self.currentColor]
-        self.addDataToTable(abso[ledNumber],'',selectEdit=True)
+        ledNumber = constants.COLOR2LED_DICT[self.currentColor]
+        absoStr = '{0:1.2f}'.format(abso[ledNumber])
+        self.tableWidget.addData('',absoStr,selectAndEdit=True)
         self.updateWidgetEnabled()
 
     def calibratePressed_Callback(self):
@@ -324,7 +217,7 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.statusbar.showMessage('Connected, Mode: Calibrating...')
 
     def calibrateClicked_Callback(self):
-        if not DEVEL_FAKE_MEASURE: 
+        if not constants.DEVEL_FAKE_MEASURE: 
             self.dev.calibrate()
         self.isCalibrated = True
         self.calibratePushButton.setFlat(False)
@@ -340,7 +233,7 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
     def clearClicked_Callback(self):
         if len(self.tableWidget.item(0,1).text()):
             erase_msg = "Clear all data?"
-            self.cleanDataTable(msg=erase_msg)
+            self.tableWidget.clean(msg=erase_msg)
         self.clearPushButton.setFlat(False)
         self.updateWidgetEnabled()
 
@@ -359,13 +252,13 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         filename = dialog.getSaveFileName(
                    None,
                    'Select data file',
-                   self.lastLogDir,
+                   self.lastSaveDir,
                    options=QtGui.QFileDialog.DontUseNativeDialog,
                    )              
         filename = str(filename)
         if not filename:
             return
-        self.lastLogDir =  os.path.split(filename)[0]
+        self.lastSaveDir =  os.path.split(filename)[0]
 
         timeStr = time.strftime('%Y-%m-%d %H:%M:%S %Z') 
         header = [
@@ -378,9 +271,9 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
 
         with open(filename,'w') as f:
             f.write(os.linesep.join(header))
-            f.write(os.linessep)
+            f.write(os.linesep)
             for x,y in dataList:
-                f.write('{0}\t\t{1}{2}'.format(x,y,os.linesep))
+                f.write('{0}  {1}{2}'.format(x,y,os.linesep))
             f.write('{0}'.format(os.linesep))
 
     def loadFile_Callback(self):
@@ -393,7 +286,7 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         filename = dialog.getOpenFileName(
                    None,
                    'Select data file',
-                   self.lastLogDir,
+                   self.lastSaveDir,
                    options=QtGui.QFileDialog.DontUseNativeDialog,
                    )              
         filename = str(filename)
@@ -433,7 +326,7 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
             return
 
         solutionName = str(solutionName)
-        if not file_tools.isUniqueSolutionName(self.userHome,solutionName):
+        if not import_export.isUniqueSolutionName(self.userHome,solutionName):
             msg = 'User Test solution, {0}, already exists - overwrite?'.format(solutionName)
             reply = QtGui.QMessageBox.question(
                     self,
@@ -445,10 +338,10 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
             if reply == QtGui.QMessageBox.No:
                 return
             else:
-                file_tools.deleteTestSolution(self.userHome,solutionName)
+                import_export.deleteTestSolution(self.userHome,solutionName)
 
         dateStr = time.strftime('%Y-%m-%d %H:%M:%S %Z')
-        file_tools.exportTestSolutionData(
+        import_export.exportTestSolutionData(
                 self.userHome,
                 solutionName,
                 dataList,
@@ -456,39 +349,16 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
                 dateStr,
                 )
 
-    def importData_Callback(self):
-        print('importData_Callback')
-
-    def getTableData(self,addNoValueSymb=False):
-        """
-        Get data items from table widget - replace missing concentratino
-        values with the no value symbol.
-        """
-        dataList = []
-        for i in range(self.measIndex):
-            concTableItem = self.tableWidget.item(i,0)
-            absoTableItem = self.tableWidget.item(i,1)
-            try:
-                abso = float(absoTableItem.text())
-            except ValueError, e:
-                continue
-            try:
-                conc = float(concTableItem.text())
-            except ValueError, e:
-                if addNoValueSymb:
-                    conc = NO_VALUE_SYMB 
-                else:
-                    continue
-            dataList.append((abso,conc))
-        return dataList
-
     def setTableData(self,dataList):
         """
         Set data item in the table widget from the given dataList.
         """
-        self.cleanDataTable(setup=True)
+        print('setTableData')
+        self.tableWidget.clean(setup=True)
         for abso, conc in dataList:
-            self.addDataToTable(abso,conc)
+            concStr = str(conc)
+            absoStr = '{0:1.2f}'.format(abso)
+            self.tableWidget.addData(concStr,absoStr)
 
     def loadDataFromFile(self,filename):
         """
@@ -516,7 +386,7 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
                     color = line[line.index('LED')+1].lower()
                 except IndexError, e:
                     continue
-                if color in COLOR2LED_DICT:
+                if color in constants.COLOR2LED_DICT:
                     ledColor = color
                 continue
             if line[0] == '#':
@@ -542,7 +412,7 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
             self.calibratePushButton.setEnabled(False)
             self.measurePushButton.setEnabled(False)
             self.ledColorWidget.setEnabled(False)
-            if self.measIndex > 0:
+            if self.tableWidget.measIndex > 0:
                 self.tableWidget.setEnabled(True)
                 self.plotPushButton.setEnabled(True)
                 self.clearPushButton.setEnabled(True)
@@ -561,7 +431,7 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
                 self.measurePushButton.setEnabled(True)
                 self.tableWidget.setEnabled(True)
             else:
-                if self.measIndex > 0:
+                if self.tableWidget.measIndex > 0:
                     self.tableWidget.setEnabled(True)
                     self.plotPushButton.setEnabled(True)
                     self.clearPushButton.setEnabled(True)
@@ -579,59 +449,6 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.currentColor = color
         
 
-    def addDataToTable(self,abso,conc,selectEdit=False):
-        """
-        Added data to table widget. If selectEdit is set to True then the
-        concetration element is selected and opened for editing by the
-        user.
-        """
-        rowCount = self.measIndex+1
-        absoStr = '{0:1.2f}'.format(abso)
-        if type(conc) == float and not math.isnan(conc):
-            concStr = '{0:f}'.format(conc)
-        else:
-            concStr = ''
-
-        if rowCount > TABLE_MIN_ROW_COUNT:
-            self.tableWidget.setRowCount(rowCount)
-        tableItem = QtGui.QTableWidgetItem()
-        tableItem.setText(absoStr)
-        tableItem.setFlags(QtCore.Qt.ItemIsSelectable|QtCore.Qt.ItemIsEnabled)
-        self.tableWidget.setItem(self.measIndex,1,tableItem)
-
-        tableItem = QtGui.QTableWidgetItem()
-        tableItem.setText(concStr)
-        self.tableWidget.setItem(self.measIndex,0,tableItem)
-        if selectEdit:
-            tableItem.setSelected(True)
-            self.tableWidget.setCurrentCell(self.measIndex,0)
-            self.tableWidget.editItem(self.tableWidget.currentItem()) 
-        self.measIndex+=1
-
-    def cleanDataTable(self,setup=False,msg=''):
-        """
-        Removes all data form the data table widget. If setup is False the user
-        is prompted and asked if they really want to clear all data.
-        """
-        if setup:
-            reply = QtGui.QMessageBox.Yes
-        elif len(self.tableWidget.item(0,1).text()):
-            reply = QtGui.QMessageBox.question(self,'Message', msg, 
-                    QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
-        else: 
-            return True
-        if reply == QtGui.QMessageBox.Yes:
-            self.tableWidget.setRowCount(TABLE_MIN_ROW_COUNT)
-            self.tableWidget.setColumnCount(TABLE_COL_COUNT)
-            for row in range(0,TABLE_MIN_ROW_COUNT):
-                for col in range(0,TABLE_COL_COUNT):
-                    tableItem = QtGui.QTableWidgetItem()
-                    tableItem.setFlags(QtCore.Qt.NoItemFlags)
-                    self.tableWidget.setItem(row,col,tableItem)
-            self.measIndex = 0
-            return True
-        else:
-            return False
 
     def closeEvent(self,event):
         if self.dev is not None:
@@ -644,6 +461,16 @@ class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
 
     def main(self):
         self.show()
+
+def dataListToFloat(dataList):
+    dataListFloat = []
+    for x,y in dataList:
+        try:
+            x, y = float(x), float(y)
+        except ValueError:
+            continue
+        dataListFloat.append((x,y))
+    return dataListFloat
 
 def plotGuiMain():
     """

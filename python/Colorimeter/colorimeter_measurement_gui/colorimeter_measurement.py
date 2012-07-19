@@ -46,6 +46,8 @@ class MeasurementMainWindow(MainWindowWithTable, Ui_MainWindow):
     def initialize(self):
         super(MeasurementMainWindow,self).initialize()
         self.coeff = None
+        self.noValueSymbol = constants.NO_VALUE_SYMBOL_LABEL
+        self.saveFileReverseOrder = False
 
         # Set up data table
         self.tableWidget.clean(setup=True)
@@ -95,48 +97,17 @@ class MeasurementMainWindow(MainWindowWithTable, Ui_MainWindow):
         self.measurePushButton.setFlat(False)
         self.tableWidget.addData('',concStr,selectAndEdit=True)
 
-    def saveFile_Callback(self):
-        if self.tableWidget.measIndex <= 0: 
-            errMsgTitle = 'Save Error'
-            errMsg = 'No data to save'
-            QtGui.QMessageBox.warning(self,errMsgTitle, errMsg)
-            return
-
-        dialog = QtGui.QFileDialog()
-        dialog.setFileMode(QtGui.QFileDialog.AnyFile) 
-        fileName = dialog.getSaveFileName(
-                   None,
-                   'Select data file',
-                   self.lastSaveDir,
-                   options=QtGui.QFileDialog.DontUseNativeDialog,
-                   )              
-        fileName = str(fileName)
-        if not fileName:
-            return
-        self.lastSaveDir =  os.path.split(fileName)[0]
-        print(fileName)
-
-        dataList = self.tableWidget.getData(noValueSymb=constants.NO_VALUE_SYMBOL_LABEL) 
+    def getSaveFileHeader(self):
         timeStr = time.strftime('%Y-%m-%d %H:%M:%S %Z') 
         headerList = [ 
-                '# {0}%s'.format(timeStr), 
+                '# {0}'.format(timeStr), 
                 '# Colorimeter Data', 
                 '# LED {0}'.format(self.currentColor),
                 '# ----------------------------', 
                 '# Label    |    Concentration ',
                 ]
         headerStr = os.linesep.join(headerList)
-
-        with open(fileName,'w') as fid:
-            fid.write('{0}{1}'.format(headerStr,os.linesep))
-            for x,y in dataList:
-                fid.write('{0} {1}{2}'.format(x,y,os.linesep))
-
-    def loadFile_Callback(self):
-        print('loadFile_Callback')
-
-    def editTestSolutions_Callback(self):
-        print('editTestSolutions_Callback')
+        return headerStr
 
     def updateWidgetEnabled(self):
         """
@@ -278,6 +249,18 @@ class MeasurementMainWindow(MainWindowWithTable, Ui_MainWindow):
         index = min([1,self.testSolutionComboBox.count()-1])
         self.testSolutionComboBox.setCurrentIndex(index)
         self.updateTestSolution(index)
+
+    def setTableData(self,dataList):
+        dataList = dataListToLabelAndFloat(dataList)
+        self.tableWidget.clean(setup=True)
+        for label, conc in dataList:
+            if label == self.noValueSymbol:
+                label = ''
+            else:
+                label = str(label)
+            conc = str(conc)
+            self.tableWidget.addData(label,conc)
+        pass
 
 def dataListToLabelAndFloat(dataList):
     dataListNew = []

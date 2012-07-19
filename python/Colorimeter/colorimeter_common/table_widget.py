@@ -183,7 +183,7 @@ class ColorimeterTableWidget(QtGui.QTableWidget):
                     if noValueSymb is None:
                         value0 = '{0}'.format(item0.row()+1)
                     else:
-                        value0 = NO_VALUE_SYMBOL
+                        value0 = noValueSymb 
                 else:
                     continue
             item1 = self.item(i,1)

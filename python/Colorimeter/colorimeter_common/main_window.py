@@ -25,6 +25,25 @@ class MainWindowCommon(QtGui.QMainWindow):
 
 class MainWindowWithTable(MainWindowCommon):
 
+    # Temporary
+    # -------------------------------------------------------------------------
+    def updatePlot(self):
+        pass
+
+    def editTestSolutions_Callback(self):
+        pass
+
+    def getMeasurement(self):
+        pass
+
+    def setTableData(self):
+        pass
+
+    def updateWidgetEnabled(self):
+        # Figure out the common elements here
+        pass
+    # -------------------------------------------------------------------------
+
     def __init__(self,parent=None):
         super(MainWindowWithTable,self).__init__(parent)
         print('MainWindowWithTable.__init__')
@@ -61,6 +80,7 @@ class MainWindowWithTable(MainWindowCommon):
         self.dev = None
         self.fig = None
         self.isCalibrated = False
+        self.saveFileReverseOrder = False
 
         # Set default port based on system
         osType = platform.system()
@@ -81,14 +101,99 @@ class MainWindowWithTable(MainWindowCommon):
         self.tableWidget.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
         self.user_TestSolutionDir = os.path.join(self.userHome,constants.USER_DATA_DIR)
 
+
     def saveFile_Callback(self):
-        pass
+        if self.tableWidget.measIndex <= 0:
+            msgTitle = 'Save Error'
+            msgText = 'No data to save.'
+            QtGui.QMessageBox.warning(self,msgTitle, msgText)
+            return
+        dialog = QtGui.QFileDialog()
+        dialog.setFileMode(QtGui.QFileDialog.AnyFile) 
+        filename = dialog.getSaveFileName(
+                   None,
+                   'Select data file',
+                   self.lastSaveDir,
+                   options=QtGui.QFileDialog.DontUseNativeDialog,
+                   )              
+        filename = str(filename)
+        if not filename:
+            return
+        self.lastSaveDir =  os.path.split(filename)[0]
+        dataList = self.tableWidget.getData(noValueSymb=self.noValueSymbol)
+        headerStr = self.getSaveFileHeader()
+        with open(filename,'w') as f:
+            f.write(headerStr)
+            f.write(os.linesep)
+            for x,y in dataList:
+                if self.saveFileReverseOrder:
+                    f.write('{0}  {1}{2}'.format(y,x,os.linesep))
+                else:
+                    f.write('{0}  {1}{2}'.format(x,y,os.linesep))
+
 
     def loadFile_Callback(self):
-        pass
+        """
+        Load data in table from a text file.
+        """
+        dialog = QtGui.QFileDialog()
+        dialog.setFileMode(QtGui.QFileDialog.AnyFile) 
+        filename = dialog.getOpenFileName(
+                   None,
+                   'Select data file',
+                   self.lastSaveDir,
+                   options=QtGui.QFileDialog.DontUseNativeDialog,
+                   )              
+        filename = str(filename)
+        if not filename:
+            return 
+        dataList, ledColor = self.loadDataFromFile(filename)
+        if ledColor is None:
+            msgTitle = 'Import Warning'
+            msgText = 'Unable to determine LED color from data file'
+            QtGui.QMessageBox.warning(self,msgTitle, msgText)
+        else:
+            self.setLEDColor(ledColor)
+        self.setTableData(dataList)
+        self.updateWidgetEnabled()
 
-    def editTestSolutions_Callback(self):
-        pass
+    def loadDataFromFile(self,filename):
+        """
+        Load absorbance and concentration data from data file.
+        """
+        try:
+            fileLines = []
+            with open(filename,'r') as f:
+                fileLines = f.readlines()
+        except IOError, e:
+            msgTitle = 'File Load Error'
+            msgText = 'Unable to load data file: {0}'.format(str(e))
+            QtGui.QMessageBox.warning(self,msgTitle, msgText)
+            return 
+
+        dataList = []
+        ledColor = None
+        for line in fileLines:
+            line = line.split()
+            if not line:
+                continue
+            if 'LED' in line:
+                try:
+                    color = line[line.index('LED')+1].lower()
+                except IndexError, e:
+                    continue
+                if color in constants.COLOR2LED_DICT:
+                    ledColor = color
+                continue
+            if line[0] == '#':
+                continue
+            if len(line) >= 2:
+                if self.saveFileReverseOrder:
+                    x,y = line[1], line[0]
+                else: 
+                    x,y = line[0], line[1]
+            dataList.append((x,y))
+        return dataList, ledColor
 
     def portChanged_Callback(self):
         self.port = str(self.portLineEdit.text())
@@ -96,8 +201,6 @@ class MainWindowWithTable(MainWindowCommon):
     def plotPushButtonClicked_Callback(self):
         self.updatePlot(create=True)
 
-    def updatePlot(self):
-        pass
 
     def closeFigure(self): 
         if self.fig is not None and plt.fignum_exists(constants.PLOT_FIGURE_NUM): 
@@ -182,14 +285,6 @@ class MainWindowWithTable(MainWindowCommon):
         self.updatePlot()
         self.updateWidgetEnabled()
 
-    def getMeasurement(self):
-        pass
-
-    def updateWidgetEnabled(self):
-        #######################################################################
-        # Figure out the common elements here
-        #######################################################################
-        pass
 
     def setLEDColor(self,color):
         button = getattr(self,'{0}RadioButton'.format(color))

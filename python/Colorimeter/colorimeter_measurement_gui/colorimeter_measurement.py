@@ -1,11 +1,8 @@
 from __future__ import print_function
 import os 
 import sys 
-#import platform
-import functools
 import random 
 import time
-import yaml
 import numpy
 import pkg_resources
 # TEMPORARY - FOR DEVELOPMENT ##################
@@ -21,14 +18,12 @@ from PyQt4 import QtCore
 from PyQt4 import QtGui
 
 from colorimeter_measurement_ui import Ui_MainWindow 
-#from colorimeter_serial import Colorimeter
 from colorimeter_common import constants 
 from colorimeter_common import import_export 
 from colorimeter_common import standard_curve
-from colorimeter_common.main_window import MainWindowCommon
+from colorimeter_common.main_window import MainWindowWithTable
 
-#class MeasurementMainWindow(QtGui.QMainWindow, Ui_MainWindow):
-class MeasurementMainWindow(MainWindowCommon, Ui_MainWindow):
+class MeasurementMainWindow(MainWindowWithTable, Ui_MainWindow):
 
     def __init__(self,parent=None):
         super(MeasurementMainWindow,self).__init__(parent)
@@ -37,26 +32,7 @@ class MeasurementMainWindow(MainWindowCommon, Ui_MainWindow):
         self.connectActions()
 
     def connectActions(self):
-        """
-        Connect actions for widgets in measurement GUI.
-        """
         super(MeasurementMainWindow,self).connectActions()
-        #self.portLineEdit.editingFinished.connect(self.portChanged_Callback)
-        #self.connectPushButton.pressed.connect(self.connectPressed_Callback)
-        #self.connectPushButton.clicked.connect(self.connectClicked_Callback)
-        #self.calibratePushButton.pressed.connect(self.calibratePressed_Callback)
-        #self.calibratePushButton.clicked.connect(self.calibrateClicked_Callback)
-        #self.measurePushButton.clicked.connect(self.measureClicked_Callback)
-        #self.measurePushButton.pressed.connect(self.measurePressed_Callback)
-        #self.clearPushButton.pressed.connect(self.clearPressed_Callback)
-        #self.clearPushButton.clicked.connect(self.clearClicked_Callback)
-
-        #for color in constants.COLOR2LED_DICT:
-        #    button = getattr(self,'{0}RadioButton'.format(color))
-        #    callback = functools.partial(self.colorRadioButtonClicked_Callback, color)
-        #    button.clicked.connect(callback)
-        #self.plotPushButton.clicked.connect(self.plotPushButtonClicked_Callback)
-
         self.testSolutionComboBox.currentIndexChanged.connect(
                 self.testSolutionChanged_Callback
                 )
@@ -67,61 +43,27 @@ class MeasurementMainWindow(MainWindowCommon, Ui_MainWindow):
                 self.populateTestSolutionComboBox
                 )
 
-        #self.actionSave.triggered.connect(self.saveFile_Callback)
-        #self.actionSave.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_S)
-        #self.actionLoad.triggered.connect(self.loadFile_Callback)
-        #self.actionLoad.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_L)
-        #self.actionEditTestSolutions.triggered.connect(self.editTestSolutions_Callback)
-
     def initialize(self):
-        """
-        Initializes the measurement GUI. Sets buttons to default data, sets initial port
-        based on OS, get the users home directory. etc. 
-        """
         super(MeasurementMainWindow,self).initialize()
-        #self.dev = None
-        #self.fig = None
-        #self.isCalibrated = False
         self.coeff = None
-        
-        ## Set default port based on system
-        #osType = platform.system()
-        #if osType == 'Linux': 
-        #    self.port = constants.DFLT_PORT_LINUX 
-        #else: 
-        #    self.port = constants.DFLT_PORT_WINDOWS 
-        ## Get users home directory
-        #self.userHome = os.getenv('USERPROFILE')
-        #if self.userHome is None:
-        #    self.userHome = os.getenv('HOME')
-        #self.lastSaveDir = self.userHome
-        #self.statusbar.showMessage('Not Connected')
-        #self.portLineEdit.setText(self.port) 
-        #self.setLEDColor(constants.DFLT_LED_COLOR)
 
         # Set up data table
-        self.tableWidget.updateFunc = self.updatePlot
         self.tableWidget.clean(setup=True)
+        self.tableWidget.updateFunc = self.updatePlot
         concentrationStr = QtCore.QString.fromUtf8("Concentration (\xc2\xb5M)")
         self.tableWidget.setHorizontalHeaderLabels(('Sample', concentrationStr)) 
-        self.tableWidget.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
 
         # Set startup state for including test solution.
         self.actionIncludeDefaultTestSolutions.setChecked(True)
         self.actionIncludeUserTestSolutions.setChecked(True)
-
         self.user_TestSolutionDict = self.loadUserTestSolutionDict()
         self.default_TestSolutionDict = self.loadDefaultTestSolutionDict()
-
         self.populateTestSolutionComboBox()
         self.testSolutionComboBox.setCurrentIndex(1)
-
         self.updateWidgetEnabled()
 
     def testSolutionChanged_Callback(self,index):
-        print('testSolutionChanged_Callback', index)
         self.updateTestSolution(index)
-
 
     def updateTestSolution(self,index):
         if index <= 0:
@@ -141,73 +83,7 @@ class MeasurementMainWindow(MainWindowCommon, Ui_MainWindow):
             self.setLEDColor(data['led'])
         self.updateWidgetEnabled()
 
-#    def portChanged_Callback(self):
-#        self.port = str(self.portLineEdit.text())
-
-#    def connectPressed_Callback(self):
-#        if self.dev == None:
-#            self.connectPushButton.setText('Disconnect')
-#            self.connectPushButton.setFlat(True)
-#            self.portLineEdit.setEnabled(False)
-#            self.statusbar.showMessage('Connecting...')
-
-#    def connectClicked_Callback(self):
-#        if self.dev == None:
-#            try:
-#                self.dev = Colorimeter(self.port)
-#                self.numSamples = self.dev.getNumSamples()
-#                connected = True
-#            except Exception, e:
-#                QtGui.QMessageBox.critical(self,'Error', str(e))
-#                self.connectPushButton.setText('Connect')
-#                self.statusbar.showMessage('Not Connected')
-#                self.portLineEdit.setEnabled(True)
-#                connected = False
-#        else:
-#            self.connectPushButton.setText('Connect')
-#            try:
-#                self.cleanUpAndCloseDevice()
-#            except Exception, e:
-#                QtGui.QMessageBox.critical(self,'Error', str(e))
-#            connected = False
-#        self.updateWidgetEnabled()
-
-    def colorRadioButtonClicked_Callback(self,color):
-        if len(self.tableWidget.item(0,1).text()):
-            chn_msg = "Changing channels will clear all data. Continue?"
-            response = self.tableWidget.clean(msg=chn_msg)
-            if not response:
-                self.closeFigure()
-                self.setLEDColor(self.currentColor)
-        self.currentColor = color
-
-    def plotPushButtonClicked_Callback(self):
-        self.updatePlot(create=True)
-
-    def calibratePressed_Callback(self):
-        print('callibratePushButton_Pressed')
-        self.measurePushButton.setEnabled(False)
-        self.plotPushButton.setEnabled(False)
-        self.clearPushButton.setEnabled(False)
-        self.calibratePushButton.setFlat(True)
-        self.statusbar.showMessage('Connected, Mode: Calibrating...')
-
-    def calibrateClicked_Callback(self):
-        print('calibratePushButton_Clicked')
-        if not constants.DEVEL_FAKE_MEASURE:
-            self.dev.calibrate()
-        self.isCalibrated = True
-        self.calibratePushButton.setFlat(False)
-        self.updateWidgetEnabled()
-
-    def measurePressed_Callback(self):
-        print('measPushButton_Pressed')
-        self.plotPushButton.setEnabled(False)
-        self.measurePushButton.setFlat(True)
-        self.statusbar.showMessage('Connected, Mode: Measuring...')
-
-    def measureClicked_Callback(self):
-        rowCount = self.tableWidget.measIndex+1
+    def getMeasurement(self):
         ledNumber = constants.COLOR2LED_DICT[self.currentColor]
         if constants.DEVEL_FAKE_MEASURE:  
             conc = random.random()
@@ -218,38 +94,14 @@ class MeasurementMainWindow(MainWindowCommon, Ui_MainWindow):
         concStr = '{0:1.2f}'.format(conc)
         self.measurePushButton.setFlat(False)
         self.tableWidget.addData('',concStr,selectAndEdit=True)
-        self.updatePlot()
-        self.updateWidgetEnabled()
-
-    def clearPressed_Callback(self):
-        if len(self.tableWidget.item(0,1).text()):
-            self.measurePushButton.setEnabled(False)
-            self.plotPushButton.setEnabled(False)
-        self.clearPushButton.setFlat(True)
-
-    def clearClicked_Callback(self):
-        if len(self.tableWidget.item(0,1).text()):
-            erase_msg = "Clear all data?"
-            rsp = self.tableWidget.clean(msg=erase_msg)
-            if rsp:
-                self.closeFigure()
-        self.clearPushButton.setFlat(False) 
-        self.updateWidgetEnabled()
-
-    def closeFigure(self): 
-        if self.fig is not None and plt.fignum_exists(constants.PLOT_FIGURE_NUM): 
-            plt.close(self.fig)
-            self.fig = None
 
     def saveFile_Callback(self):
-        # Ensure that there is data to save.
         if self.tableWidget.measIndex <= 0: 
             errMsgTitle = 'Save Error'
             errMsg = 'No data to save'
             QtGui.QMessageBox.warning(self,errMsgTitle, errMsg)
             return
 
-        # Get filename
         dialog = QtGui.QFileDialog()
         dialog.setFileMode(QtGui.QFileDialog.AnyFile) 
         fileName = dialog.getSaveFileName(
@@ -334,22 +186,18 @@ class MeasurementMainWindow(MainWindowCommon, Ui_MainWindow):
 
         # Check if there is any data to plot
         dataList = self.tableWidget.getData()
-        dataList = [(x,float(y)) for x,y in dataList]
+        dataList = dataListToLabelAndFloat(dataList)
         if not dataList:
             self.closeFigure()
             return 
-
-        # Unpack data 
+        # Unpack data and create plot 
         labelList, concList = zip(*dataList)
-
-        # Create plot showing bar graph of data
         posList = range(1,len(concList)+1)
         xlim = (
                 posList[0]  - 0.5*constants.PLOT_BAR_WIDTH, 
                 posList[-1] + 1.5*constants.PLOT_BAR_WIDTH,
                 )
         ylim = (0,constants.PLOT_YLIM_ADJUST*max(concList))
-
         plt.clf()
         self.fig = plt.figure(constants.PLOT_FIGURE_NUM)
         self.fig.canvas.manager.set_window_title('Colorimeter Measurement: Concentration Plot')
@@ -369,11 +217,6 @@ class MeasurementMainWindow(MainWindowCommon, Ui_MainWindow):
         ax.set_ylabel('Concentration')
         ax.set_xlabel('Samples')
         plt.draw() 
-
-    def setLEDColor(self,color):
-        self.currentColor = color
-        button = getattr(self, '{0}RadioButton'.format(self.currentColor))
-        button.setChecked(True)
 
     def loadDefaultTestSolutionDict(self):
         """
@@ -436,41 +279,28 @@ class MeasurementMainWindow(MainWindowCommon, Ui_MainWindow):
         self.testSolutionComboBox.setCurrentIndex(index)
         self.updateTestSolution(index)
 
-    def closeEvent(self,event):
-        if self.fig is not None:
-            plt.close(self.fig)
-        if self.dev is not None:
-            self.cleanUpAndCloseDevice()
-        event.accept()
-
-    def cleanUpAndCloseDevice(self):
-        self.dev.close()
-        self.dev = None
-
-    def main(self):
-        self.show()
+def dataListToLabelAndFloat(dataList):
+    dataListNew = []
+    for x,y in dataList:
+        try: 
+            y = float(y)
+        except ValueError:
+            continue
+        dataListNew.append((x,y))
+    return dataListNew
 
 def getCoefficientFromData(data): 
-    """
-    Compuetes the coefficient (slope of absorbance vs concentration)
-    """
     values = data['values']
     abso, conc = zip(*values)
     coeff = standard_curve.getCoefficient(abso,conc,fitType=constants.FIT_TYPE)
     return coeff
 
 def getResourcePath(relative_path): 
-    """
-    Get path of resources file in both deployed and development.
-    """
     base_path = os.environ.get("_MEIPASS2", os.path.abspath("."))
     resource_path = os.path.join(base_path, relative_path)
     return resource_path
 
 def measurementGuiMain():
-    """
-    Entry point for measurement gui
-    """
     app = QtGui.QApplication(sys.argv)
     mainWindow = MeasurementMainWindow()
     mainWindow.main()

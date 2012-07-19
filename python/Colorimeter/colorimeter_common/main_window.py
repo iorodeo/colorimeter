@@ -4,6 +4,8 @@ import functools
 import platform
 from PyQt4 import QtCore
 from PyQt4 import QtGui
+import matplotlib.pyplot as plt 
+plt.ion()
 
 from colorimeter_common import constants
 from colorimeter_serial import Colorimeter
@@ -15,7 +17,21 @@ class MainWindowCommon(QtGui.QMainWindow):
         print('MainWindowCommon.__init__')
 
     def connectActions(self):
-        print('MainWindowCommon.connectActions')
+        print('MainWindowCommon.initialize')
+
+    def initialize(self):
+        print('MainWindowCommon.initialize')
+
+
+class MainWindowWithTable(MainWindowCommon):
+
+    def __init__(self,parent=None):
+        super(MainWindowWithTable,self).__init__(parent)
+        print('MainWindowWithTable.__init__')
+
+    def connectActions(self):
+        super(MainWindowWithTable,self).connectActions()
+        print('MainWindowWithTable.connectActions')
         self.portLineEdit.editingFinished.connect(self.portChanged_Callback)
         self.connectPushButton.pressed.connect(self.connectPressed_Callback)
         self.connectPushButton.clicked.connect(self.connectClicked_Callback)
@@ -38,9 +54,10 @@ class MainWindowCommon(QtGui.QMainWindow):
         self.actionLoad.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_L)
         self.actionEditTestSolutions.triggered.connect(self.editTestSolutions_Callback)
 
-    def initialize(self):
 
-        print('MainWindowCommon.initialize')
+    def initialize(self):
+        super(MainWindowWithTable,self).initialize()
+        print('MainWindowWithTable.initialize')
         self.dev = None
         self.fig = None
         self.isCalibrated = False
@@ -56,12 +73,36 @@ class MainWindowCommon(QtGui.QMainWindow):
         if self.userHome is None:
             self.userHome = os.getenv('HOME')
         self.lastSaveDir = self.userHome
+
         self.statusbar.showMessage('Not Connected')
         self.portLineEdit.setText(self.port) 
         self.setLEDColor(constants.DFLT_LED_COLOR)
 
+        self.tableWidget.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
+        self.user_TestSolutionDir = os.path.join(self.userHome,constants.USER_DATA_DIR)
+
+    def saveFile_Callback(self):
+        pass
+
+    def loadFile_Callback(self):
+        pass
+
+    def editTestSolutions_Callback(self):
+        pass
+
     def portChanged_Callback(self):
         self.port = str(self.portLineEdit.text())
+
+    def plotPushButtonClicked_Callback(self):
+        self.updatePlot(create=True)
+
+    def updatePlot(self):
+        pass
+
+    def closeFigure(self): 
+        if self.fig is not None and plt.fignum_exists(constants.PLOT_FIGURE_NUM): 
+            plt.close(self.fig)
+            self.fig = None
 
     def connectPressed_Callback(self):
         if self.dev == None:
@@ -71,9 +112,6 @@ class MainWindowCommon(QtGui.QMainWindow):
             self.statusbar.showMessage('Connecting...')
 
     def connectClicked_Callback(self):
-        """
-        Connect/Disconnect to colorimeter device.
-        """
         if self.dev == None:
             try:
                 self.dev = Colorimeter(self.port)
@@ -95,13 +133,79 @@ class MainWindowCommon(QtGui.QMainWindow):
             self.isCalibrated = False
         self.updateWidgetEnabled()
 
-    def saveFile_Callback(self):
+    def colorRadioButtonClicked_Callback(self,color):
+        if len(self.tableWidget.item(0,1).text()):
+            chn_msg = "Changing channels will clear all data. Continue?"
+            response = self.tableWidget.clean(msg=chn_msg)
+            if not response:
+                self.closeFigure()
+                self.setLEDColor(self.currentColor)
+        self.currentColor = color
+
+    def clearPressed_Callback(self):
+        if len(self.tableWidget.item(0,1).text()):
+            self.measurePushButton.setEnabled(False)
+            self.plotPushButton.setEnabled(False)
+        self.clearPushButton.setFlat(True)
+
+    def clearClicked_Callback(self):
+        if len(self.tableWidget.item(0,1).text()):
+            erase_msg = "Clear all data?"
+            rsp = self.tableWidget.clean(msg=erase_msg)
+            if rsp:
+                self.closeFigure()
+        self.clearPushButton.setFlat(False) 
+        self.updateWidgetEnabled()
+
+    def calibratePressed_Callback(self):
+        self.measurePushButton.setEnabled(False)
+        self.plotPushButton.setEnabled(False)
+        self.clearPushButton.setEnabled(False)
+        self.calibratePushButton.setFlat(True)
+        self.statusbar.showMessage('Connected, Mode: Calibrating...')
+
+    def calibrateClicked_Callback(self):
+        if not constants.DEVEL_FAKE_MEASURE: 
+            self.dev.calibrate()
+        self.isCalibrated = True
+        self.calibratePushButton.setFlat(False)
+        self.updateWidgetEnabled()
+
+    def measurePressed_Callback(self):
+        self.calibratePushButton.setEnabled(False)
+        self.plotPushButton.setEnabled(False)
+        self.measurePushButton.setFlat(True)
+        self.statusbar.showMessage('Connected, Mode: Measuring...')
+
+    def measureClicked_Callback(self):
+        self.getMeasurement()
+        self.updatePlot()
+        self.updateWidgetEnabled()
+
+    def getMeasurement(self):
         pass
 
-    def loadFile_Callback(self):
+    def updateWidgetEnabled(self):
+        #######################################################################
+        # Figure out the common elements here
+        #######################################################################
         pass
 
-    def editTestSolutions_Callback(self):
-        pass
+    def setLEDColor(self,color):
+        button = getattr(self,'{0}RadioButton'.format(color))
+        button.setChecked(True)
+        self.currentColor = color
 
+    def closeEvent(self,event):
+        if self.fig is not None:
+            plt.close(self.fig)
+        if self.dev is not None:
+            self.cleanUpAndCloseDevice()
+        event.accept()
 
+    def cleanUpAndCloseDevice(self):
+        self.dev.close()
+        self.dev = None
+
+    def main(self):
+        self.show()

@@ -1,13 +1,10 @@
 import os 
 import sys 
 import math
-#import platform
-import functools
 import random 
 import time
 import numpy
 import matplotlib
-import yaml
 matplotlib.use('Qt4Agg')
 import matplotlib.pyplot as plt 
 plt.ion()
@@ -16,14 +13,12 @@ from PyQt4 import QtCore
 from PyQt4 import QtGui
 
 from colorimeter_plot_gui_ui import Ui_MainWindow 
-#from colorimeter_serial import Colorimeter
 from colorimeter_common import constants
 from colorimeter_common import import_export 
 from colorimeter_common import standard_curve
-from colorimeter_common.main_window import MainWindowCommon
+from colorimeter_common.main_window import MainWindowWithTable
 
-#class ColorimeterPlotMainWindow(QtGui.QMainWindow, Ui_MainWindow):
-class ColorimeterPlotMainWindow(MainWindowCommon, Ui_MainWindow):
+class ColorimeterPlotMainWindow(MainWindowWithTable, Ui_MainWindow):
 
     def __init__(self,parent=None):
         super(ColorimeterPlotMainWindow,self).__init__(parent)
@@ -33,28 +28,6 @@ class ColorimeterPlotMainWindow(MainWindowCommon, Ui_MainWindow):
 
     def connectActions(self):
         super(ColorimeterPlotMainWindow,self).connectActions()
-        #self.portLineEdit.editingFinished.connect(self.portChanged_Callback)
-        #self.connectPushButton.pressed.connect(self.connectPressed_Callback)
-        #self.connectPushButton.clicked.connect(self.connectClicked_Callback)
-        #self.calibratePushButton.pressed.connect(self.calibratePressed_Callback)
-        #self.calibratePushButton.clicked.connect(self.calibrateClicked_Callback)
-        #self.measurePushButton.clicked.connect(self.measureClicked_Callback)
-        #self.measurePushButton.pressed.connect(self.measurePressed_Callback)
-        #self.clearPushButton.pressed.connect(self.clearPressed_Callback)
-        #self.clearPushButton.clicked.connect(self.clearClicked_Callback)
-
-        #for color in constants.COLOR2LED_DICT:
-        #    button = getattr(self,'{0}RadioButton'.format(color))
-        #    callback = functools.partial(self.colorRadioButtonClicked_Callback, color)
-        #    button.clicked.connect(callback)
-        #self.plotPushButton.clicked.connect(self.plotPushButtonClicked_Callback)
-
-        #self.actionSave.triggered.connect(self.saveFile_Callback)
-        #self.actionSave.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_S)
-        #self.actionLoad.triggered.connect(self.loadFile_Callback)
-        #self.actionLoad.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_L)
-        #self.actionEditTestSolutions.triggered.connect(self.editTestSolutions_Callback)
-
         self.actionExport.triggered.connect(self.exportData_Callback)
         self.actionExport.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_E)
         self.actionImport.triggered.connect(self.importData_Callback)
@@ -62,186 +35,72 @@ class ColorimeterPlotMainWindow(MainWindowCommon, Ui_MainWindow):
         itemDelegate = DoubleItemDelegate(self.tableWidget)
         self.tableWidget.setItemDelegateForColumn(0,itemDelegate)
 
-
     def editTestSolutions_Callback(self):
         print('editTestSolutions_Callback')
 
     def importData_Callback(self):
         print('importData_Callback')
-
         
     def initialize(self):
         super(ColorimeterPlotMainWindow,self).initialize()
-        #self.dev = None
-        #self.fig = None
-        #self.isCalibrated = False
-
-        #osType = platform.system()
-        #if osType == 'Linux': 
-        #    self.port = constants.DFLT_PORT_LINUX 
-        #else: 
-        #    self.port = constants.DFLT_PORT_WINDOWS 
-        #self.userHome = os.getenv('USERPROFILE')
-        #if self.userHome is None:
-        #    self.userHome = os.getenv('HOME')
-        #self.lastSaveDir = self.userHome
-        #self.statusbar.showMessage('Not Connected')
-        #self.portLineEdit.setText(self.port) 
-        #self.setLEDColor(constants.DFLT_LED_COLOR)
-
-        # Set up data table
         self.tableWidget.clean(setup=True)
-
+        self.tableWidget.updateFunc = self.updatePlot
         self.tableWidget.setHorizontalHeaderLabels(('Concentration','Absorbance')) 
-        self.tableWidget.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
-
-        self.user_TestSolutionDir = os.path.join(
-                self.userHome,
-                '.iorodeo_colorimeter',
-                'data',
-                )
         self.updateWidgetEnabled()
 
-#    def portChanged_Callback(self):
-#        self.port = str(self.portLineEdit.text())
-
-#    def connectPressed_Callback(self):
-#        if self.dev == None:
-#            self.connectPushButton.setText('Disconnect')
-#            self.connectPushButton.setFlat(True)
-#            self.portLineEdit.setEnabled(False)
-#            self.statusbar.showMessage('Connecting...')
-
-#    def connectClicked_Callback(self):
-#        """
-#        Connect/Disconnect to colorimeter device.
-#        """
-#        if self.dev == None:
-#            try:
-#                self.dev = Colorimeter(self.port)
-#                self.numSamples = self.dev.getNumSamples()
-#                connected = True
-#            except Exception, e:
-#                QtGui.QMessageBox.critical(self,'Error', str(e))
-#                self.connectPushButton.setText('Connect')
-#                self.statusbar.showMessage('Not Connected')
-#                self.portLineEdit.setEnabled(True)
-#                connected = False
-#        else:
-#            self.connectPushButton.setText('Connect')
-#            try:
-#                self.cleanUpAndCloseDevice()
-#            except Exception, e:
-#                QtGui.QMessageBox.critical(self,'Error', str(e))
-#            connected = False
-#            self.isCalibrated = False
-#        self.updateWidgetEnabled()
-
-    def colorRadioButtonClicked_Callback(self,color):
-        """
-        Callback for selecting the LED color used by the colorimeter.
-        """
-        if len(self.tableWidget.item(0,1).text()):
-            chn_msg = "Changing channels will clear all data. Continue?"
-            response = self.tableWidget.clean(msg=chn_msg)
-            if not response:
-                color = self.currentColor
-                self.setLEDColor(color)
-        self.currentColor = color
-
-    def plotPushButtonClicked_Callback(self):
-        """
-        Plots the data in the table widget. 
-        """
+    def updatePlot(self,create=False):
+        if not create and not plt.fignum_exists(constants.PLOT_FIGURE_NUM):
+            return
         dataList = self.tableWidget.getData(noValueInclude=False)
         dataList = dataListToFloat(dataList)
         if not dataList:
+            self.closeFigure()
             return
+        xList,yList = zip(*dataList)
 
-        xList = [x for x,y in dataList]
-        yList = [y for x,y in dataList]
-
-        if constants.FIT_TYPE == 'force_zero': 
-            xArray = numpy.array(xList)
-            yArray = numpy.array(yList)
-            numer = (xArray*yArray).sum()
-            denom = (xArray*xArray).sum()
-            slope = numer/denom
-            xFit = numpy.linspace(min(xList), max(xList), 500)
-            yFit = slope*xFit
+        if len(dataList) > 1:
+            slope, xFit, yFit = standard_curve.getLinearFit(
+                    xList,
+                    yList,
+                    fitType=constants.FIT_TYPE,
+                    numPts=constants.PLOT_FIT_NUM_PTS,
+                    )
+            haveSlope = True
         else:
-            polyFit = numpy.polyfit(xList,yList,1)
-            xFit = numpy.linspace(min(xList), max(xList), 500)
-            yFit = numpy.polyval(polyFit, xFit)
-            slope = polyFit[0]
+            haveSlope = False
 
         plt.clf()
         self.fig = plt.figure(constants.PLOT_FIGURE_NUM)
         self.fig.canvas.manager.set_window_title('Colorimeter Plot')
         ax = self.fig.add_subplot(111)
-        hFit = ax.plot(xFit,yFit,'r')
 
+        if haveSlope:
+            hFit = ax.plot(xFit,yFit,'r')
         ax.plot(xList,yList,'ob')
         ax.grid('on')
         ax.set_xlabel('Concentration')
         ax.set_ylabel('Absorbance ('+self.currentColor+' led)')
-        self.fig.text(0.15,0.85,'slope = {0:1.3f}'.format(slope), color='r')
+        if haveSlope:
+            self.fig.text(
+                    constants.PLOT_SLOPE_TEXT_POS[0],
+                    constants.PLOT_SLOPE_TEXT_POS[1],
+                    'slope = {0:1.3f}'.format(slope), 
+                    color='r'
+                    )
         plt.draw()
-        
-    def measurePressed_Callback(self):
-        print('measPushButton_Pressed')
-        self.calibratePushButton.setEnabled(False)
-        self.plotPushButton.setEnabled(False)
-        self.measurePushButton.setFlat(True)
-        self.statusbar.showMessage('Connected, Mode: Measuring...')
 
-    def measureClicked_Callback(self):
-        """
-        Takes a measurement from the colorimeter. 
-        """
+    def getMeasurement(self):
+        ledNumber = constants.COLOR2LED_DICT[self.currentColor]
         if constants.DEVEL_FAKE_MEASURE:
             abso = (random.random(),)*4
         else:
             freq, trans, abso = self.dev.getMeasurement()
         self.measurePushButton.setFlat(False)
-        ledNumber = constants.COLOR2LED_DICT[self.currentColor]
         absoStr = '{0:1.2f}'.format(abso[ledNumber])
         self.tableWidget.addData('',absoStr,selectAndEdit=True)
-        self.updateWidgetEnabled()
-
-    def calibratePressed_Callback(self):
-        self.measurePushButton.setEnabled(False)
-        self.plotPushButton.setEnabled(False)
-        self.clearPushButton.setEnabled(False)
-        self.calibratePushButton.setFlat(True)
-        self.statusbar.showMessage('Connected, Mode: Calibrating...')
-
-    def calibrateClicked_Callback(self):
-        if not constants.DEVEL_FAKE_MEASURE: 
-            self.dev.calibrate()
-        self.isCalibrated = True
-        self.calibratePushButton.setFlat(False)
-        self.updateWidgetEnabled()
-
-    def clearPressed_Callback(self):
-        if len(self.tableWidget.item(0,1).text()):
-            self.measurePushButton.setEnabled(False)
-            self.plotPushButton.setEnabled(False)
-            self.calibratePushButton.setEnabled(False)
-        self.clearPushButton.setFlat(True)
-
-    def clearClicked_Callback(self):
-        if len(self.tableWidget.item(0,1).text()):
-            erase_msg = "Clear all data?"
-            self.tableWidget.clean(msg=erase_msg)
-        self.clearPushButton.setFlat(False)
-        self.updateWidgetEnabled()
 
     def saveFile_Callback(self):
-        """
-        Save data in table to a text file.
-        """
-        dataList = self.getTableData(addNoValueSymb=True)
+        dataList = self.tableWidget.getData(noValueSymb=True)
         if not dataList:
             msgTitle = 'Save Error'
             msgText = 'No data to save.'
@@ -273,7 +132,7 @@ class ColorimeterPlotMainWindow(MainWindowCommon, Ui_MainWindow):
             f.write(os.linesep.join(header))
             f.write(os.linesep)
             for x,y in dataList:
-                f.write('{0}  {1}{2}'.format(x,y,os.linesep))
+                f.write('{0}  {1}{2}'.format(y,x,os.linesep))
             f.write('{0}'.format(os.linesep))
 
     def loadFile_Callback(self):
@@ -353,7 +212,6 @@ class ColorimeterPlotMainWindow(MainWindowCommon, Ui_MainWindow):
         """
         Set data item in the table widget from the given dataList.
         """
-        print('setTableData')
         self.tableWidget.clean(setup=True)
         for abso, conc in dataList:
             concStr = str(conc)
@@ -378,9 +236,9 @@ class ColorimeterPlotMainWindow(MainWindowCommon, Ui_MainWindow):
         ledColor = None
 
         for line in fileLines:
+            line = line.split()
             if not line:
                 continue
-            line = line.split()
             if 'LED' in line:
                 try:
                     color = line[line.index('LED')+1].lower()
@@ -443,24 +301,6 @@ class ColorimeterPlotMainWindow(MainWindowCommon, Ui_MainWindow):
             self.connectPushButton.setFlat(False)
             self.statusbar.showMessage('Connected, Mode: Stopped')
 
-    def setLEDColor(self,color):
-        button = getattr(self,'{0}RadioButton'.format(color))
-        button.setChecked(True)
-        self.currentColor = color
-        
-
-
-    def closeEvent(self,event):
-        if self.dev is not None:
-            self.cleanUpAndCloseDevice()
-        event.accept()
-
-    def cleanUpAndCloseDevice(self):
-        self.dev.close()
-        self.dev = None
-
-    def main(self):
-        self.show()
 
 def dataListToFloat(dataList):
     dataListFloat = []

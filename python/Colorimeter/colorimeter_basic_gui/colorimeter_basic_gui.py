@@ -1,14 +1,20 @@
 from __future__ import print_function
+import os
 import sys
 import platform
 import matplotlib
 matplotlib.use('Qt4Agg')
 import matplotlib.pyplot as plt 
 import numpy
+import numpy.random
+import functools
 from PyQt4 import QtCore
 from PyQt4 import QtGui
+
+
 from colorimeter_basic_gui_ui import Ui_MainWindow 
 from colorimeter_serial import Colorimeter
+from colorimeter_common import constants
 
 DFLT_PORT_WINDOWS = 'com1' 
 DFLT_PORT_LINUX = '/dev/ttyACM0' 
@@ -32,6 +38,19 @@ class BasicMainWindow(QtGui.QMainWindow,Ui_MainWindow):
         self.measurePushButton.pressed.connect(self.measurePressed_Callback)
         self.samplesLineEdit.editingFinished.connect(self.samplesChanged_Callback)
         self.plotCheckBox.stateChanged.connect(self.plotCheckBox_Callback)
+        for color in constants.COLOR2LED_DICT:
+            checkBox = getattr(self,'{0}CheckBox'.format(color))
+            callback = functools.partial(self.colorCheckBox_Callback,color)
+            checkBox.stateChanged.connect(callback)
+        self.actionSave.triggered.connect(self.saveFile_Callback)
+        self.actionSave.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_S)
+
+    def saveFile_Callback(self):
+        print('saveFile_Callback')
+
+    def colorCheckBox_Callback(self,color):
+        self.updateResultsDisplay()
+        self.updatePlot()
 
     def plotCheckBox_Callback(self,value):
         if value == QtCore.Qt.Unchecked:
@@ -40,7 +59,10 @@ class BasicMainWindow(QtGui.QMainWindow,Ui_MainWindow):
                 self.fig = None
 
     def initialize(self):
-        self.ledColors = 'red', 'green', 'blue', 'white'
+
+        self.dev = None
+        self.measValues = None
+        self.numSamples = None
         osType = platform.system()
         if osType == 'Linux': 
             self.port = DFLT_PORT_LINUX 
@@ -48,11 +70,9 @@ class BasicMainWindow(QtGui.QMainWindow,Ui_MainWindow):
             self.port = DFLT_PORT_WINDOWS 
         self.portLineEdit.setText(self.port) 
         self.setWidgetEnableOnDisconnect()
-        self.dev = None
-        self.numSamples = None
         self.samplesValidator = QtGui.QIntValidator(0,2**16-1,self.samplesLineEdit)
         self.samplesLineEdit.setValidator(self.samplesValidator)
-        for name in self.ledColors:
+        for name in constants.COLOR2LED_DICT:
             checkBox = getattr(self,'{0}CheckBox'.format(name))
             checkBox.setCheckState(QtCore.Qt.Checked)
             
@@ -60,7 +80,6 @@ class BasicMainWindow(QtGui.QMainWindow,Ui_MainWindow):
         plt.ion()
         self.fig = None
         
-
     def portChanged_Callback(self):
         self.port = str(self.portLineEdit.text())
 
@@ -70,15 +89,25 @@ class BasicMainWindow(QtGui.QMainWindow,Ui_MainWindow):
             self.portLineEdit.setEnabled(False)
 
     def connectClicked_Callback(self):
+        connected = False
         if self.dev == None:
-            self.dev = Colorimeter(self.port)
+            try:
+                self.dev = Colorimeter(self.port)
+                connected = True
+            except Exception, e:
+                msgTitle = 'Connection Error'
+                msgText = 'unable to connect to device: {0}'.format(str(e))
+                QtGui.QMessageBox.warning(self,msgTitle, msgText)
+                self.dev = None
+        else:
+            self.dev.close()
+            self.dev = None
+        if connected:
             self.setWidgetEnableOnConnect()
             self.numSamples = self.dev.getNumSamples()
             self.samplesLineEdit.setText('{0}'.format(self.numSamples))
         else:
             self.connectPushButton.setText('Connect')
-            self.dev.close()
-            self.dev = None
             self.setWidgetEnableOnDisconnect()
             self.samplesLineEdit.setText('')
 
@@ -89,10 +118,13 @@ class BasicMainWindow(QtGui.QMainWindow,Ui_MainWindow):
         self.setWidgetEnableOnMeasure()
 
     def calibrateClicked_Callback(self):
-        self.dev.calibrate()
-        trans  = 1.0, 1.0, 1.0, 1.0
-        absorb = 0.0, 0.0, 0.0, 0.0
-        self.updateResultsDisplay(trans,absorb)
+        if not constants.DEVEL_FAKE_MEASURE: 
+            self.dev.calibrate()
+        freq = None  
+        tran = 1.0, 1.0, 1.0, 1.0
+        abso = 0.0, 0.0, 0.0, 0.0
+        self.measValues = freq, tran, abso
+        self.updateResultsDisplay()
         self.setWidgetEnableOnConnect()
 
     def measurePressed_Callback(self):
@@ -102,35 +134,60 @@ class BasicMainWindow(QtGui.QMainWindow,Ui_MainWindow):
         self.setWidgetEnableOnMeasure()
 
     def measureClicked_Callback(self):
-        freq, trans, absorb = self.dev.getMeasurement()
-        self.updateResultsDisplay(trans,absorb)
+        if constants.DEVEL_FAKE_MEASURE:
+            freqValues = tuple(numpy.random.random((4,)))
+            tranValues = tuple(numpy.random.random((4,)))
+            absoValues = tuple(numpy.random.random((4,)))
+        else:
+            freqValues, tranValues, absoValues = self.dev.getMeasurement()
+        self.measValues = freqValues, tranValues, absoValues
+        self.updateResultsDisplay()
+        self.updatePlot()
         self.setWidgetEnableOnConnect()
 
+    def updatePlot(self):
+        if self.measValues is None:
+            return
+        freqValues, tranValues, absoValues = self.measValues
         if self.plotCheckBox.isChecked():
-            barWidth = 0.8
-            yticks = 0.5*numpy.arange(0.0,2.0*max([max(absorb),1.0]))
-            colorList = ('r','g','b','w')
-            xLabelList = ('red', 'green', 'blue', 'white') 
-            posList = range(1,len(absorb)+1)
-            xlim = (posList[0],posList[-1]+barWidth)
-            ylim = (0,max(1.2*max(absorb),1.0))
+            barWidth = constants.PLOT_BAR_WIDTH 
+            colorNames = constants.COLOR2LED_DICT.keys()
+            xLabelList = []
+            absoList= []
+            for c, a in zip(colorNames,absoValues):
+                if self.isColorChecked(c):
+                    xLabelList.append(c) 
+                    absoList.append(a)
+            if not absoList:
+                self.closeFigure()
+                return
+
+            posList = range(1,len(absoList)+1)
+            yticks = 0.5*numpy.arange(0.0,2.0*max([max(absoList),1.0]))
+            xlim = (
+                    posList[0]  - 0.5*constants.PLOT_BAR_WIDTH, 
+                    posList[-1] + 1.5*constants.PLOT_BAR_WIDTH,
+                    )
+            ylim = (0,max(constants.PLOT_YLIM_ADJUST*max(absoList),1.0))
 
             plt.clf()
-            self.fig = plt.figure(1)
+            self.fig = plt.figure(constants.PLOT_FIGURE_NUM)
             self.fig.canvas.manager.set_window_title('Colorimeter Basic: Absorbance Plot')
             ax = self.fig.add_subplot(111)
+
             for y in yticks[1:]:
                 ax.plot(xlim,[y,y],'k:')
-            for pos, value, color in zip(posList, absorb,colorList): 
-                ax.bar([pos],[value],width=barWidth,color=color,linewidth=2)
-                textXPos = pos+0.5*barWidth
-                textYPos = value+0.01
-                valueStr = '{0:1.3f}'.format(value)
+
+            for p, a, c in zip(posList, absoList, xLabelList): 
+                colorSymb = constants.PLOT_COLOR_DICT[c]
+                ax.bar([p],[a],width=barWidth,color=colorSymb,linewidth=2)
+                textXPos = p+0.5*barWidth
+                textYPos = a+0.01
+                valueStr = '{0:1.3f}'.format(a)
                 ax.text(textXPos,textYPos,valueStr,ha ='center',va ='bottom')
 
             ax.set_xlim(*xlim)
             ax.set_ylim(*ylim)
-
             ax.set_xticks([x+0.5*barWidth for x in posList])
             ax.set_xticklabels(xLabelList)
             ax.set_ylabel('Absorbance')
@@ -138,26 +195,25 @@ class BasicMainWindow(QtGui.QMainWindow,Ui_MainWindow):
             ax.set_yticks(yticks)
             plt.draw() 
 
+    def updateResultsDisplay(self):
+        if self.measValues is None:
+            return 
+        freqValues, tranValues, absoValues = self.measValues
+        tranStrList, absoStrList = [], []
+        colorNames = sorted(constants.COLOR2LED_DICT)
+        for c in colorNames:
+            n = constants.COLOR2LED_DICT[c] 
+            if self.isColorChecked(c):
+                tranStrList.append('{0}:\t{1:1.3f}'.format(c, tranValues[n]))
+                absoStrList.append('{0}:\t{1:1.3f}'.format(c, absoValues[n]))
+        tranStr = os.linesep.join(tranStrList)
+        absoStr = os.linesep.join(absoStrList)
+        self.transmissionTextEdit.setText(tranStr)
+        self.absorbanceTextEdit.setText(absoStr)
 
-    def updateResultsDisplay(self,trans,absorb):
-        transStrList = []
-        absorbStrList = []
-        if self.redCheckBox.isChecked():
-            transStrList.append('red:    {0:1.3f}'.format(trans[0]))
-            absorbStrList.append('red:    {0:1.3f}'.format(absorb[0]))
-        if self.greenCheckBox.isChecked():
-            transStrList.append('green:  {0:1.3f}'.format(trans[1]))
-            absorbStrList.append('green:  {0:1.3f}'.format(absorb[1]))
-        if self.blueCheckBox.isChecked():
-            transStrList.append('blue:   {0:1.3f}'.format(trans[2]))
-            absorbStrList.append('blue:   {0:1.3f}'.format(absorb[2]))
-        if self.whiteCheckBox.isChecked():
-            transStrList.append('white:  {0:1.3f}'.format(trans[3]))
-            absorbStrList.append('white:  {0:1.3f}'.format(absorb[3]))
-        transStr = '\n'.join(transStrList)
-        absorbStr = '\n'.join(absorbStrList)
-        self.transmissionTextEdit.setText(transStr)
-        self.absorbanceTextEdit.setText(absorbStr)
+    def isColorChecked(self,color):
+        checkBox = getattr(self,'{0}CheckBox'.format(color))
+        return checkBox.isChecked()
 
     def samplesChanged_Callback(self):
         valueStr = str(self.samplesLineEdit.text())
@@ -208,6 +264,22 @@ class BasicMainWindow(QtGui.QMainWindow,Ui_MainWindow):
         self.whiteCheckBox.setEnabled(False)
         self.portLineEdit.setEnabled(True)
         self.plotCheckBox.setEnabled(False)
+
+    def closeFigure(self): 
+        if self.fig is not None and plt.fignum_exists(constants.PLOT_FIGURE_NUM): 
+            plt.close(self.fig)
+            self.fig = None
+
+    def closeEvent(self,event):
+        if self.fig is not None:
+            plt.close(self.fig)
+        if self.dev is not None:
+            self.cleanUpAndCloseDevice()
+        event.accept()
+
+    def cleanUpAndCloseDevice(self):
+        self.dev.close()
+        self.dev = None
 
     def main(self):
         self.show()

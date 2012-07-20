@@ -9,7 +9,12 @@ DFLT_PORT_LINUX = '/dev/ttyACM0'
 
 # LEDs
 DFLT_LED_COLOR = 'red'
-COLOR2LED_DICT = {'red':0,'green':1,'blue': 2,'white': 3} 
+COLOR2LED_DICT = {
+        'red'   : 0,
+        'green' : 1,
+        'blue'  : 2,
+        'white' : 3,
+        } 
 
 # Data table
 TABLE_MIN_ROW_COUNT = 4 
@@ -25,6 +30,13 @@ PLOT_TEXT_Y_OFFSET = 0.01
 PLOT_YLIM_ADJUST = 1.15
 PLOT_FIT_NUM_PTS = 500
 PLOT_SLOPE_TEXT_POS = 0.15,0.84
+PLOT_COLOR_DICT = {
+        'red'   : 'r',
+        'green' : 'g',
+        'blue'  : 'b',
+        'white' : 'w',
+        }
+
 
 # No value symbols
 NO_VALUE_SYMBOL_LABEL = '_nv_'

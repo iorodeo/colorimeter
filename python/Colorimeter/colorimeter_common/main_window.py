@@ -285,7 +285,6 @@ class MainWindowWithTable(MainWindowCommon):
         self.updatePlot()
         self.updateWidgetEnabled()
 
-
     def setLEDColor(self,color):
         button = getattr(self,'{0}RadioButton'.format(color))
         button.setChecked(True)

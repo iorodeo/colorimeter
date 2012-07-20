@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'colorimeter_basic_gui.ui'
 #
-# Created: Fri Jun 29 13:05:26 2012
+# Created: Thu Jul 19 19:20:12 2012
 #      by: PyQt4 UI code generator 4.7.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -32,6 +32,7 @@ class Ui_MainWindow(object):
         self.verticalLayout = QtGui.QVBoxLayout(self.transmissionGroupBox)
         self.verticalLayout.setObjectName("verticalLayout")
         self.transmissionTextEdit = QtGui.QTextEdit(self.transmissionGroupBox)
+        self.transmissionTextEdit.setReadOnly(True)
         self.transmissionTextEdit.setObjectName("transmissionTextEdit")
         self.verticalLayout.addWidget(self.transmissionTextEdit)
         self.verticalLayout_2.addWidget(self.transmissionGroupBox)
@@ -47,6 +48,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_3 = QtGui.QVBoxLayout(self.absorbanceGroupBox)
         self.verticalLayout_3.setObjectName("verticalLayout_3")
         self.absorbanceTextEdit = QtGui.QTextEdit(self.absorbanceGroupBox)
+        self.absorbanceTextEdit.setReadOnly(True)
         self.absorbanceTextEdit.setObjectName("absorbanceTextEdit")
         self.verticalLayout_3.addWidget(self.absorbanceTextEdit)
         self.verticalLayout_4.addWidget(self.absorbanceGroupBox)
@@ -170,10 +172,16 @@ class Ui_MainWindow(object):
         self.menubar = QtGui.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 646, 23))
         self.menubar.setObjectName("menubar")
+        self.menu_File = QtGui.QMenu(self.menubar)
+        self.menu_File.setObjectName("menu_File")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtGui.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
+        self.actionSave = QtGui.QAction(MainWindow)
+        self.actionSave.setObjectName("actionSave")
+        self.menu_File.addAction(self.actionSave)
+        self.menubar.addAction(self.menu_File.menuAction())
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -192,4 +200,6 @@ class Ui_MainWindow(object):
         self.calibratePushButton.setText(QtGui.QApplication.translate("MainWindow", "Calibrate", None, QtGui.QApplication.UnicodeUTF8))
         self.measurePushButton.setText(QtGui.QApplication.translate("MainWindow", "Measure", None, QtGui.QApplication.UnicodeUTF8))
         self.plotCheckBox.setText(QtGui.QApplication.translate("MainWindow", "Plot   ", None, QtGui.QApplication.UnicodeUTF8))
+        self.menu_File.setTitle(QtGui.QApplication.translate("MainWindow", "&File", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionSave.setText(QtGui.QApplication.translate("MainWindow", "Save...", None, QtGui.QApplication.UnicodeUTF8))
 

@@ -20,21 +20,32 @@ void ColorSensor::initialize(uint8_t _S0, uint8_t _S1, uint8_t _S2, uint8_t _S3,
 
     // Set frequency scaling 
     digitalWrite(S0,HIGH);
-    digitalWrite(S1,HIGH);
+    digitalWrite(S1,LOW);
+    //digitalWrite(S1,HIGH);
+
+    timeoutCountMax = DFLT_TIMEOUT_COUNT_MAX;
+    pulseInWait = DFLT_PULSE_IN_WAIT;
 }
 
 uint32_t ColorSensor::getFrequency(uint16_t numSamples) {
     uint32_t dt;
     uint32_t freq = 0;
     uint16_t _numSamples = numSamples;
+    uint16_t timeoutCount = 0;
 
     for(uint16_t j=0; j<numSamples; j++) {
-        dt = pulseIn(FO, HIGH, PULSE_IN_WAIT);
+        dt = pulseIn(FO, HIGH, pulseInWait);
         if (dt > 0) {
             freq+= 500000/dt;
         }
         else {
             _numSamples -= 1;
+            timeoutCount += 1;
+        }
+        if (timeoutCount > timeoutCountMax) {
+            freq = 0;
+            _numSamples = 1;
+            break;
         }
     }
     return freq/_numSamples;

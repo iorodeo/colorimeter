@@ -105,6 +105,23 @@ void Colorimeter::EEPROM_loadCalibration() {
     EEPROM_readAnything(EEPROM_CAL_WHITE,calibration.white);
 }
 
+bool Colorimeter::checkCalibration() {
+    bool flag = true;
+    if (calibration.red == 0) {
+        flag = false;
+    }
+    if (calibration.green == 0) {
+        flag = false;
+    }
+    if (calibration.blue == 0) {
+        flag = false;
+    }
+    if (calibration.white == 0) {
+        flag = false;
+    }
+    return flag;
+}
+
 
 // Utility functions
 // ----------------------------------------------------------------------------

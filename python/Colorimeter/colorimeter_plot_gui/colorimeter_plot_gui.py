@@ -41,20 +41,14 @@ class ColorimeterPlotMainWindow(MainWindowWithTable, Ui_MainWindow):
     def initialize(self):
         super(ColorimeterPlotMainWindow,self).initialize()
         self.noValueSymbol = constants.NO_VALUE_SYMBOL_NUMBER
-        self.saveFileReverseOrder = True
         self.tableWidget.clean(setup=True)
         self.tableWidget.updateFunc = self.updatePlot
-        self.tableWidget.setHorizontalHeaderLabels(('Concentration','Absorbance')) 
+        concentrationStr = QtCore.QString.fromUtf8("Concentration (\xc2\xb5M)")
+        self.tableWidget.setHorizontalHeaderLabels((concentrationStr,'Absorbance')) 
         self.updateWidgetEnabled()
 
     def exportData_Callback(self):
-        """
-        Export data to yaml file stored in the users colorimeter data
-        directory.  This data will then be available for use with the
-        colorimeter measurement program.
-        """
-        dataList = self.getTableData()
-
+        dataList = self.tableWidget.getData()
         if len(dataList) < 2:
             msgTitle = 'Export Error'
             msgText = 'insufficient data for export'
@@ -66,7 +60,6 @@ class ColorimeterPlotMainWindow(MainWindowWithTable, Ui_MainWindow):
                 'Export: Test Solultion Data',
                 'Enter name for test solution:',
                 )
-
         if not flag:
             return
 
@@ -152,7 +145,7 @@ class ColorimeterPlotMainWindow(MainWindowWithTable, Ui_MainWindow):
                 '# Colorimeter Data', 
                 '# LED {0}'.format(self.currentColor),
                 '# -----------------------------', 
-                '# Absorbance  |  Concentration', 
+                '# Concentration | Absorbance', 
                 ]
         headerStr = os.linesep.join(headerList)
         return headerStr
@@ -166,44 +159,12 @@ class ColorimeterPlotMainWindow(MainWindowWithTable, Ui_MainWindow):
             self.tableWidget.addData(concStr,absoStr)
 
     def updateWidgetEnabled(self):
-        """
-        Kind of messay -  perhaps this could be cleaned up a bit.
-        """
+        super(ColorimeterPlotMainWindow,self).updateWidgetEnabled()
         if self.dev is None:
-            self.calibratePushButton.setEnabled(False)
-            self.measurePushButton.setEnabled(False)
             self.ledColorWidget.setEnabled(False)
-            if self.tableWidget.measIndex > 0:
-                self.tableWidget.setEnabled(True)
-                self.plotPushButton.setEnabled(True)
-                self.clearPushButton.setEnabled(True)
-            else:
-                self.tableWidget.setEnabled(False)
-                self.plotPushButton.setEnabled(False)
-                self.clearPushButton.setEnabled(False)
-            self.portLineEdit.setEnabled(True)
-            self.statusbar.showMessage('Not Connected')
         else:
-            self.calibratePushButton.setEnabled(True)
             self.ledColorWidget.setEnabled(True)
-            if self.isCalibrated:
-                self.plotPushButton.setEnabled(True)
-                self.clearPushButton.setEnabled(True)
-                self.measurePushButton.setEnabled(True)
-                self.tableWidget.setEnabled(True)
-            else:
-                if self.tableWidget.measIndex > 0:
-                    self.tableWidget.setEnabled(True)
-                    self.plotPushButton.setEnabled(True)
-                    self.clearPushButton.setEnabled(True)
-                else:
-                    self.tableWidget.setEnabled(False)
-                    self.plotPushButton.setEnabled(False)
-                    self.clearPushButton.setEnabled(False)
-            self.portLineEdit.setEnabled(False)
-            self.connectPushButton.setFlat(False)
-            self.statusbar.showMessage('Connected, Mode: Stopped')
-
+            self.calibratePushButton.setEnabled(True)
 
 def dataListToFloat(dataList):
     dataListFloat = []
@@ -216,19 +177,12 @@ def dataListToFloat(dataList):
     return dataListFloat
 
 def plotGuiMain():
-    """
-    Entry point for plotting gui
-    """
     app = QtGui.QApplication(sys.argv)
     mainWindow = ColorimeterPlotMainWindow()
     mainWindow.main()
     app.exec_()
 
 class DoubleItemDelegate(QtGui.QStyledItemDelegate):
-    """
-    Item delegate for double items - assigns a validator to the editor to
-    check/limit inputs.
-    """
 
     def __init__(self,*args,**kwargs):
         super(DoubleItemDelegate,self).__init__(*args,**kwargs)

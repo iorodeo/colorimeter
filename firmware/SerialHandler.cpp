@@ -54,8 +54,15 @@ void SerialHandler::switchYard() {
 
 void SerialHandler::calibrate() { 
     colorimeter.calibrate();
-    colorimeter.EEPROM_saveCalibration();
-    Serial << '[' << RSP_SUCCESS << ']' << endl;
+    if (colorimeter.checkCalibration() ) {
+        colorimeter.EEPROM_saveCalibration();
+        Serial << '[' << RSP_SUCCESS << ']' << endl;
+    } 
+    else {
+        Serial << '[' << RSP_ERROR; 
+        Serial << ',' << "calibration failed";
+        Serial << ']' << endl;
+    }
 }
 
 void SerialHandler::sendMeasurement() { 

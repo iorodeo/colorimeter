@@ -35,16 +35,22 @@ class Colorimeter(serial.Serial):
         self.write('{0}\n'.format(cmd))
         rsp = self.readline()
         self.clearBuffer()
+        print(rsp)
         if self.debug:
             print('cmd: ', cmd)
             print('rsp: ', rsp)
+
+        if len(rsp) < 2:
+            raise IOError, 'response from device is too short'
+
+        if rsp[1] == str(RSP_ERROR):
+            raise IOError, 'RSP_ERROR: {0}'.format(rsp)
+
         try:
             rsp = eval(rsp.strip())
-        except SyntaxError:
+        except Exception:
             raise IOError, 'bad response unable to parse result'
 
-        if rsp[0] == RSP_ERROR:
-            raise IOError, 'bad response: {0}'.format(rsp)
         return rsp
         
     def calibrate(self):

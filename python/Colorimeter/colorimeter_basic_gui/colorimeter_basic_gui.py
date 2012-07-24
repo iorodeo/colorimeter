@@ -11,14 +11,12 @@ import functools
 from PyQt4 import QtCore
 from PyQt4 import QtGui
 
-
 from colorimeter_basic_gui_ui import Ui_MainWindow 
 from colorimeter_serial import Colorimeter
 from colorimeter_common import constants
 
 DFLT_PORT_WINDOWS = 'com1' 
 DFLT_PORT_LINUX = '/dev/ttyACM0' 
-
 
 class BasicMainWindow(QtGui.QMainWindow,Ui_MainWindow):
 
@@ -29,7 +27,6 @@ class BasicMainWindow(QtGui.QMainWindow,Ui_MainWindow):
         self.initialize()
 
     def connectActions(self):
-        self.portLineEdit.editingFinished.connect(self.portChanged_Callback)
         self.connectPushButton.pressed.connect(self.connectPressed_Callback)
         self.connectPushButton.clicked.connect(self.connectClicked_Callback)
         self.calibratePushButton.pressed.connect(self.calibratePressed_Callback)
@@ -57,19 +54,22 @@ class BasicMainWindow(QtGui.QMainWindow,Ui_MainWindow):
             if self.fig is not None:
                 plt.close(self.fig)
                 self.fig = None
+        else:
+            if self.fig is None:
+                self.updatePlot(create=True)
 
     def initialize(self):
-
         self.dev = None
+        self.fig = None
         self.measValues = None
         self.numSamples = None
+        self.isCalibrated = False
         osType = platform.system()
         if osType == 'Linux': 
             self.port = DFLT_PORT_LINUX 
         else: 
             self.port = DFLT_PORT_WINDOWS 
         self.portLineEdit.setText(self.port) 
-        self.setWidgetEnableOnDisconnect()
         self.samplesValidator = QtGui.QIntValidator(0,2**16-1,self.samplesLineEdit)
         self.samplesLineEdit.setValidator(self.samplesValidator)
         for name in constants.COLOR2LED_DICT:
@@ -78,10 +78,8 @@ class BasicMainWindow(QtGui.QMainWindow,Ui_MainWindow):
             
         self.plotCheckBox.setCheckState(QtCore.Qt.Checked)
         plt.ion()
-        self.fig = None
-        
-    def portChanged_Callback(self):
-        self.port = str(self.portLineEdit.text())
+
+        self.updateWidgetEnabled()
 
     def connectPressed_Callback(self):
         if self.dev == None:
@@ -103,35 +101,43 @@ class BasicMainWindow(QtGui.QMainWindow,Ui_MainWindow):
             self.dev.close()
             self.dev = None
         if connected:
-            self.setWidgetEnableOnConnect()
             self.numSamples = self.dev.getNumSamples()
             self.samplesLineEdit.setText('{0}'.format(self.numSamples))
         else:
             self.connectPushButton.setText('Connect')
-            self.setWidgetEnableOnDisconnect()
             self.samplesLineEdit.setText('')
+        self.updateWidgetEnabled()
 
     def calibratePressed_Callback(self):
         self.transmissionTextEdit.setText('')
         self.absorbanceTextEdit.setText('')
         self.measurePushButton.setEnabled(False)
-        self.setWidgetEnableOnMeasure()
+        self.setWidgetEnabledOnMeasure()
 
     def calibrateClicked_Callback(self):
         if not constants.DEVEL_FAKE_MEASURE: 
-            self.dev.calibrate()
+            try:
+                self.dev.calibrate()
+            except IOError, e:
+                msgTitle = 'Calibration Error:'
+                msgText = 'unable to calibrate device: {0}'.format(str(e))
+                QtGui.QMessageBox.warning(self,msgTitle, msgText)
+                self.updateWidgetEnabled()
+                return 
+
         freq = None  
         tran = 1.0, 1.0, 1.0, 1.0
         abso = 0.0, 0.0, 0.0, 0.0
         self.measValues = freq, tran, abso
+        self.isCalibrated = True
         self.updateResultsDisplay()
-        self.setWidgetEnableOnConnect()
+        self.updateWidgetEnabled()
 
     def measurePressed_Callback(self):
         self.transmissionTextEdit.setText('')
         self.absorbanceTextEdit.setText('')
         self.calibratePushButton.setEnabled(False)
-        self.setWidgetEnableOnMeasure()
+        self.setWidgetEnabledOnMeasure()
 
     def measureClicked_Callback(self):
         if constants.DEVEL_FAKE_MEASURE:
@@ -139,22 +145,37 @@ class BasicMainWindow(QtGui.QMainWindow,Ui_MainWindow):
             tranValues = tuple(numpy.random.random((4,)))
             absoValues = tuple(numpy.random.random((4,)))
         else:
-            freqValues, tranValues, absoValues = self.dev.getMeasurement()
+            try:
+                freqValues, tranValues, absoValues = self.dev.getMeasurement()
+            except IOError, e:
+                msgTitle = 'Measurement Error:'
+                msgText = 'unable to get measurement: {0}'.format(str(e))
+                QtGui.QMessageBox.warning(self,msgTitle, msgText)
+                self.updateWidgetEnabled()
+                return 
+
         self.measValues = freqValues, tranValues, absoValues
         self.updateResultsDisplay()
-        self.updatePlot()
-        self.setWidgetEnableOnConnect()
+        self.updatePlot(create=True)
+        self.updateWidgetEnabled()
 
-    def updatePlot(self):
+    def updatePlot(self,create=False):
+        if not create and not plt.fignum_exists(constants.PLOT_FIGURE_NUM):
+            return
         if self.measValues is None:
             return
         freqValues, tranValues, absoValues = self.measValues
+
         if self.plotCheckBox.isChecked():
             barWidth = constants.PLOT_BAR_WIDTH 
-            colorNames = constants.COLOR2LED_DICT.keys()
+            colorNames = sorted(constants.COLOR2LED_DICT.keys())
+
             xLabelList = []
             absoList= []
-            for c, a in zip(colorNames,absoValues):
+
+            for c in colorNames:
+                ledNumber = constants.COLOR2LED_DICT[c]
+                a = absoValues[ledNumber]
                 if self.isColorChecked(c):
                     xLabelList.append(c) 
                     absoList.append(a)
@@ -222,7 +243,7 @@ class BasicMainWindow(QtGui.QMainWindow,Ui_MainWindow):
             self.numSamples = value
             self.dev.setNumSamples(value)
 
-    def setWidgetEnableOnMeasure(self):
+    def setWidgetEnabledOnMeasure(self):
         self.transmissionTextEdit.setEnabled(False)
         self.absorbanceTextEdit.setEnabled(False)
         self.transmissionGroupBox.setEnabled(False)
@@ -234,36 +255,36 @@ class BasicMainWindow(QtGui.QMainWindow,Ui_MainWindow):
         self.whiteCheckBox.setEnabled(False)
         self.plotCheckBox.setEnabled(False)
 
-
-    def setWidgetEnableOnConnect(self):
-        self.transmissionTextEdit.setEnabled(True)
-        self.absorbanceTextEdit.setEnabled(True)
-        self.calibratePushButton.setEnabled(True)
-        self.measurePushButton.setEnabled(True)
-        self.transmissionGroupBox.setEnabled(True)
-        self.absorbanceGroupBox.setEnabled(True)
-        self.samplesLineEdit.setEnabled(True)
-        self.redCheckBox.setEnabled(True)
-        self.greenCheckBox.setEnabled(True)
-        self.blueCheckBox.setEnabled(True)
-        self.whiteCheckBox.setEnabled(True)
-        self.portLineEdit.setEnabled(False)
-        self.plotCheckBox.setEnabled(True)
-
-    def setWidgetEnableOnDisconnect(self):
-        self.transmissionTextEdit.setEnabled(False)
-        self.absorbanceTextEdit.setEnabled(False)
-        self.calibratePushButton.setEnabled(False)
-        self.measurePushButton.setEnabled(False)
-        self.transmissionGroupBox.setEnabled(False)
-        self.absorbanceGroupBox.setEnabled(False)
-        self.samplesLineEdit.setEnabled(False)
-        self.redCheckBox.setEnabled(False)
-        self.greenCheckBox.setEnabled(False)
-        self.blueCheckBox.setEnabled(False)
-        self.whiteCheckBox.setEnabled(False)
-        self.portLineEdit.setEnabled(True)
-        self.plotCheckBox.setEnabled(False)
+    def updateWidgetEnabled(self):
+        if self.dev is None:
+            self.transmissionTextEdit.setEnabled(False)
+            self.absorbanceTextEdit.setEnabled(False)
+            self.calibratePushButton.setEnabled(False)
+            self.measurePushButton.setEnabled(False)
+            self.transmissionGroupBox.setEnabled(False)
+            self.absorbanceGroupBox.setEnabled(False)
+            self.samplesLineEdit.setEnabled(False)
+            self.redCheckBox.setEnabled(False)
+            self.greenCheckBox.setEnabled(False)
+            self.blueCheckBox.setEnabled(False)
+            self.whiteCheckBox.setEnabled(False)
+            self.portLineEdit.setEnabled(True)
+            self.plotCheckBox.setEnabled(False)
+        else:
+            self.transmissionTextEdit.setEnabled(True)
+            self.absorbanceTextEdit.setEnabled(True)
+            self.calibratePushButton.setEnabled(True)
+            self.transmissionGroupBox.setEnabled(True)
+            self.absorbanceGroupBox.setEnabled(True)
+            self.samplesLineEdit.setEnabled(True)
+            self.portLineEdit.setEnabled(False)
+            if self.isCalibrated:
+                self.measurePushButton.setEnabled(True)
+                self.redCheckBox.setEnabled(True)
+                self.greenCheckBox.setEnabled(True)
+                self.blueCheckBox.setEnabled(True)
+                self.whiteCheckBox.setEnabled(True)
+                self.plotCheckBox.setEnabled(True)
 
     def closeFigure(self): 
         if self.fig is not None and plt.fignum_exists(constants.PLOT_FIGURE_NUM): 

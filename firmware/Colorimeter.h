@@ -35,6 +35,7 @@ class Colorimeter {
         void getMeasurement();
 
         void calibrate();
+        bool checkCalibration();
         void EEPROM_saveCalibration();
         void EEPROM_loadCalibration();
 

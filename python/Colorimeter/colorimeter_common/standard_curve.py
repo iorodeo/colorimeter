@@ -26,4 +26,4 @@ def getCoefficient(abso,conc,fitType='force_zero'):
     values for a standard curve.
     """
     slope, dummy0, dummy1 = getLinearFit(abso,conc,fitType=fitType)
-    return 1.0/slope
+    return slope

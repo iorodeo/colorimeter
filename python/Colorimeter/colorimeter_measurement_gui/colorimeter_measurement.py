@@ -47,7 +47,6 @@ class MeasurementMainWindow(MainWindowWithTable, Ui_MainWindow):
         super(MeasurementMainWindow,self).initialize()
         self.coeff = None
         self.noValueSymbol = constants.NO_VALUE_SYMBOL_LABEL
-        self.saveFileReverseOrder = False
 
         # Set up data table
         self.tableWidget.clean(setup=True)
@@ -110,44 +109,16 @@ class MeasurementMainWindow(MainWindowWithTable, Ui_MainWindow):
         return headerStr
 
     def updateWidgetEnabled(self):
-        """
-        Updates the GUI widgets enabled properties based on the current
-        state of the program.
-        """
+        super(MeasurementMainWindow,self).updateWidgetEnabled()
         if self.dev is None:
-            self.measurePushButton.setEnabled(False)
-            self.calibratePushButton.setEnabled(False)
-            if self.tableWidget.measIndex > 0:
-                self.clearPushButton.setEnabled(True)
-                self.plotPushButton.setEnabled(True)
-                self.tableWidget.setEnabled(True)
-            else:
-                self.clearPushButton.setEnabled(False)
-                self.plotPushButton.setEnabled(False)
-                self.tableWidget.setEnabled(False)
             self.testSolutionWidget.setEnabled(False)
             self.coeffLEDWidget.setEnabled(False)
-            self.portLineEdit.setEnabled(True)
-            self.statusbar.showMessage('Not Connected')
         else:
             self.testSolutionWidget.setEnabled(True)
             if self.coeff is None:
                 self.calibratePushButton.setEnabled(False)
             else:
                 self.calibratePushButton.setEnabled(True)
-            if self.isCalibrated and self.coeff is not None:
-                self.plotPushButton.setEnabled(True)
-                self.clearPushButton.setEnabled(True)
-                self.measurePushButton.setEnabled(True)
-                self.tableWidget.setEnabled(True)
-            else:
-                self.plotPushButton.setEnabled(False)
-                self.clearPushButton.setEnabled(False)
-                self.measurePushButton.setEnabled(False)
-                self.tableWidget.setEnabled(False)
-            self.portLineEdit.setEnabled(False)
-            self.connectPushButton.setFlat(False)
-            self.statusbar.showMessage('Connected, Mode: Stopped')
 
     def updatePlot(self,create=False):
 
@@ -190,10 +161,6 @@ class MeasurementMainWindow(MainWindowWithTable, Ui_MainWindow):
         plt.draw() 
 
     def loadDefaultTestSolutionDict(self):
-        """
-        Load the dictionary mapping the test solution name to the test solution
-        data from the default location.
-        """
         ## Works with pyinstaller
         ## ---------------------------------------------------------------
         #default_TestSolutionDir = getResourcePath('data')
@@ -203,18 +170,11 @@ class MeasurementMainWindow(MainWindowWithTable, Ui_MainWindow):
         return import_export.loadTestSolutionDict(fileList,tag='D')
 
     def loadUserTestSolutionDict(self):
-        """
-        Load the dictionary mapping test solution name to test solution data
-        file from the user's directory.
-        """
         userTestSolutionDir = import_export.getUserTestSolutionDir(self.userHome)
         fileList = import_export.getTestSolutionFilesFromDir(userTestSolutionDir)
         return import_export.loadTestSolutionDict(fileList,tag='U')
 
     def getTestSolutionFilesFromResources(self): 
-        """
-        Get the list of test solution files form the package resources.
-        """
         fileNames = pkg_resources.resource_listdir(__name__,'data')
         testFiles = []
         for name in fileNames:
@@ -223,10 +183,6 @@ class MeasurementMainWindow(MainWindowWithTable, Ui_MainWindow):
         return testFiles
 
     def populateTestSolutionComboBox(self):
-        """
-        Populates the test solution combobox for the currently selected
-        options (via the Options menu).
-        """
         self.testSolutionComboBox.clear()
         self.testSolutionComboBox.addItem('-- (manually specify) --')
         includeDflt = self.actionIncludeDefaultTestSolutions.isChecked()

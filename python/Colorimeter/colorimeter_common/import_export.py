@@ -61,10 +61,11 @@ def exportTestSolutionData(userHome, solutionName, dataList, color, dateStr):
             'name': solutionName,
             'date': dateStr,
             'led' : color,
-            'values': [list(x) for x in dataList],
+            'values': [map(float,x) for x in dataList],
             }
     with open(fileName,'w') as fid: 
         yaml.dump(dataDict,fid)
+        print(dataDict)
 
 def deleteTestSolution(userHome, solutionName):
     """

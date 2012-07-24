@@ -18,9 +18,20 @@ class MainWindowCommon(QtGui.QMainWindow):
 
     def connectActions(self):
         print('MainWindowCommon.initialize')
+        self.portLineEdit.editingFinished.connect(self.portChanged_Callback)
 
     def initialize(self):
         print('MainWindowCommon.initialize')
+        self.setAppSize()
+
+    def portChanged_Callback(self):
+        self.port = str(self.portLineEdit.text())
+
+    def setAppSize(self):
+        availGeom = QtGui.QApplication.desktop().availableGeometry()
+        width = min([0.9*availGeom.width(), self.geometry().width()])
+        height = min([0.9*availGeom.height(), self.geometry().height()])
+        self.setGeometry(0,0,width,height)
 
 
 class MainWindowWithTable(MainWindowCommon):
@@ -39,9 +50,6 @@ class MainWindowWithTable(MainWindowCommon):
     def setTableData(self):
         pass
 
-    def updateWidgetEnabled(self):
-        # Figure out the common elements here
-        pass
     # -------------------------------------------------------------------------
 
     def __init__(self,parent=None):
@@ -51,9 +59,9 @@ class MainWindowWithTable(MainWindowCommon):
     def connectActions(self):
         super(MainWindowWithTable,self).connectActions()
         print('MainWindowWithTable.connectActions')
-        self.portLineEdit.editingFinished.connect(self.portChanged_Callback)
         self.connectPushButton.pressed.connect(self.connectPressed_Callback)
         self.connectPushButton.clicked.connect(self.connectClicked_Callback)
+
         self.calibratePushButton.pressed.connect(self.calibratePressed_Callback)
         self.calibratePushButton.clicked.connect(self.calibrateClicked_Callback)
         self.measurePushButton.clicked.connect(self.measureClicked_Callback)
@@ -75,12 +83,12 @@ class MainWindowWithTable(MainWindowCommon):
 
 
     def initialize(self):
+
         super(MainWindowWithTable,self).initialize()
         print('MainWindowWithTable.initialize')
         self.dev = None
         self.fig = None
         self.isCalibrated = False
-        self.saveFileReverseOrder = False
 
         # Set default port based on system
         osType = platform.system()
@@ -125,12 +133,8 @@ class MainWindowWithTable(MainWindowCommon):
         with open(filename,'w') as f:
             f.write(headerStr)
             f.write(os.linesep)
-            for x,y in dataList:
-                if self.saveFileReverseOrder:
-                    f.write('{0}  {1}{2}'.format(y,x,os.linesep))
-                else:
-                    f.write('{0}  {1}{2}'.format(x,y,os.linesep))
-
+            for x,y in dataList: 
+                f.write('{0}  {1}{2}'.format(x,y,os.linesep))
 
     def loadFile_Callback(self):
         """
@@ -178,6 +182,7 @@ class MainWindowWithTable(MainWindowCommon):
             if not line:
                 continue
             if 'LED' in line:
+                print(line)
                 try:
                     color = line[line.index('LED')+1].lower()
                 except IndexError, e:
@@ -187,16 +192,12 @@ class MainWindowWithTable(MainWindowCommon):
                 continue
             if line[0] == '#':
                 continue
-            if len(line) >= 2:
-                if self.saveFileReverseOrder:
-                    x,y = line[1], line[0]
-                else: 
-                    x,y = line[0], line[1]
+            if len(line) >= 2: 
+                x = ' '.join(line[:-1])
+                y = line[-1]
             dataList.append((x,y))
         return dataList, ledColor
 
-    def portChanged_Callback(self):
-        self.port = str(self.portLineEdit.text())
 
     def plotPushButtonClicked_Callback(self):
         self.updatePlot(create=True)
@@ -235,6 +236,7 @@ class MainWindowWithTable(MainWindowCommon):
             connected = False
             self.isCalibrated = False
         self.updateWidgetEnabled()
+        self.connectPushButton.setFlat(False)
 
     def colorRadioButtonClicked_Callback(self,color):
         if len(self.tableWidget.item(0,1).text()):
@@ -290,6 +292,38 @@ class MainWindowWithTable(MainWindowCommon):
         button.setChecked(True)
         self.currentColor = color
 
+    def updateWidgetEnabled(self):
+        if self.dev is None:
+            self.measurePushButton.setEnabled(False)
+            self.calibratePushButton.setEnabled(False)
+            if self.tableWidget.measIndex > 0:
+                self.clearPushButton.setEnabled(True)
+                self.plotPushButton.setEnabled(True)
+                self.tableWidget.setEnabled(True)
+            else:
+                self.clearPushButton.setEnabled(False)
+                self.plotPushButton.setEnabled(False)
+                self.tableWidget.setEnabled(False)
+            self.portLineEdit.setEnabled(True)
+            self.statusbar.showMessage('Not Connected')
+        else:
+            if self.isCalibrated:
+                self.plotPushButton.setEnabled(True)
+                self.clearPushButton.setEnabled(True)
+                self.measurePushButton.setEnabled(True)
+                self.tableWidget.setEnabled(True)
+            else:
+                if self.tableWidget.measIndex > 0:
+                    self.tableWidget.setEnabled(True)
+                    self.plotPushButton.setEnabled(True)
+                    self.clearPushButton.setEnabled(True)
+                else:
+                    self.tableWidget.setEnabled(False)
+                    self.plotPushButton.setEnabled(False)
+                    self.clearPushButton.setEnabled(False)
+            self.portLineEdit.setEnabled(False)
+            self.statusbar.showMessage('Connected, Mode: Stopped')
+
     def closeEvent(self,event):
         if self.fig is not None:
             plt.close(self.fig)
@@ -303,3 +337,6 @@ class MainWindowWithTable(MainWindowCommon):
 
     def main(self):
         self.show()
+
+
+

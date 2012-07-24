@@ -19,6 +19,8 @@ class MainWindowCommon(QtGui.QMainWindow):
     def connectActions(self):
         print('MainWindowCommon.connectActions')
         self.portLineEdit.editingFinished.connect(self.portChanged_Callback)
+        self.connectPushButton.pressed.connect(self.connectPressed_Callback)
+        self.connectPushButton.clicked.connect(self.connectClicked_Callback)
 
     def initialize(self):
         print('MainWindowCommon.initialize')
@@ -40,6 +42,39 @@ class MainWindowCommon(QtGui.QMainWindow):
         self.lastSaveDir = self.userHome
         self.statusbar.showMessage('Not Connected')
         self.portLineEdit.setText(self.port) 
+
+    def connectPressed_Callback(self):
+        if self.dev == None:
+            self.connectPushButton.setText('Disconnect')
+            self.connectPushButton.setFlat(True)
+            self.portLineEdit.setEnabled(False)
+            self.statusbar.showMessage('Connecting...')
+
+    def connectClicked_Callback(self):
+        if self.dev == None:
+            try:
+                self.dev = Colorimeter(self.port)
+                connected = True
+            except Exception, e:
+                msgTitle = 'Connection Error'
+                msgText = 'unable to connect to device: {0}'.format(str(e))
+                QtGui.QMessageBox.warning(self,msgTitle, msgText)
+                self.connectPushButton.setText('Connect')
+                self.statusbar.showMessage('Not Connected')
+                connected = False
+                self.dev = None
+        else:
+            self.connectPushButton.setText('Connect')
+            try:
+                self.cleanUpAndCloseDevice()
+            except Exception, e:
+                QtGui.QMessageBox.critical(self,'Error', str(e))
+            connected = False
+
+        if connected:
+            self.numSamples = self.dev.getNumSamples()
+        self.updateWidgetEnabled()
+        self.connectPushButton.setFlat(False)
 
     def portChanged_Callback(self):
         self.port = str(self.portLineEdit.text())
@@ -128,9 +163,6 @@ class MainWindowWithTable(MainWindowCommon):
     def connectActions(self):
         super(MainWindowWithTable,self).connectActions()
         print('MainWindowWithTable.connectActions')
-        self.connectPushButton.pressed.connect(self.connectPressed_Callback)
-        self.connectPushButton.clicked.connect(self.connectClicked_Callback)
-
         self.calibratePushButton.pressed.connect(self.calibratePressed_Callback)
         self.calibratePushButton.clicked.connect(self.calibrateClicked_Callback)
         self.measurePushButton.clicked.connect(self.measureClicked_Callback)
@@ -218,39 +250,8 @@ class MainWindowWithTable(MainWindowCommon):
             dataList.append((x,y))
         return dataList, ledColor
 
-
     def plotPushButtonClicked_Callback(self):
         self.updatePlot(create=True)
-
-    def connectPressed_Callback(self):
-        if self.dev == None:
-            self.connectPushButton.setText('Disconnect')
-            self.connectPushButton.setFlat(True)
-            self.portLineEdit.setEnabled(False)
-            self.statusbar.showMessage('Connecting...')
-
-    def connectClicked_Callback(self):
-        if self.dev == None:
-            try:
-                self.dev = Colorimeter(self.port)
-                self.numSamples = self.dev.getNumSamples()
-                connected = True
-            except Exception, e:
-                QtGui.QMessageBox.critical(self,'Error', str(e))
-                self.connectPushButton.setText('Connect')
-                self.statusbar.showMessage('Not Connected')
-                self.portLineEdit.setEnabled(True)
-                connected = False
-        else:
-            self.connectPushButton.setText('Connect')
-            try:
-                self.cleanUpAndCloseDevice()
-            except Exception, e:
-                QtGui.QMessageBox.critical(self,'Error', str(e))
-            connected = False
-            self.isCalibrated = False
-        self.updateWidgetEnabled()
-        self.connectPushButton.setFlat(False)
 
     def colorRadioButtonClicked_Callback(self,color):
         if len(self.tableWidget.item(0,1).text()):

@@ -1,7 +1,7 @@
 import os
 
 # Development
-DEVEL_FAKE_MEASURE = False 
+DEVEL_FAKE_MEASURE = True 
 
 # Serial ports
 DFLT_PORT_WINDOWS = 'com1' 

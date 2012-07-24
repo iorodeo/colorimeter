@@ -127,14 +127,26 @@ bool Colorimeter::checkCalibration() {
 // ----------------------------------------------------------------------------
 float freq2trans(uint32_t calFreq, uint32_t sampleFreq) {
     float trans;
-    trans = ((float) sampleFreq)/((float) calFreq);
-    if (trans > 1.0) {
-        trans = 1.0;
+    if (calFreq == 0) {
+        trans = -1.0;
+    }
+    else {
+        trans = ((float) sampleFreq)/((float) calFreq);
+        if (trans > 1.0) {
+            trans = 1.0;
+        }
     }
     return trans;
 }
 
 float trans2absorb(float transmission) { 
-    return  (float)log10( 1.0/((double) transmission));
+    float absorb;
+    if (transmission > 0) {
+        absorb = (float)log10( 1.0/((double) transmission));
+    }
+    else {
+        absorb = -1.0;
+    }
+    return absorb;
 }
 

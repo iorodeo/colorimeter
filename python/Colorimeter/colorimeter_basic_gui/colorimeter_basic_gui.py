@@ -30,8 +30,6 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
 
     def connectActions(self):
         super(BasicMainWindow,self).connectActions()
-        self.connectPushButton.pressed.connect(self.connectPressed_Callback)
-        self.connectPushButton.clicked.connect(self.connectClicked_Callback)
         self.calibratePushButton.pressed.connect(self.calibratePressed_Callback)
         self.calibratePushButton.clicked.connect(self.calibrateClicked_Callback)
         self.measurePushButton.clicked.connect(self.measureClicked_Callback)
@@ -70,35 +68,13 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
         self.plotCheckBox.setCheckState(QtCore.Qt.Checked)
         self.updateWidgetEnabled()
 
-    def connectPressed_Callback(self):
-        if self.dev == None:
-            self.connectPushButton.setText('Disconnect')
-            self.connectPushButton.setFlat(True)
-            self.portLineEdit.setEnabled(False)
-            self.statusbar.showMessage('Connecting...')
-
     def connectClicked_Callback(self):
-        connected = False
-        if self.dev == None:
-            try:
-                self.dev = Colorimeter(self.port)
-                connected = True
-            except Exception, e:
-                msgTitle = 'Connection Error'
-                msgText = 'unable to connect to device: {0}'.format(str(e))
-                QtGui.QMessageBox.warning(self,msgTitle, msgText)
-                self.dev = None
-        else:
-            self.dev.close()
-            self.dev = None
-        if connected:
-            self.numSamples = self.dev.getNumSamples()
-            self.samplesLineEdit.setText('{0}'.format(self.numSamples))
-        else:
-            self.connectPushButton.setText('Connect')
+        super(BasicMainWindow,self).connectClicked_Callback()
+        if self.dev is None:
             self.samplesLineEdit.setText('')
-        self.updateWidgetEnabled()
-        self.connectPushButton.setFlat(False)
+        else:
+            self.samplesLineEdit.setText('{0}'.format(self.numSamples))
+
 
     def calibratePressed_Callback(self):
         self.transmissionTextEdit.setText('')

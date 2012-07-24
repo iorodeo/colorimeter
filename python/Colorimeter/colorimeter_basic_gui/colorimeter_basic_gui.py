@@ -80,6 +80,7 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
         self.transmissionTextEdit.setText('')
         self.absorbanceTextEdit.setText('')
         self.measurePushButton.setEnabled(False)
+        self.calibratePushButton.setFlat(True)
         self.setWidgetEnabledOnMeasure()
         self.statusbar.showMessage('Connected, Mode: Calibrating...')
 
@@ -87,18 +88,19 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
         if not constants.DEVEL_FAKE_MEASURE: 
             try:
                 self.dev.calibrate()
+                self.isCalibrated = True
             except IOError, e:
                 msgTitle = 'Calibration Error:'
                 msgText = 'unable to calibrate device: {0}'.format(str(e))
                 QtGui.QMessageBox.warning(self,msgTitle, msgText)
                 self.updateWidgetEnabled()
-                return 
 
-        freq = None  
-        tran = 1.0, 1.0, 1.0, 1.0
-        abso = 0.0, 0.0, 0.0, 0.0
-        self.measValues = freq, tran, abso
-        self.isCalibrated = True
+        if self.isCalibrated:
+            freq = None  
+            tran = 1.0, 1.0, 1.0, 1.0
+            abso = 0.0, 0.0, 0.0, 0.0
+            self.measValues = freq, tran, abso
+        self.calibratePushButton.setFlat(False)
         self.updateResultsDisplay()
         self.updateWidgetEnabled()
 

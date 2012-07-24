@@ -286,8 +286,14 @@ class MainWindowWithTable(MainWindowCommon):
 
     def calibrateClicked_Callback(self):
         if not constants.DEVEL_FAKE_MEASURE: 
-            self.dev.calibrate()
-        self.isCalibrated = True
+            try:
+                self.dev.calibrate()
+                self.isCalibrated = True
+            except IOError, e:
+                msgTitle = 'Calibration Error:'
+                msgText = 'unable to calibrate device: {0}'.format(str(e))
+                QtGui.QMessageBox.warning(self,msgTitle, msgText)
+                self.updateWidgetEnabled()
         self.calibratePushButton.setFlat(False)
         self.updateWidgetEnabled()
 

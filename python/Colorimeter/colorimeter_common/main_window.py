@@ -14,16 +14,19 @@ class MainWindowCommon(QtGui.QMainWindow):
 
     def __init__(self,parent=None):
         super(MainWindowCommon,self).__init__(parent)
-        print('MainWindowCommon.__init__')
 
     def connectActions(self):
-        print('MainWindowCommon.connectActions')
         self.portLineEdit.editingFinished.connect(self.portChanged_Callback)
         self.connectPushButton.pressed.connect(self.connectPressed_Callback)
         self.connectPushButton.clicked.connect(self.connectClicked_Callback)
+        self.calibratePushButton.pressed.connect(self.calibratePressed_Callback)
+        self.calibratePushButton.clicked.connect(self.calibrateClicked_Callback)
+        self.measurePushButton.clicked.connect(self.measureClicked_Callback)
+        self.measurePushButton.pressed.connect(self.measurePressed_Callback)
+        self.actionSave.triggered.connect(self.saveFile_Callback)
+        self.actionSave.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_S)
 
     def initialize(self):
-        print('MainWindowCommon.initialize')
         self.setAppSize()
         self.dev = None
         self.fig = None
@@ -75,6 +78,36 @@ class MainWindowCommon(QtGui.QMainWindow):
             self.numSamples = self.dev.getNumSamples()
         self.updateWidgetEnabled()
         self.connectPushButton.setFlat(False)
+
+    def calibratePressed_Callback(self):
+        self.measurePushButton.setEnabled(False)
+        self.calibratePushButton.setFlat(True)
+        self.statusbar.showMessage('Connected, Mode: Calibrating...')
+
+    def calibrateClicked_Callback(self):
+        if not constants.DEVEL_FAKE_MEASURE: 
+            try:
+                self.dev.calibrate()
+                self.isCalibrated = True
+            except IOError, e:
+                msgTitle = 'Calibration Error:'
+                msgText = 'unable to calibrate device: {0}'.format(str(e))
+                QtGui.QMessageBox.warning(self,msgTitle, msgText)
+                self.updateWidgetEnabled()
+        else:
+            self.isCalibrated = True
+        self.calibratePushButton.setFlat(False)
+        self.updateWidgetEnabled()
+
+    def measurePressed_Callback(self):
+        self.calibratePushButton.setEnabled(False)
+        self.measurePushButton.setFlat(True)
+        self.statusbar.showMessage('Connected, Mode: Measuring...')
+
+    def measureClicked_Callback(self):
+        self.getMeasurement()
+        self.measurePushButton.setFlat(False)
+        self.updateWidgetEnabled()
 
     def portChanged_Callback(self):
         self.port = str(self.portLineEdit.text())
@@ -158,33 +191,22 @@ class MainWindowWithTable(MainWindowCommon):
 
     def __init__(self,parent=None):
         super(MainWindowWithTable,self).__init__(parent)
-        print('MainWindowWithTable.__init__')
 
     def connectActions(self):
         super(MainWindowWithTable,self).connectActions()
-        print('MainWindowWithTable.connectActions')
-        self.calibratePushButton.pressed.connect(self.calibratePressed_Callback)
-        self.calibratePushButton.clicked.connect(self.calibrateClicked_Callback)
-        self.measurePushButton.clicked.connect(self.measureClicked_Callback)
-        self.measurePushButton.pressed.connect(self.measurePressed_Callback)
         self.clearPushButton.pressed.connect(self.clearPressed_Callback)
         self.clearPushButton.clicked.connect(self.clearClicked_Callback)
-
         for color in constants.COLOR2LED_DICT:
             button = getattr(self,'{0}RadioButton'.format(color))
             callback = functools.partial(self.colorRadioButtonClicked_Callback, color)
             button.clicked.connect(callback)
         self.plotPushButton.clicked.connect(self.plotPushButtonClicked_Callback)
-
-        self.actionSave.triggered.connect(self.saveFile_Callback)
-        self.actionSave.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_S)
         self.actionLoad.triggered.connect(self.loadFile_Callback)
         self.actionLoad.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_L)
         self.actionEditTestSolutions.triggered.connect(self.editTestSolutions_Callback)
 
     def initialize(self):
         super(MainWindowWithTable,self).initialize()
-        print('MainWindowWithTable.initialize')
         self.setLEDColor(constants.DFLT_LED_COLOR)
         self.tableWidget.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
         self.user_TestSolutionDir = os.path.join(self.userHome,constants.USER_DATA_DIR)
@@ -278,35 +300,17 @@ class MainWindowWithTable(MainWindowCommon):
         self.updateWidgetEnabled()
 
     def calibratePressed_Callback(self):
-        self.measurePushButton.setEnabled(False)
+        super(MainWindowWithTable,self).calibratePressed_Callback()
         self.plotPushButton.setEnabled(False)
         self.clearPushButton.setEnabled(False)
-        self.calibratePushButton.setFlat(True)
-        self.statusbar.showMessage('Connected, Mode: Calibrating...')
-
-    def calibrateClicked_Callback(self):
-        if not constants.DEVEL_FAKE_MEASURE: 
-            try:
-                self.dev.calibrate()
-                self.isCalibrated = True
-            except IOError, e:
-                msgTitle = 'Calibration Error:'
-                msgText = 'unable to calibrate device: {0}'.format(str(e))
-                QtGui.QMessageBox.warning(self,msgTitle, msgText)
-                self.updateWidgetEnabled()
-        self.calibratePushButton.setFlat(False)
-        self.updateWidgetEnabled()
 
     def measurePressed_Callback(self):
-        self.calibratePushButton.setEnabled(False)
+        super(MainWindowWithTable,self).measurePressed_Callback()
         self.plotPushButton.setEnabled(False)
-        self.measurePushButton.setFlat(True)
-        self.statusbar.showMessage('Connected, Mode: Measuring...')
 
     def measureClicked_Callback(self):
-        self.getMeasurement()
-        self.updatePlot()
-        self.updateWidgetEnabled()
+        super(MainWindowWithTable,self).measureClicked_Callback()
+        self.updatePlot(create=False)
 
     def setLEDColor(self,color):
         button = getattr(self,'{0}RadioButton'.format(color))

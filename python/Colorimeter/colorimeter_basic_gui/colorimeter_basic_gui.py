@@ -30,31 +30,27 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
 
     def connectActions(self):
         super(BasicMainWindow,self).connectActions()
-        self.calibratePushButton.pressed.connect(self.calibratePressed_Callback)
-        self.calibratePushButton.clicked.connect(self.calibrateClicked_Callback)
-        self.measurePushButton.clicked.connect(self.measureClicked_Callback)
-        self.measurePushButton.pressed.connect(self.measurePressed_Callback)
         self.samplesLineEdit.editingFinished.connect(self.samplesChanged_Callback)
         self.plotCheckBox.stateChanged.connect(self.plotCheckBox_Callback)
         for color in constants.COLOR2LED_DICT:
             checkBox = getattr(self,'{0}CheckBox'.format(color))
             callback = functools.partial(self.colorCheckBox_Callback,color)
             checkBox.stateChanged.connect(callback)
-        self.actionSave.triggered.connect(self.saveFile_Callback)
-        self.actionSave.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_S)
 
     def colorCheckBox_Callback(self,color):
         self.updateResultsDisplay()
-        self.updatePlot()
+        if self.plotCheckBox.isChecked():
+            create = True
+        else:
+            create = False
+        self.updatePlot(create=create)
 
     def plotCheckBox_Callback(self,value):
         if value == QtCore.Qt.Unchecked:
             if self.fig is not None:
-                plt.close(self.fig)
-                self.fig = None
+                self.closeFigure()
         else:
-            if self.fig is None:
-                self.updatePlot(create=True)
+            self.updatePlot(create=True)
 
     def initialize(self):
         super(BasicMainWindow,self).initialize()
@@ -75,43 +71,33 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
         else:
             self.samplesLineEdit.setText('{0}'.format(self.numSamples))
 
-
     def calibratePressed_Callback(self):
+        super(BasicMainWindow,self).calibratePressed_Callback()
         self.transmissionTextEdit.setText('')
         self.absorbanceTextEdit.setText('')
-        self.measurePushButton.setEnabled(False)
-        self.calibratePushButton.setFlat(True)
         self.setWidgetEnabledOnMeasure()
-        self.statusbar.showMessage('Connected, Mode: Calibrating...')
 
     def calibrateClicked_Callback(self):
-        if not constants.DEVEL_FAKE_MEASURE: 
-            try:
-                self.dev.calibrate()
-                self.isCalibrated = True
-            except IOError, e:
-                msgTitle = 'Calibration Error:'
-                msgText = 'unable to calibrate device: {0}'.format(str(e))
-                QtGui.QMessageBox.warning(self,msgTitle, msgText)
-                self.updateWidgetEnabled()
-
+        super(BasicMainWindow,self).calibrateClicked_Callback()
         if self.isCalibrated:
             freq = None  
             tran = 1.0, 1.0, 1.0, 1.0
             abso = 0.0, 0.0, 0.0, 0.0
             self.measValues = freq, tran, abso
-        self.calibratePushButton.setFlat(False)
         self.updateResultsDisplay()
-        self.updateWidgetEnabled()
 
     def measurePressed_Callback(self):
+        super(BasicMainWindow,self).measurePressed_Callback()
+        self.setWidgetEnabledOnMeasure()
         self.transmissionTextEdit.setText('')
         self.absorbanceTextEdit.setText('')
-        self.calibratePushButton.setEnabled(False)
-        self.setWidgetEnabledOnMeasure()
-        self.statusbar.showMessage('Connected, Mode: Measuring...')
 
     def measureClicked_Callback(self):
+        super(BasicMainWindow,self).measureClicked_Callback()
+        self.updatePlot(create=True)
+        self.updateResultsDisplay()
+
+    def getMeasurement(self):
         if constants.DEVEL_FAKE_MEASURE:
             freqValues = tuple(numpy.random.random((4,)))
             tranValues = tuple(numpy.random.random((4,)))
@@ -119,17 +105,13 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
         else:
             try:
                 freqValues, tranValues, absoValues = self.dev.getMeasurement()
+                self.measValues = freqValues, tranValues, absoValues
             except IOError, e:
                 msgTitle = 'Measurement Error:'
                 msgText = 'unable to get measurement: {0}'.format(str(e))
                 QtGui.QMessageBox.warning(self,msgTitle, msgText)
-                self.updateWidgetEnabled()
-                return 
+                self.measValues = None 
 
-        self.measValues = freqValues, tranValues, absoValues
-        self.updateResultsDisplay()
-        self.updatePlot(create=True)
-        self.updateWidgetEnabled()
 
     def updatePlot(self,create=False):
         if not create and not plt.fignum_exists(constants.PLOT_FIGURE_NUM):
@@ -190,19 +172,21 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
 
     def updateResultsDisplay(self):
         if self.measValues is None:
-            return 
-        freqValues, tranValues, absoValues = self.measValues
-        tranStrList, absoStrList = [], []
-        colorNames = sorted(constants.COLOR2LED_DICT)
-        for c in colorNames:
-            n = constants.COLOR2LED_DICT[c] 
-            if self.isColorChecked(c):
-                tranStrList.append('{0}:\t{1:1.3f}'.format(c, tranValues[n]))
-                absoStrList.append('{0}:\t{1:1.3f}'.format(c, absoValues[n]))
-        tranStr = os.linesep.join(tranStrList)
-        absoStr = os.linesep.join(absoStrList)
-        self.transmissionTextEdit.setText(tranStr)
-        self.absorbanceTextEdit.setText(absoStr)
+            self.transmissionTextEdit.setText('')
+            self.absorbanceTextEdit.setText('')
+        else:
+            freqValues, tranValues, absoValues = self.measValues
+            tranStrList, absoStrList = [], []
+            colorNames = sorted(constants.COLOR2LED_DICT)
+            for c in colorNames:
+                n = constants.COLOR2LED_DICT[c] 
+                if self.isColorChecked(c):
+                    tranStrList.append('{0}:\t{1:1.3f}'.format(c, tranValues[n]))
+                    absoStrList.append('{0}:\t{1:1.3f}'.format(c, absoValues[n]))
+            tranStr = os.linesep.join(tranStrList)
+            absoStr = os.linesep.join(absoStrList)
+            self.transmissionTextEdit.setText(tranStr)
+            self.absorbanceTextEdit.setText(absoStr)
 
     def isColorChecked(self,color):
         checkBox = getattr(self,'{0}CheckBox'.format(color))

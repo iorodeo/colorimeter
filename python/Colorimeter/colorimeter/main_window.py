@@ -7,7 +7,7 @@ from PyQt4 import QtGui
 import matplotlib.pyplot as plt 
 plt.ion()
 
-from colorimeter_common import constants
+import constants
 from colorimeter_serial import Colorimeter
 
 class MainWindowCommon(QtGui.QMainWindow):

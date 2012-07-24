@@ -5,29 +5,30 @@ import random
 import time
 import numpy
 import matplotlib
-matplotlib.use('Qt4Agg')
+if matplotlib.get_backend() != 'Qt4Agg':
+    matplotlib.use('Qt4Agg')
 import matplotlib.pyplot as plt 
 plt.ion()
 
 from PyQt4 import QtCore
 from PyQt4 import QtGui
 
-from colorimeter_plot_gui_ui import Ui_MainWindow 
-from colorimeter_common import constants
-from colorimeter_common import import_export 
-from colorimeter_common import standard_curve
-from colorimeter_common.main_window import MainWindowWithTable
+from plot_ui import Ui_MainWindow 
+from colorimeter import constants
+from colorimeter import import_export 
+from colorimeter import standard_curve
+from colorimeter.main_window import MainWindowWithTable
 
-class ColorimeterPlotMainWindow(MainWindowWithTable, Ui_MainWindow):
+class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
 
     def __init__(self,parent=None):
-        super(ColorimeterPlotMainWindow,self).__init__(parent)
+        super(PlotMainWindow,self).__init__(parent)
         self.setupUi(self)
         self.connectActions()
         self.initialize()
 
     def connectActions(self):
-        super(ColorimeterPlotMainWindow,self).connectActions()
+        super(PlotMainWindow,self).connectActions()
         self.actionExport.triggered.connect(self.exportData_Callback)
         self.actionExport.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_E)
         self.actionImport.triggered.connect(self.importData_Callback)
@@ -39,7 +40,7 @@ class ColorimeterPlotMainWindow(MainWindowWithTable, Ui_MainWindow):
         print('importData_Callback')
         
     def initialize(self):
-        super(ColorimeterPlotMainWindow,self).initialize()
+        super(PlotMainWindow,self).initialize()
         self.noValueSymbol = constants.NO_VALUE_SYMBOL_NUMBER
         self.tableWidget.clean(setup=True)
         self.tableWidget.updateFunc = self.updatePlot
@@ -159,7 +160,7 @@ class ColorimeterPlotMainWindow(MainWindowWithTable, Ui_MainWindow):
             self.tableWidget.addData(concStr,absoStr)
 
     def updateWidgetEnabled(self):
-        super(ColorimeterPlotMainWindow,self).updateWidgetEnabled()
+        super(PlotMainWindow,self).updateWidgetEnabled()
         if self.dev is None:
             self.ledColorWidget.setEnabled(False)
         else:
@@ -176,9 +177,9 @@ def dataListToFloat(dataList):
         dataListFloat.append((x,y))
     return dataListFloat
 
-def plotGuiMain():
+def startPlotGUI():
     app = QtGui.QApplication(sys.argv)
-    mainWindow = ColorimeterPlotMainWindow()
+    mainWindow = PlotMainWindow()
     mainWindow.main()
     app.exec_()
 
@@ -196,4 +197,4 @@ class DoubleItemDelegate(QtGui.QStyledItemDelegate):
 
 # -----------------------------------------------------------------------------
 if __name__ == '__main__':
-    plotGuiMain()
+    startPlotGUI()

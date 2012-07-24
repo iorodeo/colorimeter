@@ -1,1 +1,1 @@
-from colorimeter_measurement import measurementGuiMain 
+from measurement import startMeasurementGUI

@@ -20,16 +20,8 @@ setup(
     version='0.1.0',
     author='Will Dickson',
     author_email='will@iorodeo.com',
-    packages=[
-        'colorimeter_serial', 
-        'colorimeter_basic_gui', 
-        'colorimeter_plot_gui',
-        'colorimeter_measurement_gui',
-        'colorimeter_common', 
-        ],
-    package_data = {
-        'colorimeter_measurement_gui': ['colorimeter_measurement_gui/data/*.yaml'],
-        },
+    packages=['colorimeter'],
+    package_data = { 'colorimeter': ['colorimeter/data/*.yaml']},
     scripts=['bin/colorimeter-basic', 'bin/colorimeter-plot', 'bin/colorimeter-measure'],
     license='LICENSE.txt',
     description="Serial interface and measurement software for IO Rodeo's colorimeter",

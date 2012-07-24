@@ -1,5 +1,6 @@
 from PyQt4 import QtCore
 from PyQt4 import QtGui
+
 from constants import TABLE_MIN_ROW_COUNT
 from constants import TABLE_COL_COUNT
 

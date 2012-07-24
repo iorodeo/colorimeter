@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>487</width>
-    <height>618</height>
+    <width>589</width>
+    <height>537</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Colorimeter Plot</string>
+   <string>Colorimeter Measurement</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -78,14 +78,103 @@
      </widget>
     </item>
     <item>
-     <widget class="QWidget" name="ledColorWidget" native="true">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
+     <widget class="QWidget" name="testSolutionWidget" native="true">
+      <layout class="QHBoxLayout" name="horizontalLayout_5">
+       <item>
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>Test Solution</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="testSolutionComboBox">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>200</width>
+           <height>0</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_5">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>461</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="Line" name="line_2">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
       </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QWidget" name="coeffLEDWidget" native="true">
       <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Coefficient</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="coefficientLineEdit">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>120</width>
+           <height>16777215</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_4">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Fixed</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>LED</string>
+         </property>
+        </widget>
+       </item>
        <item>
         <widget class="QRadioButton" name="redRadioButton">
          <property name="sizePolicy">
@@ -139,13 +228,20 @@
          </property>
          <property name="sizeHint" stdset="0">
           <size>
-           <width>134</width>
+           <width>40</width>
            <height>20</height>
           </size>
          </property>
         </spacer>
        </item>
       </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="Line" name="line_3">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
      </widget>
     </item>
     <item>
@@ -164,6 +260,9 @@
          </property>
          <property name="alternatingRowColors">
           <bool>true</bool>
+         </property>
+         <property name="selectionMode">
+          <enum>QAbstractItemView::ContiguousSelection</enum>
          </property>
          <property name="rowCount">
           <number>0</number>
@@ -242,7 +341,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>487</width>
+     <width>589</width>
      <height>23</height>
     </rect>
    </property>
@@ -255,39 +354,61 @@
    </widget>
    <widget class="QMenu" name="menuOptions">
     <property name="title">
-     <string>Options</string>
+     <string>&amp;Options</string>
     </property>
-    <addaction name="actionExport"/>
-    <addaction name="actionImport"/>
+    <widget class="QMenu" name="menuInclude">
+     <property name="title">
+      <string>Include</string>
+     </property>
+     <addaction name="actionIncludeUserTestSolutions"/>
+     <addaction name="actionIncludeDefaultTestSolutions"/>
+    </widget>
+    <addaction name="menuInclude"/>
     <addaction name="actionEditTestSolutions"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuOptions"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="actionSave">
+  <action name="actionReloadTestSolutions">
    <property name="text">
-    <string>Save...</string>
+    <string>Reload Test Solutions</string>
    </property>
   </action>
-  <action name="action_About">
+  <action name="actionIncludeUserTestSolutions">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
-    <string>About...</string>
+    <string>User Test Solutions</string>
+   </property>
+  </action>
+  <action name="actionIncludeDefaultTestSolutions">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Default Test Solutions</string>
    </property>
   </action>
   <action name="actionLoad">
    <property name="text">
-    <string>Load...</string>
+    <string>Load</string>
    </property>
   </action>
-  <action name="actionExport">
+  <action name="actionSave">
    <property name="text">
-    <string>Export Test Solution...</string>
+    <string>Save</string>
    </property>
   </action>
-  <action name="actionImport">
+  <action name="actionImportTestSolution">
    <property name="text">
     <string>Import Test Solution...</string>
+   </property>
+  </action>
+  <action name="actionRemoveTestSolution">
+   <property name="text">
+    <string>Remove Test Solution...</string>
    </property>
   </action>
   <action name="actionEditTestSolutions">
@@ -300,7 +421,7 @@
   <customwidget>
    <class>ColorimeterTableWidget</class>
    <extends>QTableWidget</extends>
-   <header>colorimeter_common.table_widget</header>
+   <header>colorimeter.table_widget</header>
   </customwidget>
  </customwidgets>
  <resources/>

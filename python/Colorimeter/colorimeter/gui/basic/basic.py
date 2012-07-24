@@ -3,7 +3,8 @@ import os
 import sys
 import platform
 import matplotlib
-matplotlib.use('Qt4Agg')
+if matplotlib.get_backend() != 'Qt4Agg':
+    matplotlib.use('Qt4Agg')
 import matplotlib.pyplot as plt 
 plt.ion()
 import numpy
@@ -12,10 +13,10 @@ import functools
 from PyQt4 import QtCore
 from PyQt4 import QtGui
 
-from colorimeter_basic_gui_ui import Ui_MainWindow 
-from colorimeter_serial import Colorimeter
-from colorimeter_common import constants
-from colorimeter_common.main_window import MainWindowCommon
+from basic_ui import Ui_MainWindow 
+from colorimeter import Colorimeter
+from colorimeter import constants
+from colorimeter.main_window import MainWindowCommon
 
 DFLT_PORT_WINDOWS = 'com1' 
 DFLT_PORT_LINUX = '/dev/ttyACM0' 
@@ -265,7 +266,7 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
                 self.plotCheckBox.setEnabled(True)
             self.statusbar.showMessage('Connected, Mode: Stopped')
 
-def basicGuiMain():
+def startBasicGUI():
     app = QtGui.QApplication(sys.argv)
     mainWindow = BasicMainWindow()
     mainWindow.main()
@@ -273,5 +274,5 @@ def basicGuiMain():
 
 # -----------------------------------------------------------------------------
 if __name__ == '__main__':
-    basicGuiMain()
+    startBasicGUI()
 

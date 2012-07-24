@@ -5,12 +5,10 @@ import random
 import time
 import numpy
 import pkg_resources
-# TEMPORARY - FOR DEVELOPMENT ##################
 import random
-################################################
-
 import matplotlib
-matplotlib.use('Qt4Agg')
+if matplotlib.get_backend() != 'Qt4Agg':
+    matplotlib.use('Qt4Agg')
 import matplotlib.pyplot as plt 
 plt.ion()
 
@@ -18,10 +16,10 @@ from PyQt4 import QtCore
 from PyQt4 import QtGui
 
 from colorimeter_measurement_ui import Ui_MainWindow 
-from colorimeter_common import constants 
-from colorimeter_common import import_export 
-from colorimeter_common import standard_curve
-from colorimeter_common.main_window import MainWindowWithTable
+from colorimeter import constants 
+from colorimeter import import_export 
+from colorimeter import standard_curve
+from colorimeter.main_window import MainWindowWithTable
 
 class MeasurementMainWindow(MainWindowWithTable, Ui_MainWindow):
 
@@ -239,7 +237,7 @@ def getResourcePath(relative_path):
     resource_path = os.path.join(base_path, relative_path)
     return resource_path
 
-def measurementGuiMain():
+def startMeasurementGUI():
     app = QtGui.QApplication(sys.argv)
     mainWindow = MeasurementMainWindow()
     mainWindow.main()
@@ -247,5 +245,5 @@ def measurementGuiMain():
 
 # -----------------------------------------------------------------------------
 if __name__ == '__main__':
-    measurementGuiMain()
+    startMeasurementGUI()
 

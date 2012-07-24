@@ -17,12 +17,29 @@ class MainWindowCommon(QtGui.QMainWindow):
         print('MainWindowCommon.__init__')
 
     def connectActions(self):
-        print('MainWindowCommon.initialize')
+        print('MainWindowCommon.connectActions')
         self.portLineEdit.editingFinished.connect(self.portChanged_Callback)
 
     def initialize(self):
         print('MainWindowCommon.initialize')
         self.setAppSize()
+        self.dev = None
+        self.fig = None
+        self.isCalibrated = False
+
+        # Set default port based on system
+        osType = platform.system()
+        if osType == 'Linux': 
+            self.port = constants.DFLT_PORT_LINUX 
+        else: 
+            self.port = constants.DFLT_PORT_WINDOWS 
+        # Get users home directory
+        self.userHome = os.getenv('USERPROFILE')
+        if self.userHome is None:
+            self.userHome = os.getenv('HOME')
+        self.lastSaveDir = self.userHome
+        self.statusbar.showMessage('Not Connected')
+        self.portLineEdit.setText(self.port) 
 
     def portChanged_Callback(self):
         self.port = str(self.portLineEdit.text())
@@ -33,6 +50,58 @@ class MainWindowCommon(QtGui.QMainWindow):
         height = min([0.9*availGeom.height(), self.geometry().height()])
         self.setGeometry(0,0,width,height)
 
+    def saveFile_Callback(self):
+        if not self.haveData():
+            msgTitle = 'Save Error'
+            msgText = 'No data to save.'
+            QtGui.QMessageBox.warning(self,msgTitle, msgText)
+            return
+        dialog = QtGui.QFileDialog()
+        dialog.setFileMode(QtGui.QFileDialog.AnyFile) 
+        filename = dialog.getSaveFileName(
+                   None,
+                   'Select data file',
+                   self.lastSaveDir,
+                   options=QtGui.QFileDialog.DontUseNativeDialog,
+                   )              
+        filename = str(filename)
+        if not filename:
+            return
+        self.lastSaveDir =  os.path.split(filename)[0]
+        dataList = self.getData()
+        headerStr = self.getSaveFileHeader()
+        with open(filename,'w') as f:
+            f.write(headerStr)
+            f.write(os.linesep)
+            for vals in dataList: 
+                for x in vals:
+                    f.write('{0}  '.format(x))
+                f.write(os.linesep)
+
+    def haveData(self):
+        return False
+
+    def getData(self):
+        return []
+
+    def closeFigure(self): 
+        if self.fig is not None and plt.fignum_exists(constants.PLOT_FIGURE_NUM): 
+            plt.close(self.fig)
+            self.fig = None
+
+    def closeEvent(self,event):
+        if self.fig is not None:
+            plt.close(self.fig)
+        if self.dev is not None:
+            self.cleanUpAndCloseDevice()
+        event.accept()
+
+    def cleanUpAndCloseDevice(self):
+        self.dev.close()
+        self.dev = None
+
+    def main(self):
+        self.show()
 
 class MainWindowWithTable(MainWindowCommon):
 
@@ -81,60 +150,12 @@ class MainWindowWithTable(MainWindowCommon):
         self.actionLoad.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_L)
         self.actionEditTestSolutions.triggered.connect(self.editTestSolutions_Callback)
 
-
     def initialize(self):
-
         super(MainWindowWithTable,self).initialize()
         print('MainWindowWithTable.initialize')
-        self.dev = None
-        self.fig = None
-        self.isCalibrated = False
-
-        # Set default port based on system
-        osType = platform.system()
-        if osType == 'Linux': 
-            self.port = constants.DFLT_PORT_LINUX 
-        else: 
-            self.port = constants.DFLT_PORT_WINDOWS 
-        # Get users home directory
-        self.userHome = os.getenv('USERPROFILE')
-        if self.userHome is None:
-            self.userHome = os.getenv('HOME')
-        self.lastSaveDir = self.userHome
-
-        self.statusbar.showMessage('Not Connected')
-        self.portLineEdit.setText(self.port) 
         self.setLEDColor(constants.DFLT_LED_COLOR)
-
         self.tableWidget.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
         self.user_TestSolutionDir = os.path.join(self.userHome,constants.USER_DATA_DIR)
-
-
-    def saveFile_Callback(self):
-        if self.tableWidget.measIndex <= 0:
-            msgTitle = 'Save Error'
-            msgText = 'No data to save.'
-            QtGui.QMessageBox.warning(self,msgTitle, msgText)
-            return
-        dialog = QtGui.QFileDialog()
-        dialog.setFileMode(QtGui.QFileDialog.AnyFile) 
-        filename = dialog.getSaveFileName(
-                   None,
-                   'Select data file',
-                   self.lastSaveDir,
-                   options=QtGui.QFileDialog.DontUseNativeDialog,
-                   )              
-        filename = str(filename)
-        if not filename:
-            return
-        self.lastSaveDir =  os.path.split(filename)[0]
-        dataList = self.tableWidget.getData(noValueSymb=self.noValueSymbol)
-        headerStr = self.getSaveFileHeader()
-        with open(filename,'w') as f:
-            f.write(headerStr)
-            f.write(os.linesep)
-            for x,y in dataList: 
-                f.write('{0}  {1}{2}'.format(x,y,os.linesep))
 
     def loadFile_Callback(self):
         """
@@ -182,7 +203,6 @@ class MainWindowWithTable(MainWindowCommon):
             if not line:
                 continue
             if 'LED' in line:
-                print(line)
                 try:
                     color = line[line.index('LED')+1].lower()
                 except IndexError, e:
@@ -201,12 +221,6 @@ class MainWindowWithTable(MainWindowCommon):
 
     def plotPushButtonClicked_Callback(self):
         self.updatePlot(create=True)
-
-
-    def closeFigure(self): 
-        if self.fig is not None and plt.fignum_exists(constants.PLOT_FIGURE_NUM): 
-            plt.close(self.fig)
-            self.fig = None
 
     def connectPressed_Callback(self):
         if self.dev == None:
@@ -292,11 +306,17 @@ class MainWindowWithTable(MainWindowCommon):
         button.setChecked(True)
         self.currentColor = color
 
+    def getData(self):
+        return self.tableWidget.getData(noValueSymb=self.noValueSymbol)
+
+    def haveData(self):
+        return self.tableWidget.measIndex > 0
+
     def updateWidgetEnabled(self):
         if self.dev is None:
             self.measurePushButton.setEnabled(False)
             self.calibratePushButton.setEnabled(False)
-            if self.tableWidget.measIndex > 0:
+            if self.haveData(): 
                 self.clearPushButton.setEnabled(True)
                 self.plotPushButton.setEnabled(True)
                 self.tableWidget.setEnabled(True)
@@ -313,7 +333,7 @@ class MainWindowWithTable(MainWindowCommon):
                 self.measurePushButton.setEnabled(True)
                 self.tableWidget.setEnabled(True)
             else:
-                if self.tableWidget.measIndex > 0:
+                if self.haveData(): 
                     self.tableWidget.setEnabled(True)
                     self.plotPushButton.setEnabled(True)
                     self.clearPushButton.setEnabled(True)
@@ -323,20 +343,5 @@ class MainWindowWithTable(MainWindowCommon):
                     self.clearPushButton.setEnabled(False)
             self.portLineEdit.setEnabled(False)
             self.statusbar.showMessage('Connected, Mode: Stopped')
-
-    def closeEvent(self,event):
-        if self.fig is not None:
-            plt.close(self.fig)
-        if self.dev is not None:
-            self.cleanUpAndCloseDevice()
-        event.accept()
-
-    def cleanUpAndCloseDevice(self):
-        self.dev.close()
-        self.dev = None
-
-    def main(self):
-        self.show()
-
 
 

@@ -5,6 +5,7 @@ import platform
 import matplotlib
 matplotlib.use('Qt4Agg')
 import matplotlib.pyplot as plt 
+plt.ion()
 import numpy
 import numpy.random
 import functools
@@ -14,11 +15,12 @@ from PyQt4 import QtGui
 from colorimeter_basic_gui_ui import Ui_MainWindow 
 from colorimeter_serial import Colorimeter
 from colorimeter_common import constants
+from colorimeter_common.main_window import MainWindowCommon
 
 DFLT_PORT_WINDOWS = 'com1' 
 DFLT_PORT_LINUX = '/dev/ttyACM0' 
 
-class BasicMainWindow(QtGui.QMainWindow,Ui_MainWindow):
+class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
 
     def __init__(self,parent=None):
         super(BasicMainWindow,self).__init__(parent)
@@ -27,6 +29,7 @@ class BasicMainWindow(QtGui.QMainWindow,Ui_MainWindow):
         self.initialize()
 
     def connectActions(self):
+        super(BasicMainWindow,self).connectActions()
         self.connectPushButton.pressed.connect(self.connectPressed_Callback)
         self.connectPushButton.clicked.connect(self.connectClicked_Callback)
         self.calibratePushButton.pressed.connect(self.calibratePressed_Callback)
@@ -42,9 +45,6 @@ class BasicMainWindow(QtGui.QMainWindow,Ui_MainWindow):
         self.actionSave.triggered.connect(self.saveFile_Callback)
         self.actionSave.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_S)
 
-    def saveFile_Callback(self):
-        print('saveFile_Callback')
-
     def colorCheckBox_Callback(self,color):
         self.updateResultsDisplay()
         self.updatePlot()
@@ -59,32 +59,23 @@ class BasicMainWindow(QtGui.QMainWindow,Ui_MainWindow):
                 self.updatePlot(create=True)
 
     def initialize(self):
-        self.dev = None
-        self.fig = None
+        super(BasicMainWindow,self).initialize()
         self.measValues = None
         self.numSamples = None
-        self.isCalibrated = False
-        osType = platform.system()
-        if osType == 'Linux': 
-            self.port = DFLT_PORT_LINUX 
-        else: 
-            self.port = DFLT_PORT_WINDOWS 
-        self.portLineEdit.setText(self.port) 
         self.samplesValidator = QtGui.QIntValidator(0,2**16-1,self.samplesLineEdit)
         self.samplesLineEdit.setValidator(self.samplesValidator)
         for name in constants.COLOR2LED_DICT:
             checkBox = getattr(self,'{0}CheckBox'.format(name))
             checkBox.setCheckState(QtCore.Qt.Checked)
-            
         self.plotCheckBox.setCheckState(QtCore.Qt.Checked)
-        plt.ion()
-
         self.updateWidgetEnabled()
 
     def connectPressed_Callback(self):
         if self.dev == None:
             self.connectPushButton.setText('Disconnect')
+            self.connectPushButton.setFlat(True)
             self.portLineEdit.setEnabled(False)
+            self.statusbar.showMessage('Connecting...')
 
     def connectClicked_Callback(self):
         connected = False
@@ -107,12 +98,14 @@ class BasicMainWindow(QtGui.QMainWindow,Ui_MainWindow):
             self.connectPushButton.setText('Connect')
             self.samplesLineEdit.setText('')
         self.updateWidgetEnabled()
+        self.connectPushButton.setFlat(False)
 
     def calibratePressed_Callback(self):
         self.transmissionTextEdit.setText('')
         self.absorbanceTextEdit.setText('')
         self.measurePushButton.setEnabled(False)
         self.setWidgetEnabledOnMeasure()
+        self.statusbar.showMessage('Connected, Mode: Calibrating...')
 
     def calibrateClicked_Callback(self):
         if not constants.DEVEL_FAKE_MEASURE: 
@@ -138,6 +131,7 @@ class BasicMainWindow(QtGui.QMainWindow,Ui_MainWindow):
         self.absorbanceTextEdit.setText('')
         self.calibratePushButton.setEnabled(False)
         self.setWidgetEnabledOnMeasure()
+        self.statusbar.showMessage('Connected, Mode: Measuring...')
 
     def measureClicked_Callback(self):
         if constants.DEVEL_FAKE_MEASURE:
@@ -243,6 +237,27 @@ class BasicMainWindow(QtGui.QMainWindow,Ui_MainWindow):
             self.numSamples = value
             self.dev.setNumSamples(value)
 
+    def getData(self):
+        freqValues, tranValues, absoValues = self.measValues
+        colorNames = sorted(constants.COLOR2LED_DICT.keys())
+        dataList = []
+        for c in colorNames:
+            n = constants.COLOR2LED_DICT[c]
+            tran = tranValues[n]
+            abso = absoValues[n]
+            if self.isColorChecked(c):
+                dataList.append((c,tran,abso))
+        return dataList
+
+    def haveData(self):
+        if self.measValues is None:
+            return False
+        else:
+            return True
+
+    def getSaveFileHeader(self):
+        return os.linesep
+
     def setWidgetEnabledOnMeasure(self):
         self.transmissionTextEdit.setEnabled(False)
         self.absorbanceTextEdit.setEnabled(False)
@@ -270,6 +285,7 @@ class BasicMainWindow(QtGui.QMainWindow,Ui_MainWindow):
             self.whiteCheckBox.setEnabled(False)
             self.portLineEdit.setEnabled(True)
             self.plotCheckBox.setEnabled(False)
+            self.statusbar.showMessage('Not Connected')
         else:
             self.transmissionTextEdit.setEnabled(True)
             self.absorbanceTextEdit.setEnabled(True)
@@ -285,25 +301,7 @@ class BasicMainWindow(QtGui.QMainWindow,Ui_MainWindow):
                 self.blueCheckBox.setEnabled(True)
                 self.whiteCheckBox.setEnabled(True)
                 self.plotCheckBox.setEnabled(True)
-
-    def closeFigure(self): 
-        if self.fig is not None and plt.fignum_exists(constants.PLOT_FIGURE_NUM): 
-            plt.close(self.fig)
-            self.fig = None
-
-    def closeEvent(self,event):
-        if self.fig is not None:
-            plt.close(self.fig)
-        if self.dev is not None:
-            self.cleanUpAndCloseDevice()
-        event.accept()
-
-    def cleanUpAndCloseDevice(self):
-        self.dev.close()
-        self.dev = None
-
-    def main(self):
-        self.show()
+            self.statusbar.showMessage('Connected, Mode: Stopped')
 
 def basicGuiMain():
     app = QtGui.QApplication(sys.argv)

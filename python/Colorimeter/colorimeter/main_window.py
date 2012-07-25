@@ -7,6 +7,7 @@ from PyQt4 import QtGui
 import matplotlib.pyplot as plt 
 
 import constants
+import import_export
 from colorimeter_serial import Colorimeter
 from colorimeter.gui.dialog import TestSolutionDialog
 
@@ -181,8 +182,8 @@ class MainWindowWithTable(MainWindowCommon):
         pass
 
     def editTestSolutions_Callback(self):
-        print('editTestSolutions_Callback')
-        changedFlag = TestSolutionDialog('edit').edit()
+        userSolutionDict = import_export.loadUserTestSolutionDict(self.userHome)
+        changedFlag = TestSolutionDialog().edit(userSolutionDict)
         print(changedFlag)
 
     def getMeasurement(self):

@@ -4,7 +4,6 @@ import sys
 import random 
 import time
 import numpy
-import pkg_resources
 import random
 import matplotlib
 if matplotlib.get_backend() != 'Qt4Agg':
@@ -119,11 +118,9 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
                 self.calibratePushButton.setEnabled(True)
 
     def updatePlot(self,create=False):
-
         # Only create new figure is asked to do so
         if not create and not plt.fignum_exists(constants.PLOT_FIGURE_NUM):
             return
-
         # Check if there is any data to plot
         dataList = self.tableWidget.getData()
         dataList = dataListToLabelAndFloat(dataList)
@@ -159,26 +156,12 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
         plt.draw() 
 
     def loadDefaultTestSolutionDict(self):
-        ## Works with pyinstaller
-        ## ---------------------------------------------------------------
-        #default_TestSolutionDir = getResourcePath('data')
-        #fileList = getTestSolutionFilesFromDir(default_TestSolutionDir)
-        ## ---------------------------------------------------------------
-        fileList = self.getTestSolutionFilesFromResources()
-        return import_export.loadTestSolutionDict(fileList,tag='D')
+        return import_export.loadDefaultTestSolutionDict()
 
     def loadUserTestSolutionDict(self):
         userTestSolutionDir = import_export.getUserTestSolutionDir(self.userHome)
         fileList = import_export.getTestSolutionFilesFromDir(userTestSolutionDir)
         return import_export.loadTestSolutionDict(fileList,tag='U')
-
-    def getTestSolutionFilesFromResources(self): 
-        fileNames = pkg_resources.resource_listdir('colorimeter','data')
-        testFiles = []
-        for name in fileNames:
-            pathName = pkg_resources.resource_filename('colorimeter','data/{0}'.format(name))
-            testFiles.append(pathName)
-        return testFiles
 
     def populateTestSolutionComboBox(self):
         self.testSolutionComboBox.clear()
@@ -231,11 +214,6 @@ def getCoefficientFromData(data):
     abso, conc = zip(*values)
     coeff = standard_curve.getCoefficient(abso,conc,fitType=constants.FIT_TYPE)
     return coeff
-
-def getResourcePath(relative_path): 
-    base_path = os.environ.get("_MEIPASS2", os.path.abspath("."))
-    resource_path = os.path.join(base_path, relative_path)
-    return resource_path
 
 def startMeasureGUI():
     app = QtGui.QApplication(sys.argv)

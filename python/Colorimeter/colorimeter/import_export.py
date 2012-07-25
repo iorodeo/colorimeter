@@ -2,6 +2,7 @@ from __future__ import print_function
 import os
 import yaml
 import time
+import pkg_resources
 
 def getUserTestSolutionDir(userHome): 
     return os.path.join(userHome,'.iorodeo_colorimeter','data')
@@ -42,6 +43,23 @@ def loadUserTestSolutionDict(userHome):
     testDict = loadTestSolutionDict(fileList)
     return testDict
 
+def loadDefaultTestSolutionDict():
+    ## Works with pyinstaller
+    ## ---------------------------------------------------------------
+    #default_TestSolutionDir = getResourcePath('data')
+    #fileList = getTestSolutionFilesFromDir(default_TestSolutionDir)
+    ## ---------------------------------------------------------------
+    fileList = getTestSolutionFilesFromResources()
+    return loadTestSolutionDict(fileList,tag='D')
+
+def getTestSolutionFilesFromResources(): 
+    fileNames = pkg_resources.resource_listdir('colorimeter','data')
+    testFiles = []
+    for name in fileNames:
+        pathName = pkg_resources.resource_filename('colorimeter','data/{0}'.format(name))
+        testFiles.append(pathName)
+    return testFiles
+
 def importTestSolutionData(fileName): 
     """
     Imports the test solution data with the given filename from the users
@@ -65,7 +83,6 @@ def exportTestSolutionData(userHome, solutionName, dataList, color, dateStr):
             }
     with open(fileName,'w') as fid: 
         yaml.dump(dataDict,fid)
-        print(dataDict)
 
 def deleteTestSolution(userHome, solutionName):
     """
@@ -105,3 +122,7 @@ def getUniqueSolutionFileName(userHome, solutionName):
         fileName = os.path.join(testSolutionDir,'{0}_{1}.yaml'.format(fileNameBase,cnt))
     return fileName
 
+def getResourcePath(relative_path): 
+    base_path = os.environ.get("_MEIPASS2", os.path.abspath("."))
+    resource_path = os.path.join(base_path, relative_path)
+    return resource_path

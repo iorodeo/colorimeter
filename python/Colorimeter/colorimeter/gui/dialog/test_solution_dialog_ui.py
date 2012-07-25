@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'test_solution_dialog.ui'
 #
-# Created: Tue Jul 24 15:48:38 2012
+# Created: Tue Jul 24 19:05:26 2012
 #      by: PyQt4 UI code generator 4.7.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -12,7 +12,7 @@ from PyQt4 import QtCore, QtGui
 class Ui_testSolutionDialog(object):
     def setupUi(self, testSolutionDialog):
         testSolutionDialog.setObjectName("testSolutionDialog")
-        testSolutionDialog.resize(263, 331)
+        testSolutionDialog.resize(263, 169)
         self.verticalLayout = QtGui.QVBoxLayout(testSolutionDialog)
         self.verticalLayout.setObjectName("verticalLayout")
         self.listWidget = QtGui.QListWidget(testSolutionDialog)
@@ -29,9 +29,12 @@ class Ui_testSolutionDialog(object):
         self.horizontalLayout.setObjectName("horizontalLayout")
         spacerItem = QtGui.QSpacerItem(125, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
-        self.pushButton = QtGui.QPushButton(self.widget)
-        self.pushButton.setObjectName("pushButton")
-        self.horizontalLayout.addWidget(self.pushButton)
+        self.quitPushButton = QtGui.QPushButton(self.widget)
+        self.quitPushButton.setObjectName("quitPushButton")
+        self.horizontalLayout.addWidget(self.quitPushButton)
+        self.modePushButton = QtGui.QPushButton(self.widget)
+        self.modePushButton.setObjectName("modePushButton")
+        self.horizontalLayout.addWidget(self.modePushButton)
         self.verticalLayout.addWidget(self.widget)
 
         self.retranslateUi(testSolutionDialog)
@@ -39,5 +42,6 @@ class Ui_testSolutionDialog(object):
 
     def retranslateUi(self, testSolutionDialog):
         testSolutionDialog.setWindowTitle(QtGui.QApplication.translate("testSolutionDialog", "Test Solution Editor", None, QtGui.QApplication.UnicodeUTF8))
-        self.pushButton.setText(QtGui.QApplication.translate("testSolutionDialog", "PushButton", None, QtGui.QApplication.UnicodeUTF8))
+        self.quitPushButton.setText(QtGui.QApplication.translate("testSolutionDialog", "Quit", None, QtGui.QApplication.UnicodeUTF8))
+        self.modePushButton.setText(QtGui.QApplication.translate("testSolutionDialog", "PushButton", None, QtGui.QApplication.UnicodeUTF8))
 

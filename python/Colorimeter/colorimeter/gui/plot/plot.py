@@ -18,6 +18,7 @@ from colorimeter import constants
 from colorimeter import import_export 
 from colorimeter import standard_curve
 from colorimeter.main_window import MainWindowWithTable
+from colorimeter.gui.dialog import TestSolutionDialog
 
 class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
 
@@ -37,7 +38,9 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
         self.tableWidget.setItemDelegateForColumn(0,itemDelegate)
 
     def importData_Callback(self):
-        print('importData_Callback')
+        userSolutionDict = import_export.loadUserTestSolutionDict(self.userHome)
+        dataList = TestSolutionDialog().importData(userSolutionDict)
+        print(dataList)
         
     def initialize(self):
         super(PlotMainWindow,self).initialize()

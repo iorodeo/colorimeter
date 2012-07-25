@@ -54,11 +54,16 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
         # Set startup state for including test solution.
         self.actionIncludeDefaultTestSolutions.setChecked(True)
         self.actionIncludeUserTestSolutions.setChecked(True)
-        self.user_TestSolutionDict = self.loadUserTestSolutionDict()
-        self.default_TestSolutionDict = self.loadDefaultTestSolutionDict()
+        self.updateTestSolutionDicts()
         self.populateTestSolutionComboBox()
         self.testSolutionComboBox.setCurrentIndex(1)
         self.updateWidgetEnabled()
+
+    def editTestSolutions_Callback(self):
+        changed = super(MeasureMainWindow,self).editTestSolutions_Callback()
+        if changed:
+            self.updateTestSolutionDicts()
+            self.populateTestSolutionComboBox()
 
     def testSolutionChanged_Callback(self,index):
         self.updateTestSolution(index)
@@ -154,6 +159,10 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
         ax.set_ylabel('Concentration')
         ax.set_xlabel('Samples')
         plt.draw() 
+
+    def updateTestSolutionDicts(self):
+        self.user_TestSolutionDict = self.loadUserTestSolutionDict()
+        self.default_TestSolutionDict = self.loadDefaultTestSolutionDict()
 
     def loadDefaultTestSolutionDict(self):
         return import_export.loadDefaultTestSolutionDict()

@@ -103,6 +103,7 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
             freqValues = tuple(numpy.random.random((4,)))
             tranValues = tuple(numpy.random.random((4,)))
             absoValues = tuple(numpy.random.random((4,)))
+            self.measValues = freqValues, tranValues, absoValues
         else:
             try:
                 freqValues, tranValues, absoValues = self.dev.getMeasurement()
@@ -112,7 +113,6 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
                 msgText = 'unable to get measurement: {0}'.format(str(e))
                 QtGui.QMessageBox.warning(self,msgTitle, msgText)
                 self.measValues = None 
-
 
     def updatePlot(self,create=False):
         if not create and not plt.fignum_exists(constants.PLOT_FIGURE_NUM):

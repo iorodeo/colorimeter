@@ -39,8 +39,10 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
 
     def importData_Callback(self):
         userSolutionDict = import_export.loadUserTestSolutionDict(self.userHome)
-        dataList = TestSolutionDialog().importData(userSolutionDict)
-        print(dataList)
+        data = TestSolutionDialog().importData(userSolutionDict)
+        self.setTableData(data['values'])
+        self.setLEDColor(data['led'])
+        self.updateWidgetEnabled()
         
     def initialize(self):
         super(PlotMainWindow,self).initialize()

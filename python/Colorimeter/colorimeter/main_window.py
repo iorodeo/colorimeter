@@ -183,8 +183,7 @@ class MainWindowWithTable(MainWindowCommon):
 
     def editTestSolutions_Callback(self):
         userSolutionDict = import_export.loadUserTestSolutionDict(self.userHome)
-        changedFlag = TestSolutionDialog().edit(userSolutionDict)
-        print(changedFlag)
+        return TestSolutionDialog().edit(userSolutionDict)
 
     def getMeasurement(self):
         pass

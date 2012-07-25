@@ -22,30 +22,36 @@ class TestSolutionDialog(QtGui.QDialog,Ui_testSolutionDialog):
     def initialize(self,mode):
         self.mode = mode
         self.changed = False
+        self.selectedItem = None
         self.setModal(True)
         self.listWidget.setAlternatingRowColors(True)
         self.testSolutionDict = {} 
 
     def quitPushButtonClicked_Callback(self):
-        print('quitPushButtonClicked_Callback')
+        self.selectedItem = None
+        self.testSolutionDict = None
         self.close()
 
     def modePushButtonClicked_Callback(self):
-        print('modePushButtonClicked_Callback')
         if self.listWidget.count() <= 0:
             return;
         listItem = self.listWidget.currentItem()
         if not self.listWidget.isItemSelected(listItem):
             return
         itemName = str(listItem.text())
+        self.selectedItem = listItem
         if self.mode == 'edit':
-            print('removing: ',itemName)
-            testSolutionDict = self.testSolutionDict
-            fileName = testSolutionDict.pop(itemName)
-            os.remove(fileName)
-            self.testSolutionDict = testSolutionDict
+            msg = 'Delete {0}?'.format(itemName)
+            reply = QtGui.QMessageBox.question( self, 'Delete', msg, 
+                    QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
+            if reply == QtGui.QMessageBox.Yes:
+                testSolutionDict = self.testSolutionDict
+                fileName = testSolutionDict.pop(itemName)
+                os.remove(fileName)
+                self.testSolutionDict = testSolutionDict
+                self.changed = True
         else:
-            print('importing: ',itemName)
+            self.close()
 
     @property
     def mode(self):
@@ -72,14 +78,14 @@ class TestSolutionDialog(QtGui.QDialog,Ui_testSolutionDialog):
 
     @testSolutionDict.setter
     def testSolutionDict(self,newDict):
-        print('hello')
         self.listWidget.clear()
-        nameList = sorted(newDict.keys())
-        for name in nameList:
-            listItem = QtGui.QListWidgetItem()
-            listItem.setText(name)
-            self.listWidget.addItem(listItem)
-        self._testSolutionDict = newDict
+        if newDict:
+            nameList = sorted(newDict.keys())
+            for name in nameList:
+                listItem = QtGui.QListWidgetItem()
+                listItem.setText(name)
+                self.listWidget.addItem(listItem)
+            self._testSolutionDict = newDict
 
     def edit(self,testSolutionDict):
         self.mode = 'edit'
@@ -91,12 +97,17 @@ class TestSolutionDialog(QtGui.QDialog,Ui_testSolutionDialog):
         self.mode = 'import'
         self.testSolutionDict = testSolutionDict
         self.run()
-        return []
+        if self.selectedItem is not None:
+            itemName = str(self.selectedItem.text())
+            fileName = self.testSolutionDict[itemName] 
+            itemData = import_export.importTestSolutionData(fileName) 
+            return itemData
+        else:
+            return None
 
     def run(self):
         self.show()
         self.exec_()
-
 
 # -----------------------------------------------------------------------------
 if __name__ == '__main__':

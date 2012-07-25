@@ -3,9 +3,10 @@ import os
 import yaml
 import time
 import pkg_resources
+import constants
 
 def getUserTestSolutionDir(userHome): 
-    return os.path.join(userHome,'.iorodeo_colorimeter','data')
+    return os.path.join(userHome,constants.USER_DATA_DIR)
 
 def getTestSolutionFilesFromDir(loc): 
     testFiles = os.listdir(loc) 

@@ -213,7 +213,12 @@ class MainWindowWithTable(MainWindowCommon):
         super(MainWindowWithTable,self).initialize()
         self.setLEDColor(constants.DFLT_LED_COLOR)
         self.tableWidget.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
-        self.user_TestSolutionDir = os.path.join(self.userHome,constants.USER_DATA_DIR)
+        self.checkUserTestSolutionDir()
+        #self.user_TestSolutionDir = os.path.join(self.userHome,constants.USER_DATA_DIR)
+
+    def checkUserTestSolutionDir():
+        userDataDir = import_export.getUserTestSolutionDir(self.userHome)
+        print(userTestSolutionDir)
 
     def loadFile_Callback(self):
         """

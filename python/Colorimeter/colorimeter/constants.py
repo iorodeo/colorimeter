@@ -44,5 +44,5 @@ NO_VALUE_SYMBOL_LABEL = '_nv_'
 NO_VALUE_SYMBOL_NUMBER = 'nan'
 
 # User configuration and data directories 
-USER_CONF_DIR = '.iorode_colorimeter'
+USER_CONF_DIR = '.colorimeter'
 USER_DATA_DIR = os.path.join(USER_CONF_DIR,'data')

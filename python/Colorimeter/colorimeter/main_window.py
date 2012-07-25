@@ -5,10 +5,10 @@ import platform
 from PyQt4 import QtCore
 from PyQt4 import QtGui
 import matplotlib.pyplot as plt 
-plt.ion()
 
 import constants
 from colorimeter_serial import Colorimeter
+from colorimeter.gui.dialog import TestSolutionDialog
 
 class MainWindowCommon(QtGui.QMainWindow):
 
@@ -36,6 +36,8 @@ class MainWindowCommon(QtGui.QMainWindow):
         osType = platform.system()
         if osType == 'Linux': 
             self.port = constants.DFLT_PORT_LINUX 
+        elif osType == 'Darwin':
+            self.port = constants.DFLT_PORT_DARWIN
         else: 
             self.port = constants.DFLT_PORT_WINDOWS 
         # Get users home directory
@@ -179,7 +181,9 @@ class MainWindowWithTable(MainWindowCommon):
         pass
 
     def editTestSolutions_Callback(self):
-        pass
+        print('editTestSolutions_Callback')
+        changedFlag = TestSolutionDialog('edit').edit()
+        print(changedFlag)
 
     def getMeasurement(self):
         pass

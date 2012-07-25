@@ -15,22 +15,22 @@ plt.ion()
 from PyQt4 import QtCore
 from PyQt4 import QtGui
 
-from colorimeter_measurement_ui import Ui_MainWindow 
+from measure_ui import Ui_MainWindow 
 from colorimeter import constants 
 from colorimeter import import_export 
 from colorimeter import standard_curve
 from colorimeter.main_window import MainWindowWithTable
 
-class MeasurementMainWindow(MainWindowWithTable, Ui_MainWindow):
+class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
 
     def __init__(self,parent=None):
-        super(MeasurementMainWindow,self).__init__(parent)
+        super(MeasureMainWindow,self).__init__(parent)
         self.setupUi(self)
         self.initialize()
         self.connectActions()
 
     def connectActions(self):
-        super(MeasurementMainWindow,self).connectActions()
+        super(MeasureMainWindow,self).connectActions()
         self.testSolutionComboBox.currentIndexChanged.connect(
                 self.testSolutionChanged_Callback
                 )
@@ -42,7 +42,7 @@ class MeasurementMainWindow(MainWindowWithTable, Ui_MainWindow):
                 )
 
     def initialize(self):
-        super(MeasurementMainWindow,self).initialize()
+        super(MeasureMainWindow,self).initialize()
         self.coeff = None
         self.noValueSymbol = constants.NO_VALUE_SYMBOL_LABEL
 
@@ -107,7 +107,7 @@ class MeasurementMainWindow(MainWindowWithTable, Ui_MainWindow):
         return headerStr
 
     def updateWidgetEnabled(self):
-        super(MeasurementMainWindow,self).updateWidgetEnabled()
+        super(MeasureMainWindow,self).updateWidgetEnabled()
         if self.dev is None:
             self.testSolutionWidget.setEnabled(False)
             self.coeffLEDWidget.setEnabled(False)
@@ -173,10 +173,10 @@ class MeasurementMainWindow(MainWindowWithTable, Ui_MainWindow):
         return import_export.loadTestSolutionDict(fileList,tag='U')
 
     def getTestSolutionFilesFromResources(self): 
-        fileNames = pkg_resources.resource_listdir(__name__,'data')
+        fileNames = pkg_resources.resource_listdir('colorimeter','data')
         testFiles = []
         for name in fileNames:
-            pathName = pkg_resources.resource_filename(__name__,'data/{0}'.format(name))
+            pathName = pkg_resources.resource_filename('colorimeter','data/{0}'.format(name))
             testFiles.append(pathName)
         return testFiles
 
@@ -237,13 +237,13 @@ def getResourcePath(relative_path):
     resource_path = os.path.join(base_path, relative_path)
     return resource_path
 
-def startMeasurementGUI():
+def startMeasureGUI():
     app = QtGui.QApplication(sys.argv)
-    mainWindow = MeasurementMainWindow()
+    mainWindow = MeasureMainWindow()
     mainWindow.main()
     app.exec_()
 
 # -----------------------------------------------------------------------------
 if __name__ == '__main__':
-    startMeasurementGUI()
+    startMeasureGUI()
 

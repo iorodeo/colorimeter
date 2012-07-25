@@ -1,1 +1,1 @@
-from measurement import startMeasurementGUI
+from measure import startMeasureGUI

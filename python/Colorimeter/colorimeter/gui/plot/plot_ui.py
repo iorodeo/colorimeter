@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'plot.ui'
 #
-# Created: Tue Jul 24 14:43:15 2012
+# Created: Tue Jul 24 16:41:18 2012
 #      by: PyQt4 UI code generator 4.7.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -12,7 +12,7 @@ from PyQt4 import QtCore, QtGui
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(487, 618)
+        MainWindow.resize(514, 442)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayout = QtGui.QVBoxLayout(self.centralwidget)
@@ -131,7 +131,7 @@ class Ui_MainWindow(object):
         self.verticalLayout.addWidget(self.widget_3)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 487, 23))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 514, 23))
         self.menubar.setObjectName("menubar")
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")

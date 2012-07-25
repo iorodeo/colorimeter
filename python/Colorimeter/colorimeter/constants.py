@@ -6,6 +6,7 @@ DEVEL_FAKE_MEASURE = True
 # Serial ports
 DFLT_PORT_WINDOWS = 'com1' 
 DFLT_PORT_LINUX = '/dev/ttyACM0' 
+DFLT_PORT_DARWIN = 'tty.usbmodem'
 
 # LEDs
 DFLT_LED_COLOR = 'red'

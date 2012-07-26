@@ -36,10 +36,13 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
         self.tableWidget.setItemDelegateForColumn(0,itemDelegate)
 
     def importData_Callback(self):
-        userSolutionDict = import_export.loadUserTestSolutionDict(self.userHome)
-        data = TestSolutionDialog().importData(userSolutionDict)
-        self.setTableData(data['values'])
-        self.setLEDColor(data['led'])
+        userSolutionDict = import_export.loadUserTestSolutionDict(self.userHome,tag='U')
+        dfltSolutionDict = import_export.loadDefaultTestSolutionDict(tag='D')
+        solutionDict = dict(userSolutionDict.items() + dfltSolutionDict.items())
+        data = TestSolutionDialog().importData(solutionDict)
+        if data is not None:
+            self.setTableData(data['values'])
+            self.setLEDColor(data['led'])
         self.updateWidgetEnabled()
         
     def initialize(self):

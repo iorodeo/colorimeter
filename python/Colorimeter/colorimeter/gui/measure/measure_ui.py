@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'measurement.ui'
+# Form implementation generated from reading ui file 'measure.ui'
 #
-# Created: Tue Jul 24 14:44:36 2012
+# Created: Wed Jul 25 19:55:32 2012
 #      by: PyQt4 UI code generator 4.7.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -240,6 +240,6 @@ class Ui_MainWindow(object):
         self.actionSave.setText(QtGui.QApplication.translate("MainWindow", "Save", None, QtGui.QApplication.UnicodeUTF8))
         self.actionImportTestSolution.setText(QtGui.QApplication.translate("MainWindow", "Import Test Solution...", None, QtGui.QApplication.UnicodeUTF8))
         self.actionRemoveTestSolution.setText(QtGui.QApplication.translate("MainWindow", "Remove Test Solution...", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionEditTestSolutions.setText(QtGui.QApplication.translate("MainWindow", "Edit Test Solutions...", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionEditTestSolutions.setText(QtGui.QApplication.translate("MainWindow", "Edit User Test Solutions...", None, QtGui.QApplication.UnicodeUTF8))
 
 from colorimeter.table_widget import ColorimeterTableWidget

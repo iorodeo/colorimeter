@@ -292,7 +292,7 @@
   </action>
   <action name="actionEditTestSolutions">
    <property name="text">
-    <string>Edit Test Solutions...</string>
+    <string>Edit User Test Solutions...</string>
    </property>
   </action>
  </widget>

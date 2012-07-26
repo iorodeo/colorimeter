@@ -35,23 +35,23 @@ def loadTestSolutionDict(fileList,tag=''):
         testDict[key] = name
     return testDict
 
-def loadUserTestSolutionDict(userHome):
+def loadUserTestSolutionDict(userHome,tag=''):
     """
     Load dictionary of test solution names to test solution data files.
     """
     userDir = getUserTestSolutionDir(userHome)
     fileList = getTestSolutionFilesFromDir(userDir)
-    testDict = loadTestSolutionDict(fileList)
+    testDict = loadTestSolutionDict(fileList,tag=tag)
     return testDict
 
-def loadDefaultTestSolutionDict():
+def loadDefaultTestSolutionDict(tag='D'):
     ## Works with pyinstaller
     ## ---------------------------------------------------------------
     #default_TestSolutionDir = getResourcePath('data')
     #fileList = getTestSolutionFilesFromDir(default_TestSolutionDir)
     ## ---------------------------------------------------------------
     fileList = getTestSolutionFilesFromResources()
-    return loadTestSolutionDict(fileList,tag='D')
+    return loadTestSolutionDict(fileList,tag=tag)
 
 def getTestSolutionFilesFromResources(): 
     fileNames = pkg_resources.resource_listdir('colorimeter','data')

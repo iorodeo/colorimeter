@@ -216,9 +216,15 @@ class MainWindowWithTable(MainWindowCommon):
         self.checkUserTestSolutionDir()
         #self.user_TestSolutionDir = os.path.join(self.userHome,constants.USER_DATA_DIR)
 
-    def checkUserTestSolutionDir():
-        userDataDir = import_export.getUserTestSolutionDir(self.userHome)
-        print(userTestSolutionDir)
+    def checkUserTestSolutionDir(self):
+        userTestSolutionDir = import_export.getUserTestSolutionDir(self.userHome)
+        if not os.path.isdir(userTestSolutionDir):
+            try:
+                os.makedirs(userTestSolutionDir)
+            except Exception, e:
+                msgTitle = 'Setup Warning'
+                msgText = 'Unable to create data directory, {0}\n{1}'.format(userTestSolutionDir,str(e))
+                QtGui.QMessageBox.warning(self,msgTitle, msgText)
 
     def loadFile_Callback(self):
         """

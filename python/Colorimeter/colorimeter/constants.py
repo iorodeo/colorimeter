@@ -51,6 +51,7 @@ START_POS_X = 75
 START_POS_Y = 75 
 
 # About text messages
+ABOUT_TEXT_COMMON = 'IO Rodeo Inc.'
 BASIC_ABOUT_TEXT = 'Colorimieter Basic 0.1'
 PLOT_ABOUT_TEXT = 'Colorimieter Plot 0.1'
 MEASURE_ABOUT_TEXT = 'Colorimieter Measure 0.1'

@@ -159,7 +159,11 @@ class MainWindowCommon(QtGui.QMainWindow):
                 f.write(os.linesep)
 
     def about_Callback(self):
-        QtGui.QMessageBox.about(self,self.aboutCaption, self.aboutText)
+        aboutText = '{0} \n\n {1}'.format(
+                self.aboutText,
+                constants.ABOUT_TEXT_COMMON
+                )
+        QtGui.QMessageBox.about(self,self.aboutCaption, aboutText)
 
     def haveData(self):
         return False

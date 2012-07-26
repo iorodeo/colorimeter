@@ -130,10 +130,14 @@ class MainWindowCommon(QtGui.QMainWindow):
             return
         dialog = QtGui.QFileDialog()
         dialog.setFileMode(QtGui.QFileDialog.AnyFile) 
+        if os.path.isdir(self.lastSaveDir):
+            saveDir = self.lastSaveDir
+        else:
+            saveDir = self.userHome
         filename = dialog.getSaveFileName(
                    None,
                    'Select data file',
-                   self.lastSaveDir,
+                   saveDir,
                    options=QtGui.QFileDialog.DontUseNativeDialog,
                    )              
         filename = str(filename)
@@ -212,10 +216,10 @@ class MainWindowWithTable(MainWindowCommon):
 
     def initialize(self):
         super(MainWindowWithTable,self).initialize()
+        self.lastLoadDir = self.userHome
         self.setLEDColor(constants.DFLT_LED_COLOR)
         self.tableWidget.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
         self.checkUserTestSolutionDir()
-        #self.user_TestSolutionDir = os.path.join(self.userHome,constants.USER_DATA_DIR)
 
     def checkUserTestSolutionDir(self):
         userTestSolutionDir = import_export.getUserTestSolutionDir(self.userHome)
@@ -233,15 +237,20 @@ class MainWindowWithTable(MainWindowCommon):
         """
         dialog = QtGui.QFileDialog()
         dialog.setFileMode(QtGui.QFileDialog.AnyFile) 
+        if os.path.isdir(self.lastLoadDir):
+            loadDir = self.lastLoadDir
+        else:
+            loadDir = self.userHome
         filename = dialog.getOpenFileName(
                    None,
                    'Select data file',
-                   self.lastSaveDir,
+                   loadDir,
                    options=QtGui.QFileDialog.DontUseNativeDialog,
                    )              
         filename = str(filename)
         if not filename:
             return 
+        self.lastLoadDir =  os.path.split(filename)[0]
         dataList, ledColor = self.loadDataFromFile(filename)
         if ledColor is None:
             msgTitle = 'Import Warning'

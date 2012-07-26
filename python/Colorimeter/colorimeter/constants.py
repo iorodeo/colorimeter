@@ -47,5 +47,5 @@ USER_CONF_DIR = '.colorimeter'
 USER_DATA_DIR = os.path.join(USER_CONF_DIR,'data')
 
 # Window start positoin
-START_POS_X = 50
-START_POS_Y = 50
+START_POS_X = 75 
+START_POS_Y = 75 

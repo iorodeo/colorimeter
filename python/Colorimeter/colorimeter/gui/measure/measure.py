@@ -42,6 +42,7 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
         super(MeasureMainWindow,self).initialize()
         self.coeff = None
         self.noValueSymbol = constants.NO_VALUE_SYMBOL_LABEL
+        self.aboutText = constants.MEASURE_ABOUT_TEXT
 
         # Set up data table
         self.tableWidget.clean(setup=True)

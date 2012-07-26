@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'colorimeter_basic_gui.ui'
+# Form implementation generated from reading ui file 'basic.ui'
 #
-# Created: Thu Jul 19 19:20:12 2012
+# Created: Thu Jul 26 11:14:19 2012
 #      by: PyQt4 UI code generator 4.7.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -174,14 +174,20 @@ class Ui_MainWindow(object):
         self.menubar.setObjectName("menubar")
         self.menu_File = QtGui.QMenu(self.menubar)
         self.menu_File.setObjectName("menu_File")
+        self.menu_Help = QtGui.QMenu(self.menubar)
+        self.menu_Help.setObjectName("menu_Help")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtGui.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
         self.actionSave = QtGui.QAction(MainWindow)
         self.actionSave.setObjectName("actionSave")
+        self.actionAbout = QtGui.QAction(MainWindow)
+        self.actionAbout.setObjectName("actionAbout")
         self.menu_File.addAction(self.actionSave)
+        self.menu_Help.addAction(self.actionAbout)
         self.menubar.addAction(self.menu_File.menuAction())
+        self.menubar.addAction(self.menu_Help.menuAction())
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -201,5 +207,7 @@ class Ui_MainWindow(object):
         self.measurePushButton.setText(QtGui.QApplication.translate("MainWindow", "Measure", None, QtGui.QApplication.UnicodeUTF8))
         self.plotCheckBox.setText(QtGui.QApplication.translate("MainWindow", "Plot   ", None, QtGui.QApplication.UnicodeUTF8))
         self.menu_File.setTitle(QtGui.QApplication.translate("MainWindow", "&File", None, QtGui.QApplication.UnicodeUTF8))
+        self.menu_Help.setTitle(QtGui.QApplication.translate("MainWindow", "&Help", None, QtGui.QApplication.UnicodeUTF8))
         self.actionSave.setText(QtGui.QApplication.translate("MainWindow", "Save...", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionAbout.setText(QtGui.QApplication.translate("MainWindow", "About", None, QtGui.QApplication.UnicodeUTF8))
 

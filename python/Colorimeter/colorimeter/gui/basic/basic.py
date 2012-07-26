@@ -1,6 +1,7 @@
 from __future__ import print_function
 import os
 import sys
+import time
 import platform
 import matplotlib
 import matplotlib.pyplot as plt 
@@ -55,6 +56,7 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
         super(BasicMainWindow,self).initialize()
         self.measValues = None
         self.numSamples = None
+        self.aboutText = constants.BASIC_ABOUT_TEXT
         self.samplesValidator = QtGui.QIntValidator(0,2**16-1,self.samplesLineEdit)
         self.samplesLineEdit.setValidator(self.samplesValidator)
         for name in constants.COLOR2LED_DICT:
@@ -202,12 +204,14 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
         freqValues, tranValues, absoValues = self.measValues
         colorNames = sorted(constants.COLOR2LED_DICT.keys())
         dataList = []
+        maxNameLen = max([len(c) for c in colorNames])
         for c in colorNames:
             n = constants.COLOR2LED_DICT[c]
             tran = tranValues[n]
             abso = absoValues[n]
             if self.isColorChecked(c):
-                dataList.append((c,tran,abso))
+                cPadded = padString(c,maxNameLen)
+                dataList.append((cPadded,tran,abso))
         return dataList
 
     def haveData(self):
@@ -217,7 +221,15 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
             return True
 
     def getSaveFileHeader(self):
-        return os.linesep
+        timeStr = time.strftime('%Y-%m-%d %H:%M:%S %Z') 
+        headerList = [ 
+                '# {0}'.format(timeStr),
+                '# Colorimeter Data', 
+                '# --------------------------------', 
+                '# LED | Transmittance | Absorbance', 
+                ]
+        headerStr = os.linesep.join(headerList)
+        return headerStr
 
     def setWidgetEnabledOnMeasure(self):
         self.transmissionTextEdit.setEnabled(False)
@@ -263,6 +275,14 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
                 self.whiteCheckBox.setEnabled(True)
                 self.plotCheckBox.setEnabled(True)
             self.statusbar.showMessage('Connected, Mode: Stopped')
+
+def padString(x,n):
+    if len(x) < n:
+        d = n - len(x)
+        xNew = '{0}{1}'.format(x,' '*d)
+    else:
+        xNew = x
+    return xNew
 
 def startBasicGUI():
     app = QtGui.QApplication(sys.argv)

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'measure.ui'
 #
-# Created: Wed Jul 25 19:55:32 2012
+# Created: Thu Jul 26 11:23:32 2012
 #      by: PyQt4 UI code generator 4.7.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -181,6 +181,8 @@ class Ui_MainWindow(object):
         self.menuOptions.setObjectName("menuOptions")
         self.menuInclude = QtGui.QMenu(self.menuOptions)
         self.menuInclude.setObjectName("menuInclude")
+        self.menu_Help = QtGui.QMenu(self.menubar)
+        self.menu_Help.setObjectName("menu_Help")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtGui.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
@@ -203,14 +205,18 @@ class Ui_MainWindow(object):
         self.actionRemoveTestSolution.setObjectName("actionRemoveTestSolution")
         self.actionEditTestSolutions = QtGui.QAction(MainWindow)
         self.actionEditTestSolutions.setObjectName("actionEditTestSolutions")
+        self.actionAbout = QtGui.QAction(MainWindow)
+        self.actionAbout.setObjectName("actionAbout")
         self.menuFile.addAction(self.actionSave)
         self.menuFile.addAction(self.actionLoad)
         self.menuInclude.addAction(self.actionIncludeUserTestSolutions)
         self.menuInclude.addAction(self.actionIncludeDefaultTestSolutions)
         self.menuOptions.addAction(self.menuInclude.menuAction())
         self.menuOptions.addAction(self.actionEditTestSolutions)
+        self.menu_Help.addAction(self.actionAbout)
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuOptions.menuAction())
+        self.menubar.addAction(self.menu_Help.menuAction())
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -233,6 +239,7 @@ class Ui_MainWindow(object):
         self.menuFile.setTitle(QtGui.QApplication.translate("MainWindow", "&File", None, QtGui.QApplication.UnicodeUTF8))
         self.menuOptions.setTitle(QtGui.QApplication.translate("MainWindow", "&Options", None, QtGui.QApplication.UnicodeUTF8))
         self.menuInclude.setTitle(QtGui.QApplication.translate("MainWindow", "Include", None, QtGui.QApplication.UnicodeUTF8))
+        self.menu_Help.setTitle(QtGui.QApplication.translate("MainWindow", "&Help", None, QtGui.QApplication.UnicodeUTF8))
         self.actionReloadTestSolutions.setText(QtGui.QApplication.translate("MainWindow", "Reload Test Solutions", None, QtGui.QApplication.UnicodeUTF8))
         self.actionIncludeUserTestSolutions.setText(QtGui.QApplication.translate("MainWindow", "User Test Solutions", None, QtGui.QApplication.UnicodeUTF8))
         self.actionIncludeDefaultTestSolutions.setText(QtGui.QApplication.translate("MainWindow", "Default Test Solutions", None, QtGui.QApplication.UnicodeUTF8))
@@ -241,5 +248,6 @@ class Ui_MainWindow(object):
         self.actionImportTestSolution.setText(QtGui.QApplication.translate("MainWindow", "Import Test Solution...", None, QtGui.QApplication.UnicodeUTF8))
         self.actionRemoveTestSolution.setText(QtGui.QApplication.translate("MainWindow", "Remove Test Solution...", None, QtGui.QApplication.UnicodeUTF8))
         self.actionEditTestSolutions.setText(QtGui.QApplication.translate("MainWindow", "Edit User Test Solutions...", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionAbout.setText(QtGui.QApplication.translate("MainWindow", "About", None, QtGui.QApplication.UnicodeUTF8))
 
 from colorimeter.table_widget import ColorimeterTableWidget

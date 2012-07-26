@@ -47,6 +47,7 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
         
     def initialize(self):
         super(PlotMainWindow,self).initialize()
+        self.aboutText = constants.PLOT_ABOUT_TEXT
         self.noValueSymbol = constants.NO_VALUE_SYMBOL_NUMBER
         self.tableWidget.clean(setup=True)
         self.tableWidget.updateFunc = self.updatePlot

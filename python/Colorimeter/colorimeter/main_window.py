@@ -26,12 +26,16 @@ class MainWindowCommon(QtGui.QMainWindow):
         self.measurePushButton.pressed.connect(self.measurePressed_Callback)
         self.actionSave.triggered.connect(self.saveFile_Callback)
         self.actionSave.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_S)
+        self.actionAbout.triggered.connect(self.about_Callback)
+        self.actionSave.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_A)
 
     def initialize(self):
         self.setAppSize()
         self.dev = None
         self.fig = None
         self.isCalibrated = False
+        self.aboutCaption = 'About'
+        self.aboutText = 'About Default Text'
 
         # Set default port based on system
         osType = platform.system()
@@ -153,6 +157,9 @@ class MainWindowCommon(QtGui.QMainWindow):
                 for x in vals:
                     f.write('{0}  '.format(x))
                 f.write(os.linesep)
+
+    def about_Callback(self):
+        QtGui.QMessageBox.about(self,self.aboutCaption, self.aboutText)
 
     def haveData(self):
         return False

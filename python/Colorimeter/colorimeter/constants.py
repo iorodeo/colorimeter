@@ -1,12 +1,12 @@
 import os
 
 # Development
-DEVEL_FAKE_MEASURE = True 
+DEVEL_FAKE_MEASURE = False 
 
 # Serial ports
 DFLT_PORT_WINDOWS = 'com1' 
 DFLT_PORT_LINUX = '/dev/ttyACM0' 
-DFLT_PORT_DARWIN = 'tty.usbmodem'
+DFLT_PORT_DARWIN = '/dev/tty.usbmodem'
 
 # LEDs
 DFLT_LED_COLOR = 'red'
@@ -49,3 +49,9 @@ USER_DATA_DIR = os.path.join(USER_CONF_DIR,'data')
 # Window start positoin
 START_POS_X = 75 
 START_POS_Y = 75 
+
+# About text messages
+BASIC_ABOUT_TEXT = 'Colorimieter Basic 0.1'
+PLOT_ABOUT_TEXT = 'Colorimieter Plot 0.1'
+MEASURE_ABOUT_TEXT = 'Colorimieter Measure 0.1'
+

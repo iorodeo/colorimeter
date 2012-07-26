@@ -45,12 +45,11 @@ def loadUserTestSolutionDict(userHome,tag=''):
     return testDict
 
 def loadDefaultTestSolutionDict(tag='D'):
-    ## Works with pyinstaller
-    ## ---------------------------------------------------------------
-    #default_TestSolutionDir = getResourcePath('data')
-    #fileList = getTestSolutionFilesFromDir(default_TestSolutionDir)
-    ## ---------------------------------------------------------------
-    fileList = getTestSolutionFilesFromResources()
+    try:
+        fileList = getTestSolutionFilesFromResources()
+    except AssertionError, e:
+        default_TestSolutionDir = getPyInstallerResourcePath('data')
+        fileList = getTestSolutionFilesFromDir(default_TestSolutionDir)
     return loadTestSolutionDict(fileList,tag=tag)
 
 def getTestSolutionFilesFromResources(): 
@@ -60,6 +59,11 @@ def getTestSolutionFilesFromResources():
         pathName = pkg_resources.resource_filename('colorimeter','data/{0}'.format(name))
         testFiles.append(pathName)
     return testFiles
+
+def getPyInstallerResourcePath(relative_path): 
+    base_path = os.environ.get("_MEIPASS2", os.path.abspath("."))
+    resource_path = os.path.join(base_path, relative_path)
+    return resource_path
 
 def importTestSolutionData(fileName): 
     """
@@ -123,7 +127,3 @@ def getUniqueSolutionFileName(userHome, solutionName):
         fileName = os.path.join(testSolutionDir,'{0}_{1}.yaml'.format(fileNameBase,cnt))
     return fileName
 
-def getResourcePath(relative_path): 
-    base_path = os.environ.get("_MEIPASS2", os.path.abspath("."))
-    resource_path = os.path.join(base_path, relative_path)
-    return resource_path

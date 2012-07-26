@@ -37,6 +37,13 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
         self.actionIncludeUserTestSolutions.toggled.connect(
                 self.populateTestSolutionComboBox
                 )
+        self.coefficientLineEdit.editingFinished.connect(
+                self.coeffEditingFinished_Callback
+                )
+        coeffValidator = QtGui.QDoubleValidator(self.coefficientLineEdit) 
+        coeffValidator.setBottom(0)
+        coeffValidator.fixup = self.coeffFixup
+        self.coefficientLineEdit.setValidator(coeffValidator)
 
     def initialize(self):
         super(MeasureMainWindow,self).initialize()
@@ -55,8 +62,23 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
         self.actionIncludeUserTestSolutions.setChecked(True)
         self.updateTestSolutionDicts()
         self.populateTestSolutionComboBox()
-        self.testSolutionComboBox.setCurrentIndex(1)
+        self.testSolutionIndex = 1
+        self.testSolutionComboBox.setCurrentIndex(
+                self.testSolutionIndex
+                )
         self.updateWidgetEnabled()
+
+    def coeffEditingFinished_Callback(self):
+        value = self.coefficientLineEdit.text()
+        value = float(value)
+        self.coeff = value
+        self.updateWidgetEnabled()
+
+    def coeffFixup(self,value):
+        value = str(value)
+        if not value:
+            self.coeff = None
+            self.updateWidgetEnabled()
 
     def editTestSolutions_Callback(self):
         changed = super(MeasureMainWindow,self).editTestSolutions_Callback()
@@ -65,7 +87,16 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
             self.populateTestSolutionComboBox()
 
     def testSolutionChanged_Callback(self,index):
-        self.updateTestSolution(index)
+        if index != self.testSolutionIndex:
+            erase_msg = "Change test solution and clear all data?"
+            rsp = self.tableWidget.clean(msg=erase_msg)
+            if rsp:
+                self.isCalibrated = False
+                self.updateTestSolution(index)
+            else:
+                self.testSolutionComboBox.setCurrentIndex(
+                        self.testSolutionIndex
+                        )
 
     def updateTestSolution(self,index):
         if index <= 0:
@@ -83,6 +114,7 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
             self.coeff = getCoefficientFromData(data)
             self.coefficientLineEdit.setText('{0:1.1f}'.format(1.0e6*self.coeff))
             self.setLEDColor(data['led'])
+        self.testSolutionIndex = index
         self.updateWidgetEnabled()
 
     def getMeasurement(self):
@@ -118,6 +150,8 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
             self.testSolutionWidget.setEnabled(True)
             if self.coeff is None:
                 self.calibratePushButton.setEnabled(False)
+                self.measurePushButton.setEnabled(False)
+                self.plotPushButton.setEnabled(False)
             else:
                 self.calibratePushButton.setEnabled(True)
 

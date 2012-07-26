@@ -52,6 +52,10 @@ class MainWindowCommon(QtGui.QMainWindow):
         self.lastSaveDir = self.userHome
         self.statusbar.showMessage('Not Connected')
         self.portLineEdit.setText(self.port) 
+        if constants.DEVEL_FAKE_MEASURE: 
+            msgTitle = 'Development'
+            msgText = 'Development mode fake measure is enabled'
+            QtGui.QMessageBox.warning(self,msgTitle, msgText)
 
     def connectPressed_Callback(self):
         if self.dev == None:
@@ -388,6 +392,7 @@ class MainWindowWithTable(MainWindowCommon):
                     self.tableWidget.setEnabled(False)
                     self.plotPushButton.setEnabled(False)
                     self.clearPushButton.setEnabled(False)
+                self.measurePushButton.setEnabled(False)
             self.portLineEdit.setEnabled(False)
             self.statusbar.showMessage('Connected, Mode: Stopped')
 

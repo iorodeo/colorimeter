@@ -117,9 +117,10 @@ class MainWindowCommon(QtGui.QMainWindow):
 
     def setAppSize(self):
         availGeom = QtGui.QApplication.desktop().availableGeometry()
-        width = min([0.9*availGeom.width(), self.geometry().width()])
-        height = min([0.9*availGeom.height(), self.geometry().height()])
-        self.setGeometry(0,0,width,height)
+        x, y = constants.START_POS_X, constants.START_POS_Y
+        width = min([0.9*(availGeom.width()-x), self.geometry().width()])
+        height = min([0.9*(availGeom.height()-y), self.geometry().height()])
+        self.setGeometry(x,y,width,height)
 
     def saveFile_Callback(self):
         if not self.haveData():

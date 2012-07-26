@@ -38,7 +38,6 @@ PLOT_COLOR_DICT = {
         'white' : 'w',
         }
 
-
 # No value symbols
 NO_VALUE_SYMBOL_LABEL = '_nv_'
 NO_VALUE_SYMBOL_NUMBER = 'nan'
@@ -46,3 +45,7 @@ NO_VALUE_SYMBOL_NUMBER = 'nan'
 # User configuration and data directories 
 USER_CONF_DIR = '.colorimeter'
 USER_DATA_DIR = os.path.join(USER_CONF_DIR,'data')
+
+# Window start positoin
+START_POS_X = 50
+START_POS_Y = 50

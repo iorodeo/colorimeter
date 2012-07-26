@@ -28,7 +28,7 @@ setup(
         'colorimeter/gui/measure',
         'colorimeter/gui/dialog',
         ],
-    package_data = { 'colorimeter': ['colorimeter/data/*.yaml']},
+    package_data = { 'colorimeter': ['data/*.yaml']},
     scripts=['bin/colorimeter-basic', 'bin/colorimeter-plot', 'bin/colorimeter-measure'],
     license='LICENSE.txt',
     description="Serial interface and measurement software for IO Rodeo's colorimeter",

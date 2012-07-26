@@ -6,8 +6,6 @@ import time
 import numpy
 import random
 import matplotlib
-if matplotlib.get_backend() != 'Qt4Agg':
-    matplotlib.use('Qt4Agg')
 import matplotlib.pyplot as plt 
 plt.ion()
 

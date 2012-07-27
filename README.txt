@@ -1,4 +1,5 @@
-= Colorimeter.
+Colorimeter
+-----------
 
 Design files, software and firmware for IO Rodeos's open source (hardware &
 software) scientific colorimeter kit for educators, students and DIY
@@ -23,15 +24,4 @@ follow population growth;
 environmental parameters (temp, pH, inhibitors); Nitrogen cycle - quantify the
 amount of ammonia, nitrite and nitrate in a newly established aquarium.
 
-How it works: The colorimeter essentially consists of two electronics boards:
-i) a red-green-blue (RGB) LED board and a light sensor board. A cuvette holder
-in the center of the colorimeter properly positions the sample between the LED
-and the sensor. The sensor board connects to an Arduino via the colorimeter
-shield. When the colorimeter is operating, the RGB LED illuminates the sample
-in the cuvette with one of three different wavelengths of light: 625 nm (red),
-528 nm (true green) and 470 nm (blue). On the opposite side of the cuvette a
-slit in the colorimeter allows light to pass through the sample to the light
-sensor. Finally absorbance (A) of the sample is determined by comparing the
-intensity of incident light (I0) to the intensity of light after it has passed
-through the sample (I) using the following equation: A = log10(I/I0).
 

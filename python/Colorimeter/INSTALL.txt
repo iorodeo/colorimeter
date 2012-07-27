@@ -4,7 +4,11 @@ colorimeter installation instructions
 Requirements:
 
   * pyserial
-  * pyqt4
+  * PyQt4 
+  * numpy >= 1.3.0
+  * scipy >= 0.7.0
+  * matplotlib >= 0.99
+  * PyYaml >= 3.09
 
 Installation:
 
@@ -16,8 +20,5 @@ which installs the package on your system.  See the "Installing Python
 Modules" manual inside your Python documentation or at
 http://docs.python.org/inst/inst.html if you want to customize the
 build process or the target location.
-
-
-
 
 

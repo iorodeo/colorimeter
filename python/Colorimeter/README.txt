@@ -1,4 +1,4 @@
-colorimeter: Python library for communicating with IO Rodeo's OSHW Colorimeter.
+colorimeter: Serial library and GUI's for IO Rodeo's OSHW Colorimeter.
 
 Installations instructions can be found in the INSTALL file.
 

@@ -3,8 +3,6 @@
 #include "SerialReceiver.h"
 #include "Colorimeter.h"
 
-
-
 const int CMD_CALIBRATE=0;
 const int CMD_GET_MEASUREMENT=1;
 const int CMD_SET_NUM_SAMPLES=2;

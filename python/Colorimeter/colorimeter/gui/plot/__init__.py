@@ -1,2 +1,1 @@
-from plot import startPlotGUI 
-
+from plot import *

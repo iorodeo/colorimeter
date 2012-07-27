@@ -1,1 +1,1 @@
-from basic import startBasicGUI 
+from basic import *

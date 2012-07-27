@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import constants
 import import_export
 from colorimeter_serial import Colorimeter
-from colorimeter.gui.dialog import TestSolutionDialog
+from colorimeter.gui.dialog.test_solution_dialog import TestSolutionDialog
 
 class MainWindowCommon(QtGui.QMainWindow):
 

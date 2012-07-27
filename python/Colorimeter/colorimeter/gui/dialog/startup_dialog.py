@@ -55,11 +55,14 @@ class StartupDialog(QtGui.QDialog,Ui_startupDialog):
         self.exec_()
         return self.program
 
-# ---------------------------------------------------------------------------------
-if __name__ == '__main__':
-
+def startColorimeterGUI():
     app = QtGui.QApplication(sys.argv)
     dlg = StartupDialog()
     program = dlg.run()
     if program is not None:
         program()
+
+# ---------------------------------------------------------------------------------
+if __name__ == '__main__':
+    startColorimeterGUI()
+

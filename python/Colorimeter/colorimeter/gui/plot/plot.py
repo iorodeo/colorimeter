@@ -16,7 +16,7 @@ from colorimeter import constants
 from colorimeter import import_export 
 from colorimeter import standard_curve
 from colorimeter.main_window import MainWindowWithTable
-from colorimeter.gui.dialog import TestSolutionDialog
+from colorimeter.gui.dialog.test_solution_dialog import TestSolutionDialog
 
 class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
 

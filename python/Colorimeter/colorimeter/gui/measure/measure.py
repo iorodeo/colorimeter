@@ -257,13 +257,16 @@ def getCoefficientFromData(data):
     coeff = standard_curve.getCoefficient(abso,conc,fitType=constants.FIT_TYPE)
     return coeff
 
-def startMeasureGUI():
-    app = QtGui.QApplication(sys.argv)
+def startMeasureMainWindow(app):
     mainWindow = MeasureMainWindow()
     mainWindow.main()
     app.exec_()
 
+def startMeasureApp():
+    app = QtGui.QApplication(sys.argv)
+    startMeasureMainWindow(app)
+
 # -----------------------------------------------------------------------------
 if __name__ == '__main__':
-    startMeasureGUI()
+    startMeasureApp()
 

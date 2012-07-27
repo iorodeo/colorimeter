@@ -184,11 +184,15 @@ def dataListToFloat(dataList):
         dataListFloat.append((x,y))
     return dataListFloat
 
-def startPlotGUI():
-    app = QtGui.QApplication(sys.argv)
+def startPlotMainWindow(app):
     mainWindow = PlotMainWindow()
     mainWindow.main()
     app.exec_()
+
+def startPlotApp():
+    app = QtGui.QApplication(sys.argv)
+    startPlotMainWindow(app)
+
 
 class DoubleItemDelegate(QtGui.QStyledItemDelegate):
 
@@ -204,4 +208,4 @@ class DoubleItemDelegate(QtGui.QStyledItemDelegate):
 
 # -----------------------------------------------------------------------------
 if __name__ == '__main__':
-    startPlotGUI()
+    startPlotApp()

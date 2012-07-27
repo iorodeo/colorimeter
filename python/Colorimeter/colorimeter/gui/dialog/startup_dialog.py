@@ -4,9 +4,9 @@ from PyQt4 import QtCore
 from PyQt4 import QtGui
 from startup_dialog_ui import Ui_startupDialog
 from colorimeter import constants
-from colorimeter.gui.basic import startBasicGUI
-from colorimeter.gui.plot import startPlotGUI
-from colorimeter.gui.measure import startMeasureGUI
+from colorimeter.gui.basic import startBasicMainWindow
+from colorimeter.gui.plot import startPlotMainWindow
+from colorimeter.gui.measure import startMeasureMainWindow
 
 class StartupDialog(QtGui.QDialog,Ui_startupDialog):
 
@@ -32,15 +32,15 @@ class StartupDialog(QtGui.QDialog,Ui_startupDialog):
         self.program = None
 
     def basicPushButtonClicked_Callback(self):
-        self.program = startBasicGUI
+        self.program = startBasicMainWindow
         self.close()
 
     def plotPushButtonClicked_Callback(self):
-        self.program = startPlotGUI
+        self.program = startPlotMainWindow
         self.close()
 
     def measurePushButtonClicked_Callback(self):
-        self.program = startMeasureGUI
+        self.program = startMeasureMainWindow
         self.close()
 
     def setAppSize(self):
@@ -55,14 +55,14 @@ class StartupDialog(QtGui.QDialog,Ui_startupDialog):
         self.exec_()
         return self.program
 
-def startColorimeterGUI():
+def startColorimeterApp():
     app = QtGui.QApplication(sys.argv)
     dlg = StartupDialog()
     program = dlg.run()
     if program is not None:
-        program()
+        program(app)
 
 # ---------------------------------------------------------------------------------
 if __name__ == '__main__':
-    startColorimeterGUI()
+    startColorimeterApp()
 

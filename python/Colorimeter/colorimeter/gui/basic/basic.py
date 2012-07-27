@@ -284,13 +284,17 @@ def padString(x,n):
         xNew = x
     return xNew
 
-def startBasicGUI():
-    app = QtGui.QApplication(sys.argv)
+
+def startBasicMainWindow(app):
     mainWindow = BasicMainWindow()
     mainWindow.main()
     app.exec_()
 
+def startBasicApp():
+    app = QtGui.QApplication(sys.argv)
+    startBasciMainWindow(app)
+
 # -----------------------------------------------------------------------------
 if __name__ == '__main__':
-    startBasicGUI()
+    startBasicApp()
 

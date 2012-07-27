@@ -1,0 +1,91 @@
+# -*- coding: utf-8 -*-
+
+# Form implementation generated from reading ui file 'startup_dialog.ui'
+#
+# Created: Thu Jul 26 17:20:33 2012
+#      by: PyQt4 UI code generator 4.7.2
+#
+# WARNING! All changes made in this file will be lost!
+
+from PyQt4 import QtCore, QtGui
+
+class Ui_startupDialog(object):
+    def setupUi(self, startupDialog):
+        startupDialog.setObjectName("startupDialog")
+        startupDialog.resize(442, 260)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(startupDialog.sizePolicy().hasHeightForWidth())
+        startupDialog.setSizePolicy(sizePolicy)
+        startupDialog.setMinimumSize(QtCore.QSize(442, 260))
+        startupDialog.setMaximumSize(QtCore.QSize(442, 260))
+        self.verticalLayout = QtGui.QVBoxLayout(startupDialog)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.groupBox = QtGui.QGroupBox(startupDialog)
+        self.groupBox.setObjectName("groupBox")
+        self.horizontalLayout = QtGui.QHBoxLayout(self.groupBox)
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.label = QtGui.QLabel(self.groupBox)
+        self.label.setObjectName("label")
+        self.horizontalLayout.addWidget(self.label)
+        spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout.addItem(spacerItem)
+        self.basicPushButton = QtGui.QPushButton(self.groupBox)
+        self.basicPushButton.setObjectName("basicPushButton")
+        self.horizontalLayout.addWidget(self.basicPushButton)
+        self.verticalLayout.addWidget(self.groupBox)
+        self.line = QtGui.QFrame(startupDialog)
+        self.line.setFrameShape(QtGui.QFrame.HLine)
+        self.line.setFrameShadow(QtGui.QFrame.Sunken)
+        self.line.setObjectName("line")
+        self.verticalLayout.addWidget(self.line)
+        self.groupBox_2 = QtGui.QGroupBox(startupDialog)
+        self.groupBox_2.setObjectName("groupBox_2")
+        self.horizontalLayout_2 = QtGui.QHBoxLayout(self.groupBox_2)
+        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.label_2 = QtGui.QLabel(self.groupBox_2)
+        self.label_2.setObjectName("label_2")
+        self.horizontalLayout_2.addWidget(self.label_2)
+        spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_2.addItem(spacerItem1)
+        self.plotPushButton = QtGui.QPushButton(self.groupBox_2)
+        self.plotPushButton.setObjectName("plotPushButton")
+        self.horizontalLayout_2.addWidget(self.plotPushButton)
+        self.verticalLayout.addWidget(self.groupBox_2)
+        self.line_2 = QtGui.QFrame(startupDialog)
+        self.line_2.setFrameShape(QtGui.QFrame.HLine)
+        self.line_2.setFrameShadow(QtGui.QFrame.Sunken)
+        self.line_2.setObjectName("line_2")
+        self.verticalLayout.addWidget(self.line_2)
+        self.groupBox_3 = QtGui.QGroupBox(startupDialog)
+        self.groupBox_3.setObjectName("groupBox_3")
+        self.horizontalLayout_3 = QtGui.QHBoxLayout(self.groupBox_3)
+        self.horizontalLayout_3.setObjectName("horizontalLayout_3")
+        self.label_3 = QtGui.QLabel(self.groupBox_3)
+        self.label_3.setObjectName("label_3")
+        self.horizontalLayout_3.addWidget(self.label_3)
+        spacerItem2 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_3.addItem(spacerItem2)
+        self.measurePushButton = QtGui.QPushButton(self.groupBox_3)
+        self.measurePushButton.setObjectName("measurePushButton")
+        self.horizontalLayout_3.addWidget(self.measurePushButton)
+        self.verticalLayout.addWidget(self.groupBox_3)
+        spacerItem3 = QtGui.QSpacerItem(20, 14, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        self.verticalLayout.addItem(spacerItem3)
+
+        self.retranslateUi(startupDialog)
+        QtCore.QMetaObject.connectSlotsByName(startupDialog)
+
+    def retranslateUi(self, startupDialog):
+        startupDialog.setWindowTitle(QtGui.QApplication.translate("startupDialog", "IO Rodeo Colorimeter", None, QtGui.QApplication.UnicodeUTF8))
+        self.groupBox.setTitle(QtGui.QApplication.translate("startupDialog", "Basic Program", None, QtGui.QApplication.UnicodeUTF8))
+        self.label.setText(QtGui.QApplication.translate("startupDialog", "Measure transmittance and absorbance", None, QtGui.QApplication.UnicodeUTF8))
+        self.basicPushButton.setText(QtGui.QApplication.translate("startupDialog", "Start", None, QtGui.QApplication.UnicodeUTF8))
+        self.groupBox_2.setTitle(QtGui.QApplication.translate("startupDialog", "Plotting Program", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_2.setText(QtGui.QApplication.translate("startupDialog", "Generate standard curves and plot data", None, QtGui.QApplication.UnicodeUTF8))
+        self.plotPushButton.setText(QtGui.QApplication.translate("startupDialog", "Start", None, QtGui.QApplication.UnicodeUTF8))
+        self.groupBox_3.setTitle(QtGui.QApplication.translate("startupDialog", "Measurement Program", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_3.setText(QtGui.QApplication.translate("startupDialog", "Measure the concentration of solutions ", None, QtGui.QApplication.UnicodeUTF8))
+        self.measurePushButton.setText(QtGui.QApplication.translate("startupDialog", "Start", None, QtGui.QApplication.UnicodeUTF8))
+

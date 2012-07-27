@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'test_solution_dialog.ui'
 #
-# Created: Tue Jul 24 19:05:26 2012
+# Created: Thu Jul 26 17:19:23 2012
 #      by: PyQt4 UI code generator 4.7.2
 #
 # WARNING! All changes made in this file will be lost!

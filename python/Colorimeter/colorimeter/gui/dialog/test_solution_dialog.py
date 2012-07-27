@@ -16,8 +16,12 @@ class TestSolutionDialog(QtGui.QDialog,Ui_testSolutionDialog):
         self.initialize(mode)
 
     def connectActions(self):
-        self.quitPushButton.clicked.connect(self.quitPushButtonClicked_Callback)
-        self.modePushButton.clicked.connect(self.modePushButtonClicked_Callback)
+        self.quitPushButton.clicked.connect(
+                self.quitPushButtonClicked_Callback
+                )
+        self.modePushButton.clicked.connect(
+                self.modePushButtonClicked_Callback
+                )
 
     def initialize(self,mode):
         self.mode = mode

@@ -292,7 +292,7 @@ def startBasicMainWindow(app):
 
 def startBasicApp():
     app = QtGui.QApplication(sys.argv)
-    startBasciMainWindow(app)
+    startBasicMainWindow(app)
 
 # -----------------------------------------------------------------------------
 if __name__ == '__main__':

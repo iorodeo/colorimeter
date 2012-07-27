@@ -68,6 +68,7 @@ class MainWindowCommon(QtGui.QMainWindow):
         if self.dev == None:
             try:
                 self.dev = Colorimeter(self.port)
+                self.numSamples = self.dev.getNumSamples()
                 connected = True
             except Exception, e:
                 msgTitle = 'Connection Error'
@@ -85,8 +86,6 @@ class MainWindowCommon(QtGui.QMainWindow):
                 QtGui.QMessageBox.critical(self,'Error', str(e))
             connected = False
 
-        if connected:
-            self.numSamples = self.dev.getNumSamples()
         self.updateWidgetEnabled()
         self.connectPushButton.setFlat(False)
 

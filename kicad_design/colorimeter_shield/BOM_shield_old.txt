@@ -1,0 +1,12 @@
+part     decription                        vendor   PN                  QTY
+----------------------------------------------------------------------------------
+C1       SMT 10uF Capacitor 	           Digikey	493-2886-1-ND        1
+P1       4x1 connector – friction lock	   Digikey	A1922-ND             1
+P2       5x2 shrouded header	           Digikey	S9169-ND             1
+P4       2-pin connector		
+K1       3-pin connector		
+SW1      SMT switch	                       Digikey	CKN10223CT-ND        1
+RV1      Potentiometer	                   Digikey	CT2264-ND            1
+SHIELD1  Arduino Stackable Header Kit 	   Sparkfun	PRT-10007            1
+
+

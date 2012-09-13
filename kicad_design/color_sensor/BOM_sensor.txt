@@ -1,7 +1,7 @@
 part     decription                        vendor   PN                  QTY
 ----------------------------------------------------------------------------------
 U1      SMT Color sensor	               Mouser	856-TCS3200D-TR       1
-P2, P3  2pos terminal block	               Digikey	277-1273-ND           2
+P2      4 pin SMT male header              Digikey	S1013E-04-ND          1
 C1      SMT 0.1uF capacitor	               Digikey	490-1577-1-ND         1
 P1      5x2 shrouded header	               Digikey	S9169-ND              1
 

@@ -1,0 +1,9 @@
+QTY      decription                          vendor          PN                  
+------------------------------------------------------------------------
+4        4-40 hex standoffs 1 ¾” long        McMaster-Carr   91780A038
+2        4-40 hex standoffs 1 ¼” long        McMaster-Carr   91780A034
+16       4-40 machine screws 3/8” long       McMaster-Carr   91249A108
+4        4-40 machine screws 1/2" long       McMaster-Carr   91249A111
+8        4-40 machine screw nuts             McMaster-Carr   96537A120
+4        3” female-female wire               Pololu          1806
+2        connector housing                   Pololu          1903

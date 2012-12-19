@@ -16,6 +16,7 @@ from measure_ui import Ui_MainWindow
 from colorimeter import constants 
 from colorimeter import import_export 
 from colorimeter import standard_curve
+from colorimeter import nonlinear_fit
 from colorimeter.main_window import MainWindowWithTable
 
 class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
@@ -48,6 +49,8 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
     def initialize(self):
         super(MeasureMainWindow,self).initialize()
         self.coeff = None
+        self.fitType = 'linear'
+        self.fitParam = None
         self.noValueSymbol = constants.NO_VALUE_SYMBOL_LABEL
         self.aboutText = constants.MEASURE_ABOUT_TEXT
 
@@ -72,12 +75,16 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
         value = self.coefficientLineEdit.text()
         value = float(value)
         self.coeff = value
+        self.fitType = 'linear'
+        self.fitParam = None
         self.updateWidgetEnabled()
 
     def coeffFixup(self,value):
         value = str(value)
         if not value:
             self.coeff = None
+            self.fitType = 'linear'
+            self.fitParam = None
             self.updateWidgetEnabled()
 
     def editTestSolutions_Callback(self):
@@ -111,8 +118,15 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
             testSolutionDict.update(self.default_TestSolutionDict)
             pathName = testSolutionDict[itemText]
             data = import_export.importTestSolutionData(pathName)
-            self.coeff = getCoefficientFromData(data)
-            self.coefficientLineEdit.setText('{0:1.1f}'.format(1.0e6*self.coeff))
+            if not self.checkImportData(data):
+                return
+            self.fitType = data['fitType']
+            self.fitParams = data['fitParams']
+            self.coeff = getCoefficientFromData(data,self.fitType,self.fitParams)
+            if self.fitType == 'linear':
+                self.coefficientLineEdit.setText('{0:1.1f}'.format(1.0e6*self.coeff))
+            else:
+                self.coefficientLineEdit.setText(' -- nonlinear --')
             self.setLEDColor(data['led'])
         self.testSolutionIndex = index
         self.updateWidgetEnabled()
@@ -123,11 +137,18 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
             conc = random.random()
         else:
             freq, trans, absorb = self.dev.getMeasurement()
-            conc = absorb[ledNumber]/self.coeff
+            conc = self.getConcentration(absorb[ledNumber])
+
 
         concStr = '{0:1.2f}'.format(conc)
         self.measurePushButton.setFlat(False)
         self.tableWidget.addData('',concStr,selectAndEdit=True)
+
+    def getConcentration(self,absorb):
+        if self.fitType == 'linear':
+            conc = absorb/self.coeff
+        elif self.fitType == 'polynomial':
+            pass
 
     def getSaveFileHeader(self):
         timeStr = time.strftime('%Y-%m-%d %H:%M:%S %Z') 
@@ -239,7 +260,20 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
                 label = str(label)
             conc = str(conc)
             self.tableWidget.addData(label,conc)
-        pass
+
+    def checkImportData(self,data): 
+        msgTitle = 'Import Error'
+        if not data['fitType'] in ('linear', 'polynomial'):
+            msgText = 'unknown fit type: {0}'.format(data['fitType']) 
+            QtGui.QMessageBox.warning(self,msgTitle, msgText)
+            return False
+
+        if data['fitType'] == 'polynomial':
+            if data['fitParams'] not in (2,3,4,5):
+                msgText = 'unsuported polynomial order: {0}'.format(fitParams) 
+                QtGui.QMessageBox.warning(self,msgTitle, msgText)
+                return False
+        return True
 
 def dataListToLabelAndFloat(dataList):
     dataListNew = []
@@ -251,10 +285,14 @@ def dataListToLabelAndFloat(dataList):
         dataListNew.append((x,y))
     return dataListNew
 
-def getCoefficientFromData(data): 
+def getCoefficientFromData(data,fitType,fitParams): 
     values = data['values']
     abso, conc = zip(*values)
-    coeff = standard_curve.getCoefficient(abso,conc,fitType=constants.FIT_TYPE)
+    if fitType == 'linear':
+        coeff = standard_curve.getCoefficient(abso,conc,fitType=constants.LINEAR_FIT_TYPE)
+    elif fitType == 'polynomial':
+        order = fitParams
+        coeff, dummy0, dummy1 = nonlinear_fit.getPolynomialFit(abso,conc,order=order)
     return coeff
 
 def startMeasureMainWindow(app):

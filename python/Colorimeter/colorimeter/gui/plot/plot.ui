@@ -257,9 +257,28 @@
     <property name="title">
      <string>&amp;Options</string>
     </property>
+    <widget class="QMenu" name="menuFitType">
+     <property name="title">
+      <string>Fit Type</string>
+     </property>
+     <addaction name="actionFitTypeLinear"/>
+     <addaction name="actionFitTypePolynomial2"/>
+     <addaction name="actionFitTypePolynomial3"/>
+     <addaction name="actionFitTypePolynomial4"/>
+     <addaction name="actionFitTypePolynomial5"/>
+    </widget>
+    <widget class="QMenu" name="menuConcentrationUnits">
+     <property name="title">
+      <string>Concentration Units</string>
+     </property>
+     <addaction name="actionConcentrationUnitsUM"/>
+     <addaction name="actionConcentrationUnitsPPM"/>
+    </widget>
     <addaction name="actionExport"/>
     <addaction name="actionImport"/>
     <addaction name="actionEditTestSolutions"/>
+    <addaction name="menuFitType"/>
+    <addaction name="menuConcentrationUnits"/>
    </widget>
    <widget class="QMenu" name="menu_Help">
     <property name="title">
@@ -305,6 +324,62 @@
   <action name="actionAbout">
    <property name="text">
     <string>About</string>
+   </property>
+  </action>
+  <action name="actionFitTypeLinear">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Linear</string>
+   </property>
+  </action>
+  <action name="actionFitTypePolynomial2">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Polynomial (order=2)</string>
+   </property>
+  </action>
+  <action name="actionConcentrationUnitsUM">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>uM</string>
+   </property>
+  </action>
+  <action name="actionConcentrationUnitsPPM">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>ppm</string>
+   </property>
+  </action>
+  <action name="actionFitTypePolynomial3">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Polynomial (order=3)</string>
+   </property>
+  </action>
+  <action name="actionFitTypePolynomial4">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Polynomial (order=4)</string>
+   </property>
+  </action>
+  <action name="actionFitTypePolynomial5">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Polynomial (order=5)</string>
    </property>
   </action>
  </widget>

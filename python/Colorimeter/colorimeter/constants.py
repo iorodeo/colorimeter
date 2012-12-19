@@ -1,8 +1,8 @@
 import os
 
 # Development
-DEVEL_FAKE_MEASURE = False 
-#DEVEL_FAKE_MEASURE = True 
+#DEVEL_FAKE_MEASURE = False 
+DEVEL_FAKE_MEASURE = True 
 
 # Serial ports
 DFLT_PORT_WINDOWS = 'com1' 
@@ -23,7 +23,7 @@ TABLE_MIN_ROW_COUNT = 4
 TABLE_COL_COUNT = 2 
 
 # Data fit type
-FIT_TYPE = 'force_zero'
+LINEAR_FIT_TYPE = 'force_zero'
 
 # Plotting
 PLOT_FIGURE_NUM = 1

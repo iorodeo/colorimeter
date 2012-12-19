@@ -15,6 +15,7 @@ from plot_ui import Ui_MainWindow
 from colorimeter import constants
 from colorimeter import import_export 
 from colorimeter import standard_curve
+from colorimeter import nonlinear_fit
 from colorimeter.main_window import MainWindowWithTable
 from colorimeter.gui.dialog.test_solution_dialog import TestSolutionDialog
 
@@ -32,6 +33,29 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
         self.actionExport.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_E)
         self.actionImport.triggered.connect(self.importData_Callback)
         self.actionImport.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_I)
+
+        self.fitTypeActionGroup = QtGui.QActionGroup(self)
+        self.fitTypeActionGroup.addAction(self.actionFitTypeLinear)
+        self.fitTypeActionGroup.addAction(self.actionFitTypePolynomial2)
+        self.fitTypeActionGroup.addAction(self.actionFitTypePolynomial3)
+        self.fitTypeActionGroup.addAction(self.actionFitTypePolynomial4)
+        self.fitTypeActionGroup.addAction(self.actionFitTypePolynomial5)
+        self.fitTypeActionGroup.setExclusive(True)
+
+        self.actionFitTypeLinear.triggered.connect(self.fitTypeChanged_Callback)
+        self.actionFitTypePolynomial2.triggered.connect(self.fitTypeChanged_Callback)
+        self.actionFitTypePolynomial3.triggered.connect(self.fitTypeChanged_Callback)
+        self.actionFitTypePolynomial4.triggered.connect(self.fitTypeChanged_Callback)
+        self.actionFitTypePolynomial5.triggered.connect(self.fitTypeChanged_Callback)
+
+        self.concUnitsActionGroup = QtGui.QActionGroup(self)
+        self.concUnitsActionGroup.addAction(self.actionConcentrationUnitsUM)
+        self.concUnitsActionGroup.addAction(self.actionConcentrationUnitsPPM)
+        self.concUnitsActionGroup.setExclusive(True)
+
+        self.actionConcentrationUnitsUM.triggered.connect(self.concUnitsChanged_Callback)
+        self.actionConcentrationUnitsPPM.triggered.connect(self.concUnitsChanged_Callback)
+
         itemDelegate = DoubleItemDelegate(self.tableWidget)
         self.tableWidget.setItemDelegateForColumn(0,itemDelegate)
 
@@ -43,7 +67,10 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
         if data is not None:
             self.setTableData(data['values'])
             self.setLEDColor(data['led'])
+            self.setFitType(data['fitType'],data['fitParams'])
+            self.setConcentrationUnits(data['concentrationUnits'])
         self.updateWidgetEnabled()
+        self.updatePlot(create=False)
         
     def initialize(self):
         super(PlotMainWindow,self).initialize()
@@ -51,17 +78,30 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
         self.noValueSymbol = constants.NO_VALUE_SYMBOL_NUMBER
         self.tableWidget.clean(setup=True)
         self.tableWidget.updateFunc = self.updatePlot
-        concentrationStr = QtCore.QString.fromUtf8("Concentration (\xc2\xb5M)")
-        self.tableWidget.setHorizontalHeaderLabels((concentrationStr,'Absorbance')) 
         self.updateWidgetEnabled()
+        self.setFitType('linear',None)
+        self.setConcentrationUnits('uM')
 
     def exportData_Callback(self):
         dataList = self.tableWidget.getData()
-        if len(dataList) < 2:
-            msgTitle = 'Export Error'
-            msgText = 'insufficient data for export'
-            QtGui.QMessageBox.warning(self,msgTitle, msgText)
-            return
+        fitType, fitParams = self.getFitTypeAndParams()
+
+        if fitType == 'linear':
+            if len(dataList) < 2:
+                msgTitle = 'Export Error'
+                msgText = 'insufficient data for export w/ linear fit' 
+                msgText += ' - must have at least 2 points'
+                QtGui.QMessageBox.warning(self,msgTitle, msgText)
+                return
+
+        elif fitType == 'polynomial':
+            order = fitParams
+            if len(dataList) <= order:
+                msgTitle = 'Export Error'
+                msgText = 'insufficient data for export w/ order={0} polynomial'.format(order)
+                msgText += ', must have at least {0} points'.format(order+1)
+                QtGui.QMessageBox.warning(self,msgTitle, msgText)
+                return
 
         solutionName, flag = QtGui.QInputDialog.getText(
                 self,
@@ -87,15 +127,33 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
                 import_export.deleteTestSolution(self.userHome,solutionName)
 
         dateStr = time.strftime('%Y-%m-%d %H:%M:%S %Z')
-        import_export.exportTestSolutionData(
-                self.userHome,
-                solutionName,
-                dataList,
-                self.currentColor,
-                dateStr,
-                )
+        dataDict = { 
+                'name': solutionName,
+                'date': dateStr,
+                'led': self.currentColor,
+                'values': [map(float,x) for x in dataList],
+                'fitType': fitType,
+                'concentrationUnits': self.getConcentrationUnits(),
+                }
+        if fitParams is not None:
+            try:
+                dataDict['fitParams'] = list(fitParams),
+            except TypeError:
+                dataDict['fitParams'] = fitParams
+        else:
+            dataDict['fitParams'] = 'None'
+
+        import_export.exportTestSolutionData(self.userHome,dataDict)
+
+    def fitTypeChanged_Callback(self):
+        self.updatePlot()
+
+    def concUnitsChanged_Callback(self):
+        self.setConcentrationStr()
+        self.updatePlot()
 
     def updatePlot(self,create=False):
+
         if not create and not plt.fignum_exists(constants.PLOT_FIGURE_NUM):
             return
         dataList = self.tableWidget.getData(noValueInclude=False)
@@ -105,27 +163,44 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
             return
         xList,yList = zip(*dataList)
 
-        if len(dataList) > 1:
-            slope, xFit, yFit = standard_curve.getLinearFit(
-                    xList,
-                    yList,
-                    fitType=constants.FIT_TYPE,
-                    numPts=constants.PLOT_FIT_NUM_PTS,
-                    )
-            haveSlope = True
+        fitType, fitParams = self.getFitTypeAndParams()
+
+        haveFit = False
+        haveSlope = False
+        if fitType == 'linear':
+            if len(dataList) > 1:
+                slope, xFit, yFit = standard_curve.getLinearFit(
+                        xList,
+                        yList,
+                        fitType=constants.LINEAR_FIT_TYPE,
+                        numPts=constants.PLOT_FIT_NUM_PTS,
+                        )
+                haveFit = True
+                haveSlope = True
+        elif fitType == 'polynomial':
+            order = fitParams
+            if len(dataList) > order:
+                coeff, yFit, xFit = nonlinear_fit.getPolynomialFit(
+                        yList,
+                        xList,
+                        order=order,
+                        numPts=constants.PLOT_FIT_NUM_PTS,
+                        )
+                haveFit = True
         else:
-            haveSlope = False
+            print("unsupported fitType - we shouldn't be here")
 
         plt.clf()
         self.fig = plt.figure(constants.PLOT_FIGURE_NUM)
         self.fig.canvas.manager.set_window_title('Colorimeter Plot')
         ax = self.fig.add_subplot(111)
 
-        if haveSlope:
+        if haveFit:
             hFit = ax.plot(xFit,yFit,'r')
         ax.plot(xList,yList,'ob')
         ax.grid('on')
-        ax.set_xlabel('Concentration')
+        units = self.getConcentrationUnits()
+        ax.set_xlabel('Concentration ({0})'.format(units))
         ax.set_ylabel('Absorbance ('+self.currentColor+' led)')
         if haveSlope:
             self.fig.text(
@@ -173,6 +248,80 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
         else:
             self.ledColorWidget.setEnabled(True)
             self.calibratePushButton.setEnabled(True)
+
+    def getFitTypeAndParams(self):
+        if self.actionFitTypeLinear.isChecked():
+            fitType = 'linear'
+            params = None
+        elif self.actionFitTypePolynomial2.isChecked():
+            fitType = 'polynomial' 
+            params = 2
+        elif self.actionFitTypePolynomial3.isChecked():
+            fitType = 'polynomial'
+            params = 3
+        elif self.actionFitTypePolynomial4.isChecked():
+            fitType = 'polynomial'
+            params = 4
+        else:
+            fitType = 'polynomial'
+            params = 5
+        return fitType, params
+
+    def setFitType(self,fitType,fitParams):
+        error = False
+        self.actionFitTypeLinear.setChecked(False)
+        self.actionFitTypePolynomial2.setChecked(False)
+        self.actionFitTypePolynomial3.setChecked(False)
+        self.actionFitTypePolynomial4.setChecked(False)
+        self.actionFitTypePolynomial5.setChecked(False)
+        if fitType.lower() == 'linear':
+            self.actionFitTypeLinear.setChecked(True)
+        elif fitType.lower() == 'polynomial':
+            order = fitParams
+            order2actionDict = {
+                    2: self.actionFitTypePolynomial2,
+                    3: self.actionFitTypePolynomial3,
+                    4: self.actionFitTypePolynomial4,
+                    5: self.actionFitTypePolynomial5,
+                    }
+            try:
+                action = order2actionDict[order]
+                action.setChecked(True)
+            except KeyError:
+                error = True
+                errorMsg = 'unsupported polynomial order'
+        else:
+            error = True
+            errorMsg = 'uknown fit type {0}'.format(fitType)
+
+        if error: 
+            msgTitle = 'Export Error'
+            msgText = 'insufficient data for export w/ linear fit' 
+            msgText += ' - must have at least 2 points'
+            QtGui.QMessageBox.warning(self,msgTitle, msgText)
+
+    def getConcentrationUnits(self):
+        if self.actionConcentrationUnitsUM.isChecked():
+            return 'uM'
+        else:
+            return 'ppm'
+
+    def setConcentrationUnits(self,units):
+        if  units.lower() == 'um':
+            self.actionConcentrationUnitsUM.setChecked(True)
+            self.actionConcentrationUnitsPPM.setChecked(False)
+        else:
+            self.actionConcentrationUnitsUM.setChecked(False)
+            self.actionConcentrationUnitsPPM.setChecked(True)
+        self.setConcentrationStr()
+
+    def setConcentrationStr(self):
+        concUnits = self.getConcentrationUnits().lower()
+        if concUnits == 'um':
+            concentrationStr = QtCore.QString.fromUtf8("Concentration (\xc2\xb5M)")
+        else:
+            concentrationStr = QtCore.QString('Concentration (ppm)')
+        self.tableWidget.setHorizontalHeaderLabels((concentrationStr,'Absorbance')) 
 
 def dataListToFloat(dataList):
     dataListFloat = []

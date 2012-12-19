@@ -274,6 +274,7 @@ class MainWindowWithTable(MainWindowCommon):
             self.setLEDColor(ledColor)
         self.setTableData(dataList)
         self.updateWidgetEnabled()
+        self.updatePlot(create=False)
 
     def loadDataFromFile(self,filename):
         """

@@ -72,20 +72,25 @@ def importTestSolutionData(fileName):
     """
     with open(fileName,'r') as fid:
         data = yaml.load(fid)
+
+    # For backward compatability
+    if not 'fitType' in data:
+        data['fitType'] = 'linear'
+    if not 'fitParams' in data: 
+        data['fitParams'] = None
+    if not 'concentrationUnits' in data:
+        data['concentrationUnits'] = 'uM'
+    if data['fitParams'] in ('None', 'none'):
+        data['fitParams'] = None
     return data
 
-def exportTestSolutionData(userHome, solutionName, dataList, color, dateStr):
+def exportTestSolutionData(userHome, dataDict): 
     """
     Exports test solution data to the users directory. Data is saved 
     as a yaml file.
     """
+    solutionName = dataDict['name']
     fileName = getUniqueSolutionFileName(userHome, solutionName)
-    dataDict = {
-            'name': solutionName,
-            'date': dateStr,
-            'led' : color,
-            'values': [map(float,x) for x in dataList],
-            }
     with open(fileName,'w') as fid: 
         yaml.dump(dataDict,fid)
 

@@ -363,8 +363,16 @@
      <addaction name="actionIncludeUserTestSolutions"/>
      <addaction name="actionIncludeDefaultTestSolutions"/>
     </widget>
+    <widget class="QMenu" name="menuSample_Units">
+     <property name="title">
+      <string>Sample Units</string>
+     </property>
+     <addaction name="actionSampleUnitsUM"/>
+     <addaction name="actionSampleUnitsPPM"/>
+    </widget>
     <addaction name="menuInclude"/>
     <addaction name="actionEditTestSolutions"/>
+    <addaction name="menuSample_Units"/>
    </widget>
    <widget class="QMenu" name="menu_Help">
     <property name="title">
@@ -426,6 +434,22 @@
   <action name="actionAbout">
    <property name="text">
     <string>About</string>
+   </property>
+  </action>
+  <action name="actionSampleUnitsUM">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>uM</string>
+   </property>
+  </action>
+  <action name="actionSampleUnitsPPM">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>ppm</string>
    </property>
   </action>
  </widget>

@@ -41,20 +41,13 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
         self.fitTypeActionGroup.addAction(self.actionFitTypePolynomial4)
         self.fitTypeActionGroup.addAction(self.actionFitTypePolynomial5)
         self.fitTypeActionGroup.setExclusive(True)
-
-        self.actionFitTypeLinear.triggered.connect(self.fitTypeChanged_Callback)
-        self.actionFitTypePolynomial2.triggered.connect(self.fitTypeChanged_Callback)
-        self.actionFitTypePolynomial3.triggered.connect(self.fitTypeChanged_Callback)
-        self.actionFitTypePolynomial4.triggered.connect(self.fitTypeChanged_Callback)
-        self.actionFitTypePolynomial5.triggered.connect(self.fitTypeChanged_Callback)
+        self.fitTypeActionGroup.triggered.connect(self.fitTypeChanged_Callback)
 
         self.concUnitsActionGroup = QtGui.QActionGroup(self)
         self.concUnitsActionGroup.addAction(self.actionConcentrationUnitsUM)
         self.concUnitsActionGroup.addAction(self.actionConcentrationUnitsPPM)
         self.concUnitsActionGroup.setExclusive(True)
-
-        self.actionConcentrationUnitsUM.triggered.connect(self.concUnitsChanged_Callback)
-        self.actionConcentrationUnitsPPM.triggered.connect(self.concUnitsChanged_Callback)
+        self.concUnitsActionGroup.triggered.connect(self.concUnitsChanged_Callback)
 
         itemDelegate = DoubleItemDelegate(self.tableWidget)
         self.tableWidget.setItemDelegateForColumn(0,itemDelegate)
@@ -162,6 +155,7 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
             self.closeFigure()
             return
         xList,yList = zip(*dataList)
+        #yList,xList = zip(*dataList)
 
         fitType, fitParams = self.getFitTypeAndParams()
 
@@ -180,9 +174,9 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
         elif fitType == 'polynomial':
             order = fitParams
             if len(dataList) > order:
-                coeff, yFit, xFit = nonlinear_fit.getPolynomialFit(
-                        yList,
+                coeff, xFit, yFit = nonlinear_fit.getPolynomialFit(
                         xList,
+                        yList,
                         order=order,
                         numPts=constants.PLOT_FIT_NUM_PTS,
                         )
@@ -197,6 +191,7 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
 
         if haveFit:
             hFit = ax.plot(xFit,yFit,'r')
+
         ax.plot(xList,yList,'ob')
         ax.grid('on')
         units = self.getConcentrationUnits()

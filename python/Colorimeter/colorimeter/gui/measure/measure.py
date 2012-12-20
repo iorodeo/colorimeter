@@ -24,8 +24,8 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
     def __init__(self,parent=None):
         super(MeasureMainWindow,self).__init__(parent)
         self.setupUi(self)
-        self.initialize()
         self.connectActions()
+        self.initialize()
 
     def connectActions(self):
         super(MeasureMainWindow,self).connectActions()
@@ -46,29 +46,38 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
         coeffValidator.fixup = self.coeffFixup
         self.coefficientLineEdit.setValidator(coeffValidator)
 
+        self.sampleUnitsActionGroup = QtGui.QActionGroup(self)
+        self.sampleUnitsActionGroup.addAction(self.actionSampleUnitsUM)
+        self.sampleUnitsActionGroup.addAction(self.actionSampleUnitsPPM)
+        self.sampleUnitsActionGroup.setExclusive(True)
+        self.sampleUnitsActionGroup.triggered.connect(self.sampleUnitsChanged_Callback)
+
+
     def initialize(self):
         super(MeasureMainWindow,self).initialize()
         self.coeff = None
         self.fitType = 'linear'
         self.fitParam = None
+        self.testSolutionIndex = 1
+        self.user_TestSolutionDict = {}
+        self.default_TestSolutionDict = {} 
         self.noValueSymbol = constants.NO_VALUE_SYMBOL_LABEL
         self.aboutText = constants.MEASURE_ABOUT_TEXT
 
         # Set up data table
         self.tableWidget.clean(setup=True)
         self.tableWidget.updateFunc = self.updatePlot
-        concentrationStr = QtCore.QString.fromUtf8("Concentration (\xc2\xb5M)")
-        self.tableWidget.setHorizontalHeaderLabels(('Sample', concentrationStr)) 
 
         # Set startup state for including test solution.
         self.actionIncludeDefaultTestSolutions.setChecked(True)
         self.actionIncludeUserTestSolutions.setChecked(True)
         self.updateTestSolutionDicts()
         self.populateTestSolutionComboBox()
-        self.testSolutionIndex = 1
         self.testSolutionComboBox.setCurrentIndex(
                 self.testSolutionIndex
                 )
+
+        self.setSampleUnits('um')
         self.updateWidgetEnabled()
 
     def coeffEditingFinished_Callback(self):
@@ -105,23 +114,35 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
                         self.testSolutionIndex
                         )
 
+    def sampleUnitsChanged_Callback(self):
+        if self.actionSampleUnitsUM.isChecked():
+            self.setSampleUnits('uM')
+        else:
+            self.setSampleUnits('ppm')
+
     def updateTestSolution(self,index):
         if index <= 0:
             self.coeffLEDWidget.setEnabled(True)
+            self.sampleUnitsActionGroup.setEnabled(True)
             self.coefficientLineEdit.setText("")
             self.coeff = None
         else:
             self.coeffLEDWidget.setEnabled(False)
+            self.sampleUnitsActionGroup.setEnabled(False)
             itemText = str(self.testSolutionComboBox.itemText(index))
             testSolutionDict = {}
             testSolutionDict.update(self.user_TestSolutionDict)
             testSolutionDict.update(self.default_TestSolutionDict)
-            pathName = testSolutionDict[itemText]
+            try:
+                pathName = testSolutionDict[itemText]
+            except KeyError:
+                return
             data = import_export.importTestSolutionData(pathName)
             if not self.checkImportData(data):
                 return
             self.fitType = data['fitType']
             self.fitParams = data['fitParams']
+            self.setSampleUnits(data['concentrationUnits'])
             self.coeff = getCoefficientFromData(data,self.fitType,self.fitParams)
             if self.fitType == 'linear':
                 self.coefficientLineEdit.setText('{0:1.1f}'.format(1.0e6*self.coeff))
@@ -134,12 +155,11 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
     def getMeasurement(self):
         ledNumber = constants.COLOR2LED_DICT[self.currentColor]
         if constants.DEVEL_FAKE_MEASURE:  
-            conc = random.random()
+            absorb = random.random()
+            conc = self.getConcentration(absorb) 
         else:
             freq, trans, absorb = self.dev.getMeasurement()
             conc = self.getConcentration(absorb[ledNumber])
-
-
         concStr = '{0:1.2f}'.format(conc)
         self.measurePushButton.setFlat(False)
         self.tableWidget.addData('',concStr,selectAndEdit=True)
@@ -147,8 +167,9 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
     def getConcentration(self,absorb):
         if self.fitType == 'linear':
             conc = absorb/self.coeff
-        elif self.fitType == 'polynomial':
-            pass
+        else:
+            conc = nonlinear_fit.getValueFromFit(self.coeff,absorb)
+        return conc
 
     def getSaveFileHeader(self):
         timeStr = time.strftime('%Y-%m-%d %H:%M:%S %Z') 
@@ -274,6 +295,19 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
                 QtGui.QMessageBox.warning(self,msgTitle, msgText)
                 return False
         return True
+
+    def setSampleUnits(self,units):
+        if units.lower() == 'um':
+            self.actionSampleUnitsUM.setChecked(True)
+            self.actionSampleUnitsPPM.setChecked(False)
+            concentrationStr = QtCore.QString.fromUtf8("Concentration (\xc2\xb5M)")
+            self.sampleUnits = units
+        else:
+            self.actionSampleUnitsUM.setChecked(False)
+            self.actionSampleUnitsPPM.setChecked(True)
+            concentrationStr = QtCore.QString('Concentration (ppm)')
+            self.sampleUnits = units
+        self.tableWidget.setHorizontalHeaderLabels(('Sample', concentrationStr)) 
 
 def dataListToLabelAndFloat(dataList):
     dataListNew = []

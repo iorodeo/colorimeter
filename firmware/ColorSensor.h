@@ -9,9 +9,16 @@
 #include "WProgram.h"
 #endif
 
-//const uint32_t DFLT_PULSE_IN_WAIT = 250000;
-const uint32_t DFLT_PULSE_IN_WAIT = 50000;
+const uint32_t DFLT_PULSE_IN_WAIT = 250000;
 const uint16_t DFLT_TIMEOUT_COUNT_MAX = 10;
+
+enum FreqScale 
+{
+    OUTPUT_FREQSCALE_0, 
+    OUTPUT_FREQSCALE_2,
+    OUTPUT_FREQSCALE_20,
+    OUTPUT_FREQSCALE_100
+};
 
 class ColorSensor {
     public:
@@ -28,6 +35,7 @@ class ColorSensor {
         void setChannelGreen();
         void setChannelBlue();
         void setChannelClear();
+        void setOutputFreqScale(FreqScale value);
 };
 #endif
 

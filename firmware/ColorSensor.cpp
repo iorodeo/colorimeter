@@ -18,10 +18,7 @@ void ColorSensor::initialize(uint8_t _S0, uint8_t _S1, uint8_t _S2, uint8_t _S3,
     pinMode(S3, OUTPUT); 
     pinMode(FO, INPUT);
 
-    // Set frequency scaling 
-    digitalWrite(S0,HIGH);
-    digitalWrite(S1,LOW);
-    //digitalWrite(S1,HIGH);
+    setOutputFreqScale(OUTPUT_FREQSCALE_100);
 
     timeoutCountMax = DFLT_TIMEOUT_COUNT_MAX;
     pulseInWait = DFLT_PULSE_IN_WAIT;
@@ -69,4 +66,29 @@ void ColorSensor::setChannelRed() {
 void ColorSensor::setChannelClear() {
     digitalWrite(S2,HIGH);
     digitalWrite(S3,LOW);
+}
+
+void ColorSensor::setOutputFreqScale(FreqScale value) {
+    switch (value)
+    {
+        case OUTPUT_FREQSCALE_0:
+            digitalWrite(S0,LOW); 
+            digitalWrite(S1,LOW);
+            break;
+            
+        case OUTPUT_FREQSCALE_2:
+            digitalWrite(S0,LOW); 
+            digitalWrite(S1,HIGH);
+            break;
+
+        case OUTPUT_FREQSCALE_20:
+            digitalWrite(S0,HIGH);
+            digitalWrite(S1,LOW);
+            break;
+
+        default:
+            digitalWrite(S0,HIGH);
+            digitalWrite(S1,HIGH);
+            break;
+    }
 }

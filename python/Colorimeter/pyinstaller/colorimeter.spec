@@ -15,10 +15,10 @@ exe = EXE( pyz,
           a.binaries,
           a.zipfiles,
           a.datas,
-          name=os.path.join('dist', 'colorimeter.exe'),
+          name=os.path.join('dist', 'colorimeter-v02.exe'),
           debug=False,
           strip=False,
           upx=True,
           console=False, icon='colorimeter_icon.ico')
 app = BUNDLE(exe,
-             name=os.path.join('dist', 'colorimeter.exe.app'))
+             name=os.path.join('dist', 'colorimeter-v02.exe.app'))

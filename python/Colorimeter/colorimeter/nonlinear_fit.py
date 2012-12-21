@@ -54,7 +54,7 @@ def getPolynomialFit(xList,yList,order=3,numPts=500):
 def getValueFromFit(fitCoeff,inputValue,numPts=500):
     interpFunc, minVal, maxVal = fitCoeff
     if (inputValue < minVal) or (inputValue > maxVal):
-        raise ValueError, 'input Value outside of interpolator range'
+        raise ValueError, 'value outside of calibration range'
     outputValue = interpFunc(inputValue)
     return float(outputValue)
 

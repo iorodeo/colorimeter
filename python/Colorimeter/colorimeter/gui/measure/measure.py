@@ -159,7 +159,14 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
             conc = self.getConcentration(absorb) 
         else:
             freq, trans, absorb = self.dev.getMeasurement()
-            conc = self.getConcentration(absorb[ledNumber])
+            try:
+                conc = self.getConcentration(absorb[ledNumber])
+            except ValueError, err:
+                msgTitle = 'Range Error'
+                msgText = str(err)
+                QtGui.QMessageBox.warning(self,msgTitle, msgText)
+                return
+
         concStr = '{0:1.2f}'.format(conc)
         self.measurePushButton.setFlat(False)
         self.tableWidget.addData('',concStr,selectAndEdit=True)

@@ -1,8 +1,6 @@
-update=Fri 02 Mar 2012 03:26:01 PM PST
+update=Thu 03 Jan 2013 03:07:17 PM PST
 version=1
-last_client=cvpcb
-[general]
-version=1
+last_client=kicad
 [eeschema]
 version=1
 LibDir=
@@ -105,3 +103,5 @@ version=1
 NetIExt=net
 [cvpcb/libraries]
 EquName1=devcms
+[general]
+version=1

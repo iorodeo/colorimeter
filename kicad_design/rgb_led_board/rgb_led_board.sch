@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date Thu 09 Feb 2012 04:13:39 PM PST
+EESchema Schematic File Version 2  date Thu 03 Jan 2013 03:06:48 PM PST
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -33,7 +33,7 @@ LIBS:rgb_multiled
 LIBS:rgb_led_board-cache
 EELAYER 25  0
 EELAYER END
-$Descr A4 11700 8267
+$Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
 Title ""

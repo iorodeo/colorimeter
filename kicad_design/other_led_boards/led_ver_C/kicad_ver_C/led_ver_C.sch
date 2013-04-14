@@ -1,0 +1,197 @@
+EESchema Schematic File Version 2  date Fri 08 Mar 2013 02:09:25 PM PST
+LIBS:power
+LIBS:device
+LIBS:transistors
+LIBS:conn
+LIBS:linear
+LIBS:regul
+LIBS:74xx
+LIBS:cmos4000
+LIBS:adc-dac
+LIBS:memory
+LIBS:xilinx
+LIBS:special
+LIBS:microcontrollers
+LIBS:dsp
+LIBS:microchip
+LIBS:analog_switches
+LIBS:motorola
+LIBS:texas
+LIBS:intel
+LIBS:audio
+LIBS:interface
+LIBS:digital-audio
+LIBS:philips
+LIBS:display
+LIBS:cypress
+LIBS:siliconi
+LIBS:opto
+LIBS:atmel
+LIBS:contrib
+LIBS:valves
+LIBS:rgb_multiled
+LIBS:rgb_led_board-cache
+EELAYER 27 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 1 1
+Title ""
+Date "8 mar 2013"
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+Wire Wire Line
+	6700 3950 6450 3950
+Wire Wire Line
+	4700 4550 4700 4750
+Wire Wire Line
+	3850 3650 3850 3950
+Wire Wire Line
+	6700 3650 6100 3650
+Wire Wire Line
+	6450 3950 6450 4350
+Text Label 6100 3650 0    60   ~ 0
+Blue
+$Comp
+L CONN_4 P1
+U 1 1 4F345F7F
+P 7050 3800
+F 0 "P1" V 7000 3800 50  0000 C CNN
+F 1 "CONN_4" V 7100 3800 50  0000 C CNN
+F 2 "" H 7050 3800 60  0001 C CNN
+F 3 "" H 7050 3800 60  0001 C CNN
+	1    7050 3800
+	1    0    0    -1  
+$EndComp
+Text Label 6450 4350 0    60   ~ 0
+GND
+Text Label 3850 3950 0    60   ~ 0
+GND
+$Comp
+L R R1
+U 1 1 4F035CCA
+P 4700 4300
+F 0 "R1" V 4780 4300 50  0000 C CNN
+F 1 "40" V 4700 4300 50  0000 C CNN
+F 2 "" H 4700 4300 60  0001 C CNN
+F 3 "" H 4700 4300 60  0001 C CNN
+	1    4700 4300
+	-1   0    0    1   
+$EndComp
+$Comp
+L GND #PWR2
+U 1 1 4F035C98
+P 4700 4750
+F 0 "#PWR2" H 4700 4750 30  0001 C CNN
+F 1 "GND" H 4700 4680 30  0001 C CNN
+F 2 "" H 4700 4750 60  0001 C CNN
+F 3 "" H 4700 4750 60  0001 C CNN
+	1    4700 4750
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR4
+U 1 1 4F035C8B
+P 6450 4350
+F 0 "#PWR4" H 6450 4350 30  0001 C CNN
+F 1 "GND" H 6450 4280 30  0001 C CNN
+F 2 "" H 6450 4350 60  0001 C CNN
+F 3 "" H 6450 4350 60  0001 C CNN
+	1    6450 4350
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR1
+U 1 1 4F035C86
+P 3850 3950
+F 0 "#PWR1" H 3850 3950 30  0001 C CNN
+F 1 "GND" H 3850 3880 30  0001 C CNN
+F 2 "" H 3850 3950 60  0001 C CNN
+F 3 "" H 3850 3950 60  0001 C CNN
+	1    3850 3950
+	1    0    0    -1  
+$EndComp
+$Comp
+L PWR_FLAG #FLG1
+U 1 1 4F035C7F
+P 3850 3650
+F 0 "#FLG1" H 3850 3920 30  0001 C CNN
+F 1 "PWR_FLAG" H 3850 3880 30  0000 C CNN
+F 2 "" H 3850 3650 60  0001 C CNN
+F 3 "" H 3850 3650 60  0001 C CNN
+	1    3850 3650
+	1    0    0    -1  
+$EndComp
+$Comp
+L LED D1
+U 1 1 50E61451
+P 5900 3650
+F 0 "D1" H 5900 3450 50  0000 C CNN
+F 1 "LED" H 5900 3550 50  0000 C CNN
+F 2 "" H 5900 3650 60  0001 C CNN
+F 3 "" H 5900 3650 60  0001 C CNN
+	1    5900 3650
+	-1   0    0    1   
+$EndComp
+NoConn ~ 6700 3850
+Text Label 4700 4750 0    60   ~ 0
+GND
+$Comp
+L LED D2
+U 1 1 513A54E9
+P 5900 3850
+F 0 "D2" H 5900 3950 50  0000 C CNN
+F 1 "LED" H 5900 4050 50  0000 C CNN
+F 2 "~" H 5900 3850 60  0000 C CNN
+F 3 "~" H 5900 3850 60  0000 C CNN
+	1    5900 3850
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	6100 3850 6350 3850
+Wire Wire Line
+	6350 3850 6350 3750
+Wire Wire Line
+	6350 3750 6700 3750
+$Comp
+L R R2
+U 1 1 513A56AF
+P 5000 4300
+F 0 "R2" V 5080 4300 40  0000 C CNN
+F 1 "R" V 5007 4301 40  0000 C CNN
+F 2 "~" V 4930 4300 30  0000 C CNN
+F 3 "~" H 5000 4300 30  0000 C CNN
+	1    5000 4300
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5700 3650 4700 3650
+Wire Wire Line
+	4700 3650 4700 4050
+Wire Wire Line
+	5700 3850 5000 3850
+Wire Wire Line
+	5000 3850 5000 4050
+Wire Wire Line
+	5000 4550 5000 4750
+$Comp
+L GND #PWR3
+U 1 1 513A571F
+P 5000 4750
+F 0 "#PWR3" H 5000 4750 30  0001 C CNN
+F 1 "GND" H 5000 4680 30  0001 C CNN
+F 2 "" H 5000 4750 60  0000 C CNN
+F 3 "" H 5000 4750 60  0000 C CNN
+	1    5000 4750
+	1    0    0    -1  
+$EndComp
+Text Label 6100 3850 0    60   ~ 0
+Red
+Text Label 5000 4750 0    60   ~ 0
+GND
+$EndSCHEMATC

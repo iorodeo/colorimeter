@@ -1,0 +1,148 @@
+(pcb /home/jo/work/beerometer/kicad/led_board/rgb_led_board.dsn
+  (parser
+    (string_quote ")
+    (space_in_quoted_tokens on)
+    (host_cad "KiCad's Pcbnew")
+    (host_version "(2013-feb-26)-testing")
+  )
+  (resolution um 10)
+  (unit um)
+  (structure
+    (layer Front
+      (type signal)
+      (property
+        (index 0)
+      )
+    )
+    (layer Back
+      (type signal)
+      (property
+        (index 1)
+      )
+    )
+    (boundary
+      (path pcb 0  121920 -50800  76200 -50800  76200 -76200  121920 -76200
+            121920 -50800)
+    )
+    (via "Via[0-1]_889:635_um" "Via[0-1]_889:0_um")
+    (rule
+      (width 635)
+      (clearance 254.1)
+      (clearance 254.1 (type default_smd))
+      (clearance 63.5 (type smd_smd))
+    )
+  )
+  (placement
+    (component MOUNT_HOLE_4_40
+      (place M1 78740 -53340 front 0)
+      (place M2 78740 -73660 front 0)
+      (place M3 119380 -73660 front 0)
+      (place M4 119380 -53340 front 0)
+    )
+    (component smt
+      (place P1 115316 -62865 front 90 (PN CONN_4))
+    )
+    (component "LED-5MM"
+      (place D1 99060 -60325 front 180 (PN LED))
+      (place D2 99060 -69850 front 180 (PN LED))
+    )
+    (component R3
+      (place R1 83820 -60325 front 0 (PN 40))
+      (place R2 83820 -67200 front 180 (PN R2))
+    )
+  )
+  (library
+    (image MOUNT_HOLE_4_40
+      (pin Round[A]Pad_3302_um @1 0 0)
+    )
+    (image smt
+      (outline (path signal 381  -5588 6604  5588 6604))
+      (outline (path signal 381  5588 6604  5588 -6604))
+      (outline (path signal 381  5588 -6604  -5588 -6604))
+      (outline (path signal 381  -5588 -6604  -5588 6604))
+      (pin Rect[T]Pad_1270x6350_um 1 -3810 2534.92)
+      (pin Rect[T]Pad_1270x6350_um 2 -1270 -2534.92)
+      (pin Rect[T]Pad_1270x6350_um 3 1270 2534.92)
+      (pin Rect[T]Pad_1270x6350_um 4 3810 -2534.92)
+    )
+    (image "LED-5MM"
+      (outline (path signal 203.2  2844.8 -1905  2844.8 1905))
+      (outline (path signal 76.2  2050.05 0  1962.15 -555.01  1707.04 -1055.69  1309.69 -1453.04
+            809.01 -1708.15  254 -1796.05  -301.01 -1708.15  -801.692 -1453.04
+            -1199.04 -1055.69  -1454.15 -555.01  -1542.05 0  -1454.15 555.01
+            -1199.04 1055.69  -801.692 1453.04  -301.01 1708.15  254 1796.05
+            809.01 1708.15  1309.69 1453.04  1707.04 1055.69  1962.15 555.01))
+      (pin Round[A]Pad_1676.4_um 1 -1270 0)
+      (pin Round[A]Pad_1676.4_um 2 1270 0)
+    )
+    (image R3
+      (outline (path signal 203.2  -3810 0  -3302 0))
+      (outline (path signal 203.2  3810 0  3302 0))
+      (outline (path signal 203.2  3302 0  3302 1016))
+      (outline (path signal 203.2  3302 1016  -3302 1016))
+      (outline (path signal 203.2  -3302 1016  -3302 -1016))
+      (outline (path signal 203.2  -3302 -1016  3302 -1016))
+      (outline (path signal 203.2  3302 -1016  3302 0))
+      (outline (path signal 203.2  -3302 508  -2794 1016))
+      (pin Round[A]Pad_1397_um 1 -3810 0)
+      (pin Round[A]Pad_1397_um 2 3810 0)
+    )
+    (padstack Round[A]Pad_1397_um
+      (shape (circle Front 1397))
+      (shape (circle Back 1397))
+      (attach off)
+    )
+    (padstack Round[A]Pad_1676.4_um
+      (shape (circle Front 1676.4))
+      (shape (circle Back 1676.4))
+      (attach off)
+    )
+    (padstack Round[A]Pad_3302_um
+      (shape (circle Front 3302))
+      (shape (circle Back 3302))
+      (attach off)
+    )
+    (padstack Rect[T]Pad_1270x6350_um
+      (shape (rect Front -635 -3175 635 3175))
+      (attach off)
+    )
+    (padstack "Via[0-1]_889:635_um"
+      (shape (circle Front 889))
+      (shape (circle Back 889))
+      (attach off)
+    )
+    (padstack "Via[0-1]_889:0_um"
+      (shape (circle Front 889))
+      (shape (circle Back 889))
+      (attach off)
+    )
+  )
+  (network
+    (net /Blue
+      (pins P1-1 D1-1)
+    )
+    (net /Red
+      (pins P1-2 D2-1)
+    )
+    (net GND
+      (pins P1-4 R1-1 R2-2)
+    )
+    (net "N-000002"
+      (pins D1-2 R1-2)
+    )
+    (net "N-000006"
+      (pins R2-1 D2-2)
+    )
+    (class kicad_default "" /Blue /Red GND "N-000002" "N-000006"
+      (circuit
+        (use_via Via[0-1]_889:635_um)
+      )
+      (rule
+        (width 635)
+        (clearance 254.1)
+      )
+    )
+  )
+  (wiring
+  )
+)

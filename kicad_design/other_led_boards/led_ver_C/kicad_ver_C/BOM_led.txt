@@ -1,0 +1,9 @@
+part     decription                        vendor   PN                  QTY
+----------------------------------------------------------------------------------
+U1       SMT RGB LED	                   Digikey	475-2822-1-ND         1
+P1   	 4 pin SMT male header	           Digikey  S1013E-04-ND          1
+R1, R2   SMT resistor 90 ohm	           Digikey	P90.9CCT-ND           2
+R3	     SMT resistor 150 ohm	           Digikey	P150CCT-ND            1
+
+
+

@@ -1,0 +1,133 @@
+EESchema Schematic File Version 2  date Thu 03 Jan 2013 05:15:01 PM PST
+LIBS:power
+LIBS:device
+LIBS:transistors
+LIBS:conn
+LIBS:linear
+LIBS:regul
+LIBS:74xx
+LIBS:cmos4000
+LIBS:adc-dac
+LIBS:memory
+LIBS:xilinx
+LIBS:special
+LIBS:microcontrollers
+LIBS:dsp
+LIBS:microchip
+LIBS:analog_switches
+LIBS:motorola
+LIBS:texas
+LIBS:intel
+LIBS:audio
+LIBS:interface
+LIBS:digital-audio
+LIBS:philips
+LIBS:display
+LIBS:cypress
+LIBS:siliconi
+LIBS:opto
+LIBS:atmel
+LIBS:contrib
+LIBS:valves
+LIBS:rgb_multiled
+LIBS:rgb_led_board-cache
+EELAYER 25  0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 1 1
+Title ""
+Date "4 jan 2013"
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+Wire Wire Line
+	6700 3950 6100 3950
+Wire Wire Line
+	5350 4150 5350 4350
+Wire Wire Line
+	4600 4050 4600 4350
+Wire Wire Line
+	6700 3650 6100 3650
+Wire Wire Line
+	6100 3950 6100 4350
+Text Label 6100 3650 0    60   ~ 0
+Blue
+$Comp
+L CONN_4 P1
+U 1 1 4F345F7F
+P 7050 3800
+F 0 "P1" V 7000 3800 50  0000 C CNN
+F 1 "CONN_4" V 7100 3800 50  0000 C CNN
+	1    7050 3800
+	1    0    0    -1  
+$EndComp
+Text Label 6100 4350 0    60   ~ 0
+GND
+Text Label 4600 4350 0    60   ~ 0
+GND
+$Comp
+L R R1
+U 1 1 4F035CCA
+P 5350 3900
+F 0 "R1" V 5430 3900 50  0000 C CNN
+F 1 "40" V 5350 3900 50  0000 C CNN
+	1    5350 3900
+	-1   0    0    1   
+$EndComp
+$Comp
+L GND #PWR01
+U 1 1 4F035C98
+P 5350 4350
+F 0 "#PWR01" H 5350 4350 30  0001 C CNN
+F 1 "GND" H 5350 4280 30  0001 C CNN
+	1    5350 4350
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR02
+U 1 1 4F035C8B
+P 6100 4350
+F 0 "#PWR02" H 6100 4350 30  0001 C CNN
+F 1 "GND" H 6100 4280 30  0001 C CNN
+	1    6100 4350
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR03
+U 1 1 4F035C86
+P 4600 4350
+F 0 "#PWR03" H 4600 4350 30  0001 C CNN
+F 1 "GND" H 4600 4280 30  0001 C CNN
+	1    4600 4350
+	1    0    0    -1  
+$EndComp
+$Comp
+L PWR_FLAG #FLG04
+U 1 1 4F035C7F
+P 4600 4050
+F 0 "#FLG04" H 4600 4320 30  0001 C CNN
+F 1 "PWR_FLAG" H 4600 4280 30  0000 C CNN
+	1    4600 4050
+	1    0    0    -1  
+$EndComp
+$Comp
+L LED D1
+U 1 1 50E61451
+P 5900 3650
+F 0 "D1" H 5900 3750 50  0000 C CNN
+F 1 "LED" H 5900 3550 50  0000 C CNN
+	1    5900 3650
+	-1   0    0    1   
+$EndComp
+NoConn ~ 6700 3750
+NoConn ~ 6700 3850
+Text Label 5350 4350 0    60   ~ 0
+GND
+Wire Wire Line
+	5700 3650 5350 3650
+$EndSCHEMATC

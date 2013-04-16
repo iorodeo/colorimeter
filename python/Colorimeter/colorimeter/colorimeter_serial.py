@@ -10,6 +10,23 @@ CMD_SET_NUM_SAMPLES = 2
 CMD_GET_NUM_SAMPLES = 3
 CMD_GET_CALIBRATION = 4
 
+CMD_CALIBRATE_RED = 5 
+CMD_CALIBRATE_GREEN = 6
+CMD_CALIBRATE_BLUE = 7
+CMD_CALIBRATE_WHITE = 8
+
+CMD_GET_MEASUREMENT_RED = 9
+CMD_GET_MEASUREMENT_GREEN = 10
+CMD_GET_MEASUREMENT_BLUE = 11
+CMD_GET_MEASUREMENT_WHITE = 12
+
+CMD_SET_MODE_COLOR_SPECIFIC = 13
+CMD_SET_MODE_COLOR_INDEPENDENT = 14
+CMD_GET_SENSOR_MODE = 15
+
+SENSOR_MODE_COLOR_SPECIFIC = 0
+SENSOR_MODE_COLOR_INDEPENDENT = 1
+
 RSP_ERROR = 0
 RSP_SUCCESS = 1
 
@@ -54,9 +71,37 @@ class Colorimeter(serial.Serial):
         
     def calibrate(self):
         """
-        Calibrate the colorimeter.
+        Calibrate the colorimeter (all channels).
         """
         cmd = '[{0}]'.format(CMD_CALIBRATE) 
+        rsp = self.sendCmd(cmd)
+
+    def calibrateRed(self):
+        """
+        Calibrate the red channel of the colorimeter
+        """
+        cmd = '[{0}]'.format(CMD_CALIBRATE_RED)
+        rsp = self.sendCmd(cmd)
+
+    def calibrateGreen(self):
+        """
+        Calibrate the green channel of the colorimeter
+        """
+        cmd = '[{0}]'.format(CMD_CALIBRATE_GREEN)
+        rsp = self.sendCmd(cmd)
+
+    def calibrateBlue(self):
+        """
+        Calibrate the blue channe of the colorimeter
+        """
+        cmd = '[{0}]'.format(CMD_CALIBRATE_BLUE)
+        rsp = self.sendCmd(cmd)
+
+    def calibrateWhite(self):
+        """
+        Calibrate the white channel of the colorimeter
+        """
+        cmd = '[{0}]'.format(CMD_CALIBRATE_WHITE)
         rsp = self.sendCmd(cmd)
 
     def getCalibration(self):
@@ -81,6 +126,42 @@ class Colorimeter(serial.Serial):
         absorb = tuple(rsp[9:])
         return freq, trans, absorb
 
+    def getMeasurementRed(self):
+        """
+        Get a measurement from the red channel
+        """
+        cmd = '[{0}]'.format(CMD_GET_MEASUREMENT_RED)
+        rsp = self.sendCmd(cmd)
+        freq, trans, absorb = rsp[1:4]
+        return freq, trans, absorb
+
+    def getMeasurementGreen(self):
+        """
+        Get a measurement from the green channel
+        """
+        cmd = '[{0}]'.format(CMD_GET_MEASUREMENT_GREEN)
+        rsp = self.sendCmd(cmd)
+        freq, trans, absorb = rsp[1:4]
+        return freq, trans, absorb
+
+    def getMeasurementBlue(self):
+        """
+        Get a measurement from the blue channel
+        """
+        cmd = '[{0}]'.format(CMD_GET_MEASUREMENT_BLUE)
+        rsp = self.sendCmd(cmd)
+        freq, trans, absorb = rsp[1:4]
+        return freq, trans, absorb
+
+    def getMeasurementWhite(self):
+        """
+        Get a measurement from the white channel
+        """
+        cmd = '[{0}]'.format(CMD_GET_MEASUREMENT_WHITE)
+        rsp = self.sendCmd(cmd)
+        freq, trans, absorb = rsp[1:4]
+        return freq, trans, absorb
+
     def setNumSamples(self,value):
         """
         Set the number of samples aquired per measurement.
@@ -98,6 +179,33 @@ class Colorimeter(serial.Serial):
         rsp = self.sendCmd(cmd)
         numSamples = rsp[1]
         return numSamples
+
+    def setSensorModeColorSpecific(self):
+        """
+        Set the sensor to color specific mode. In this mode it will use the 
+        red/green/blue/clear color channel of the sensor when using the 
+        red/green/blue/white led.
+        """
+        cmd = '[{0}]'.format(CMD_SET_MODE_COLOR_SPECIFIC)
+        rsp = self.sendCmd(cmd)
+
+    def setSensorModeColorIndependent(self):
+        """
+        Set the sensor to color independent mode. In this mode the clear
+        (unfiltered) channel of the light sensor is used regardless of the led
+        selected.
+        """
+        cmd = '[{0}]'.format(CMD_SET_MODE_COLOR_INDEPENDENT)
+        rsp = self.sendCmd(cmd)
+
+    def getSensorMode(self):
+        """
+        Returns the current color sensor mode setting.
+        """
+        cmd = '[{0}]'.format(CMD_GET_SENSOR_MODE)
+        rsp = self.sendCmd(cmd)
+        sensorMode = rsp[1]
+        return sensorMode
 
     def printMeasurement(self):
         """

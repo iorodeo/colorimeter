@@ -3,14 +3,6 @@
 #include "SerialReceiver.h"
 #include "Colorimeter.h"
 
-const int CMD_CALIBRATE=0;
-const int CMD_GET_MEASUREMENT=1;
-const int CMD_SET_NUM_SAMPLES=2;
-const int CMD_GET_NUM_SAMPLES=3;
-const int CMD_GET_CALIBRATION=4;
-
-const int RSP_ERROR = 0;
-const int RSP_SUCCESS = 1;
 
 class SerialHandler: public SerialReceiver {
     public:
@@ -18,10 +10,21 @@ class SerialHandler: public SerialReceiver {
     private:
         void switchYard();
         void calibrate();
+        void calibrateRed();
+        void calibrateGreen();
+        void calibrateBlue();
+        void calibrateWhite();
         void sendMeasurement();
         void setNumSamples();
         void sendNumSamples();
         void sendCalibration();
+        void sendMeasurementRed();
+        void sendMeasurementGreen();
+        void sendMeasurementBlue();
+        void sendMeasurementWhite();
+        void setModeColorSpecific();
+        void setModeColorIndependent();
+        void sendSensorMode();
         void unknownCmd();
 };
 

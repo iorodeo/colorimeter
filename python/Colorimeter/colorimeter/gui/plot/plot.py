@@ -52,6 +52,16 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
         itemDelegate = DoubleItemDelegate(self.tableWidget)
         self.tableWidget.setItemDelegateForColumn(0,itemDelegate)
 
+    def initialize(self):
+        super(PlotMainWindow,self).initialize()
+        self.aboutText = constants.PLOT_ABOUT_TEXT
+        self.noValueSymbol = constants.NO_VALUE_SYMBOL_NUMBER
+        self.tableWidget.clean(setup=True)
+        self.tableWidget.updateFunc = self.updatePlot
+        self.updateWidgetEnabled()
+        self.setFitType('linear',None)
+        self.setConcentrationUnits('uM')
+
     def importData_Callback(self):
         userSolutionDict = import_export.loadUserTestSolutionDict(self.userHome,tag='U')
         dfltSolutionDict = import_export.loadDefaultTestSolutionDict(tag='D')
@@ -65,16 +75,6 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
         self.updateWidgetEnabled()
         self.updatePlot(create=False)
         
-    def initialize(self):
-        super(PlotMainWindow,self).initialize()
-        self.aboutText = constants.PLOT_ABOUT_TEXT
-        self.noValueSymbol = constants.NO_VALUE_SYMBOL_NUMBER
-        self.tableWidget.clean(setup=True)
-        self.tableWidget.updateFunc = self.updatePlot
-        self.updateWidgetEnabled()
-        self.setFitType('linear',None)
-        self.setConcentrationUnits('uM')
-
     def exportData_Callback(self):
         dataList = self.tableWidget.getData()
         fitType, fitParams = self.getFitTypeAndParams()
@@ -137,6 +137,7 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
             dataDict['fitParams'] = 'None'
 
         import_export.exportTestSolutionData(self.userHome,dataDict)
+
 
     def fitTypeChanged_Callback(self):
         self.updatePlot()

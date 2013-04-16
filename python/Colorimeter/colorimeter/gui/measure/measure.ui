@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>589</width>
+    <width>600</width>
     <height>537</height>
    </rect>
   </property>
@@ -176,6 +176,22 @@
         </widget>
        </item>
        <item>
+        <spacer name="horizontalSpacer_6">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Fixed</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>15</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
         <widget class="QRadioButton" name="redRadioButton">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -341,7 +357,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>589</width>
+     <width>600</width>
      <height>23</height>
     </rect>
    </property>
@@ -370,9 +386,9 @@
      <addaction name="actionSampleUnitsUM"/>
      <addaction name="actionSampleUnitsPPM"/>
     </widget>
+    <addaction name="menuSample_Units"/>
     <addaction name="menuInclude"/>
     <addaction name="actionEditTestSolutions"/>
-    <addaction name="menuSample_Units"/>
    </widget>
    <widget class="QMenu" name="menu_Help">
     <property name="title">
@@ -380,7 +396,15 @@
     </property>
     <addaction name="actionAbout"/>
    </widget>
+   <widget class="QMenu" name="menuMode">
+    <property name="title">
+     <string>&amp;Mode</string>
+    </property>
+    <addaction name="actionStandardRgbLed"/>
+    <addaction name="actionCustomLed"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuMode"/>
    <addaction name="menuOptions"/>
    <addaction name="menu_Help"/>
   </widget>
@@ -450,6 +474,22 @@
    </property>
    <property name="text">
     <string>ppm</string>
+   </property>
+  </action>
+  <action name="actionStandardRgbLed">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Standard RGB LED</string>
+   </property>
+  </action>
+  <action name="actionCustomLed">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Custom LED</string>
    </property>
   </action>
  </widget>

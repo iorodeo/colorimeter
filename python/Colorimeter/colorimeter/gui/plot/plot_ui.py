@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'plot.ui'
 #
-# Created: Tue Dec 18 17:20:59 2012
+# Created: Sun Apr 14 19:48:43 2013
 #      by: PyQt4 UI code generator 4.7.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -143,6 +143,8 @@ class Ui_MainWindow(object):
         self.menuConcentrationUnits.setObjectName("menuConcentrationUnits")
         self.menu_Help = QtGui.QMenu(self.menubar)
         self.menu_Help.setObjectName("menu_Help")
+        self.menuMode = QtGui.QMenu(self.menubar)
+        self.menuMode.setObjectName("menuMode")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtGui.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
@@ -182,6 +184,12 @@ class Ui_MainWindow(object):
         self.actionFitTypePolynomial5 = QtGui.QAction(MainWindow)
         self.actionFitTypePolynomial5.setCheckable(True)
         self.actionFitTypePolynomial5.setObjectName("actionFitTypePolynomial5")
+        self.actionStandardRgbLed = QtGui.QAction(MainWindow)
+        self.actionStandardRgbLed.setCheckable(True)
+        self.actionStandardRgbLed.setObjectName("actionStandardRgbLed")
+        self.actionCustomLed = QtGui.QAction(MainWindow)
+        self.actionCustomLed.setCheckable(True)
+        self.actionCustomLed.setObjectName("actionCustomLed")
         self.menuFile.addAction(self.actionSave)
         self.menuFile.addAction(self.actionLoad)
         self.menuFitType.addAction(self.actionFitTypeLinear)
@@ -197,7 +205,10 @@ class Ui_MainWindow(object):
         self.menuOptions.addAction(self.menuFitType.menuAction())
         self.menuOptions.addAction(self.menuConcentrationUnits.menuAction())
         self.menu_Help.addAction(self.actionAbout)
+        self.menuMode.addAction(self.actionStandardRgbLed)
+        self.menuMode.addAction(self.actionCustomLed)
         self.menubar.addAction(self.menuFile.menuAction())
+        self.menubar.addAction(self.menuMode.menuAction())
         self.menubar.addAction(self.menuOptions.menuAction())
         self.menubar.addAction(self.menu_Help.menuAction())
 
@@ -221,6 +232,7 @@ class Ui_MainWindow(object):
         self.menuFitType.setTitle(QtGui.QApplication.translate("MainWindow", "Fit Type", None, QtGui.QApplication.UnicodeUTF8))
         self.menuConcentrationUnits.setTitle(QtGui.QApplication.translate("MainWindow", "Concentration Units", None, QtGui.QApplication.UnicodeUTF8))
         self.menu_Help.setTitle(QtGui.QApplication.translate("MainWindow", "&Help", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuMode.setTitle(QtGui.QApplication.translate("MainWindow", "&Mode", None, QtGui.QApplication.UnicodeUTF8))
         self.actionSave.setText(QtGui.QApplication.translate("MainWindow", "Save...", None, QtGui.QApplication.UnicodeUTF8))
         self.action_About.setText(QtGui.QApplication.translate("MainWindow", "About...", None, QtGui.QApplication.UnicodeUTF8))
         self.actionLoad.setText(QtGui.QApplication.translate("MainWindow", "Load...", None, QtGui.QApplication.UnicodeUTF8))
@@ -235,5 +247,7 @@ class Ui_MainWindow(object):
         self.actionFitTypePolynomial3.setText(QtGui.QApplication.translate("MainWindow", "Polynomial (order=3)", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFitTypePolynomial4.setText(QtGui.QApplication.translate("MainWindow", "Polynomial (order=4)", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFitTypePolynomial5.setText(QtGui.QApplication.translate("MainWindow", "Polynomial (order=5)", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionStandardRgbLed.setText(QtGui.QApplication.translate("MainWindow", "Standard RGB LED", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionCustomLed.setText(QtGui.QApplication.translate("MainWindow", "Custom LED", None, QtGui.QApplication.UnicodeUTF8))
 
 from colorimeter.table_widget import ColorimeterTableWidget

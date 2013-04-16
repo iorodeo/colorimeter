@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'measure.ui'
 #
-# Created: Wed Dec 19 18:16:45 2012
+# Created: Sun Apr 14 19:52:02 2013
 #      by: PyQt4 UI code generator 4.7.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -12,7 +12,7 @@ from PyQt4 import QtCore, QtGui
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(589, 537)
+        MainWindow.resize(600, 537)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayout = QtGui.QVBoxLayout(self.centralwidget)
@@ -94,6 +94,8 @@ class Ui_MainWindow(object):
         self.label_3 = QtGui.QLabel(self.coeffLEDWidget)
         self.label_3.setObjectName("label_3")
         self.horizontalLayout_2.addWidget(self.label_3)
+        spacerItem3 = QtGui.QSpacerItem(15, 20, QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_2.addItem(spacerItem3)
         self.redRadioButton = QtGui.QRadioButton(self.coeffLEDWidget)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -121,8 +123,8 @@ class Ui_MainWindow(object):
         self.whiteRadioButton = QtGui.QRadioButton(self.coeffLEDWidget)
         self.whiteRadioButton.setObjectName("whiteRadioButton")
         self.horizontalLayout_2.addWidget(self.whiteRadioButton)
-        spacerItem3 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_2.addItem(spacerItem3)
+        spacerItem4 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_2.addItem(spacerItem4)
         self.verticalLayout.addWidget(self.coeffLEDWidget)
         self.line_3 = QtGui.QFrame(self.centralwidget)
         self.line_3.setFrameShape(QtGui.QFrame.HLine)
@@ -162,8 +164,8 @@ class Ui_MainWindow(object):
         self.clearPushButton = QtGui.QPushButton(self.widget_3)
         self.clearPushButton.setObjectName("clearPushButton")
         self.horizontalLayout_3.addWidget(self.clearPushButton)
-        spacerItem4 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_3.addItem(spacerItem4)
+        spacerItem5 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_3.addItem(spacerItem5)
         self.measurePushButton = QtGui.QPushButton(self.widget_3)
         self.measurePushButton.setObjectName("measurePushButton")
         self.horizontalLayout_3.addWidget(self.measurePushButton)
@@ -173,7 +175,7 @@ class Ui_MainWindow(object):
         self.verticalLayout.addWidget(self.widget_3)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 589, 23))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 600, 23))
         self.menubar.setObjectName("menubar")
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
@@ -185,6 +187,8 @@ class Ui_MainWindow(object):
         self.menuSample_Units.setObjectName("menuSample_Units")
         self.menu_Help = QtGui.QMenu(self.menubar)
         self.menu_Help.setObjectName("menu_Help")
+        self.menuMode = QtGui.QMenu(self.menubar)
+        self.menuMode.setObjectName("menuMode")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtGui.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
@@ -215,17 +219,26 @@ class Ui_MainWindow(object):
         self.actionSampleUnitsPPM = QtGui.QAction(MainWindow)
         self.actionSampleUnitsPPM.setCheckable(True)
         self.actionSampleUnitsPPM.setObjectName("actionSampleUnitsPPM")
+        self.actionStandardRgbLed = QtGui.QAction(MainWindow)
+        self.actionStandardRgbLed.setCheckable(True)
+        self.actionStandardRgbLed.setObjectName("actionStandardRgbLed")
+        self.actionCustomLed = QtGui.QAction(MainWindow)
+        self.actionCustomLed.setCheckable(True)
+        self.actionCustomLed.setObjectName("actionCustomLed")
         self.menuFile.addAction(self.actionSave)
         self.menuFile.addAction(self.actionLoad)
         self.menuInclude.addAction(self.actionIncludeUserTestSolutions)
         self.menuInclude.addAction(self.actionIncludeDefaultTestSolutions)
         self.menuSample_Units.addAction(self.actionSampleUnitsUM)
         self.menuSample_Units.addAction(self.actionSampleUnitsPPM)
+        self.menuOptions.addAction(self.menuSample_Units.menuAction())
         self.menuOptions.addAction(self.menuInclude.menuAction())
         self.menuOptions.addAction(self.actionEditTestSolutions)
-        self.menuOptions.addAction(self.menuSample_Units.menuAction())
         self.menu_Help.addAction(self.actionAbout)
+        self.menuMode.addAction(self.actionStandardRgbLed)
+        self.menuMode.addAction(self.actionCustomLed)
         self.menubar.addAction(self.menuFile.menuAction())
+        self.menubar.addAction(self.menuMode.menuAction())
         self.menubar.addAction(self.menuOptions.menuAction())
         self.menubar.addAction(self.menu_Help.menuAction())
 
@@ -252,6 +265,7 @@ class Ui_MainWindow(object):
         self.menuInclude.setTitle(QtGui.QApplication.translate("MainWindow", "Include", None, QtGui.QApplication.UnicodeUTF8))
         self.menuSample_Units.setTitle(QtGui.QApplication.translate("MainWindow", "Sample Units", None, QtGui.QApplication.UnicodeUTF8))
         self.menu_Help.setTitle(QtGui.QApplication.translate("MainWindow", "&Help", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuMode.setTitle(QtGui.QApplication.translate("MainWindow", "&Mode", None, QtGui.QApplication.UnicodeUTF8))
         self.actionReloadTestSolutions.setText(QtGui.QApplication.translate("MainWindow", "Reload Test Solutions", None, QtGui.QApplication.UnicodeUTF8))
         self.actionIncludeUserTestSolutions.setText(QtGui.QApplication.translate("MainWindow", "User Test Solutions", None, QtGui.QApplication.UnicodeUTF8))
         self.actionIncludeDefaultTestSolutions.setText(QtGui.QApplication.translate("MainWindow", "Default Test Solutions", None, QtGui.QApplication.UnicodeUTF8))
@@ -263,5 +277,7 @@ class Ui_MainWindow(object):
         self.actionAbout.setText(QtGui.QApplication.translate("MainWindow", "About", None, QtGui.QApplication.UnicodeUTF8))
         self.actionSampleUnitsUM.setText(QtGui.QApplication.translate("MainWindow", "uM", None, QtGui.QApplication.UnicodeUTF8))
         self.actionSampleUnitsPPM.setText(QtGui.QApplication.translate("MainWindow", "ppm", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionStandardRgbLed.setText(QtGui.QApplication.translate("MainWindow", "Standard RGB LED", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionCustomLed.setText(QtGui.QApplication.translate("MainWindow", "Custom LED", None, QtGui.QApplication.UnicodeUTF8))
 
 from colorimeter.table_widget import ColorimeterTableWidget

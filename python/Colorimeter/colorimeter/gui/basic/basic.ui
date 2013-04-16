@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>646</width>
-    <height>396</height>
+    <width>682</width>
+    <height>389</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -78,8 +78,8 @@
      </widget>
     </item>
     <item>
-     <widget class="QWidget" name="widget_3" native="true">
-      <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <widget class="QWidget" name="widget_5" native="true">
+      <layout class="QHBoxLayout" name="horizontalLayout_5">
        <item>
         <widget class="QLabel" name="label_2">
          <property name="sizePolicy">
@@ -89,7 +89,7 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>Samples   </string>
+          <string>Samples    </string>
          </property>
         </widget>
        </item>
@@ -110,13 +110,36 @@
         </widget>
        </item>
        <item>
-        <spacer name="horizontalSpacer_2">
+        <spacer name="horizontalSpacer_6">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
          <property name="sizeHint" stdset="0">
           <size>
-           <width>40</width>
+           <width>143</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QLabel" name="ledsLabel">
+         <property name="text">
+          <string>LEDs</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Fixed</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>10</width>
            <height>20</height>
           </size>
          </property>
@@ -214,7 +237,7 @@
      </widget>
     </item>
     <item>
-     <widget class="Line" name="line">
+     <widget class="Line" name="line_3">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
@@ -309,11 +332,11 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>646</width>
+     <width>682</width>
      <height>23</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menu_File">
+   <widget class="QMenu" name="menuFile">
     <property name="title">
      <string>&amp;File</string>
     </property>
@@ -325,7 +348,15 @@
     </property>
     <addaction name="actionAbout"/>
    </widget>
-   <addaction name="menu_File"/>
+   <widget class="QMenu" name="menuMode">
+    <property name="title">
+     <string>&amp;Mode</string>
+    </property>
+    <addaction name="actionStandardRgbLed"/>
+    <addaction name="actionCustomLed"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuMode"/>
    <addaction name="menu_Help"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -337,6 +368,22 @@
   <action name="actionAbout">
    <property name="text">
     <string>About</string>
+   </property>
+  </action>
+  <action name="actionStandardRgbLed">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Standard RGB LED</string>
+   </property>
+  </action>
+  <action name="actionCustomLed">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Custom LED</string>
    </property>
   </action>
  </widget>

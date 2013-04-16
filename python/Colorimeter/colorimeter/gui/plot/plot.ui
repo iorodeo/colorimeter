@@ -286,7 +286,15 @@
     </property>
     <addaction name="actionAbout"/>
    </widget>
+   <widget class="QMenu" name="menuMode">
+    <property name="title">
+     <string>&amp;Mode</string>
+    </property>
+    <addaction name="actionStandardRgbLed"/>
+    <addaction name="actionCustomLed"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuMode"/>
    <addaction name="menuOptions"/>
    <addaction name="menu_Help"/>
   </widget>
@@ -380,6 +388,22 @@
    </property>
    <property name="text">
     <string>Polynomial (order=5)</string>
+   </property>
+  </action>
+  <action name="actionStandardRgbLed">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Standard RGB LED</string>
+   </property>
+  </action>
+  <action name="actionCustomLed">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Custom LED</string>
    </property>
   </action>
  </widget>

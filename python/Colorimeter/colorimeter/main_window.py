@@ -29,6 +29,14 @@ class MainWindowCommon(QtGui.QMainWindow):
         self.actionAbout.triggered.connect(self.about_Callback)
         self.actionSave.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_A)
 
+        self.modeActionGroup = QtGui.QActionGroup(self)
+        self.modeActionGroup.addAction(self.actionStandardRgbLed)
+        self.modeActionGroup.addAction(self.actionCustomLed)
+        self.modeActionGroup.setExclusive(True)
+        self.actionStandardRgbLed.setChecked(True)
+        self.actionStandardRgbLed.triggered.connect(self.standardRgbLed_Callback)
+        self.actionCustomLed.triggered.connect(self.customLed_Callback)
+
     def initialize(self):
         self.setAppSize()
         self.dev = None
@@ -36,6 +44,7 @@ class MainWindowCommon(QtGui.QMainWindow):
         self.isCalibrated = False
         self.aboutCaption = 'About'
         self.aboutText = 'About Default Text'
+        self.sensorMode = 'standard'
 
         # Set default port based on system
         osType = platform.system()
@@ -52,6 +61,7 @@ class MainWindowCommon(QtGui.QMainWindow):
         self.lastSaveDir = self.userHome
         self.statusbar.showMessage('Not Connected')
         self.portLineEdit.setText(self.port) 
+
         if constants.DEVEL_FAKE_MEASURE: 
             msgTitle = 'Development'
             msgText = 'Development mode fake measure is enabled'
@@ -66,24 +76,31 @@ class MainWindowCommon(QtGui.QMainWindow):
 
     def connectClicked_Callback(self):
         if self.dev == None:
-            try:
-                self.dev = Colorimeter(self.port)
-                self.numSamples = self.dev.getNumSamples()
+            if constants.DEVEL_FAKE_MEASURE:
+                self.dev = 'dummy' 
                 connected = True
-            except Exception, e:
-                msgTitle = 'Connection Error'
-                msgText = 'unable to connect to device: {0}'.format(str(e))
-                QtGui.QMessageBox.warning(self,msgTitle, msgText)
-                self.connectPushButton.setText('Connect')
-                self.statusbar.showMessage('Not Connected')
-                connected = False
-                self.dev = None
+            else:
+                try:
+                    self.dev = Colorimeter(self.port)
+                    self.numSamples = self.dev.getNumSamples()
+                    connected = True
+                except Exception, e:
+                    msgTitle = 'Connection Error'
+                    msgText = 'unable to connect to device: {0}'.format(str(e))
+                    QtGui.QMessageBox.warning(self,msgTitle, msgText)
+                    self.connectPushButton.setText('Connect')
+                    self.statusbar.showMessage('Not Connected')
+                    connected = False
+                    self.dev = None
         else:
-            self.connectPushButton.setText('Connect')
-            try:
-                self.cleanUpAndCloseDevice()
-            except Exception, e:
-                QtGui.QMessageBox.critical(self,'Error', str(e))
+            if constants.DEVEL_FAKE_MEASURE:
+                self.dev = None
+            else:
+                self.connectPushButton.setText('Connect')
+                try:
+                    self.cleanUpAndCloseDevice()
+                except Exception, e:
+                    QtGui.QMessageBox.critical(self,'Error', str(e))
             connected = False
 
         self.updateWidgetEnabled()
@@ -92,7 +109,7 @@ class MainWindowCommon(QtGui.QMainWindow):
     def calibratePressed_Callback(self):
         self.measurePushButton.setEnabled(False)
         self.calibratePushButton.setFlat(True)
-        self.statusbar.showMessage('Connected, Mode: Calibrating...')
+        self.statusbar.showMessage('Connected, Calibrating...')
 
     def calibrateClicked_Callback(self):
         if not constants.DEVEL_FAKE_MEASURE: 
@@ -112,12 +129,15 @@ class MainWindowCommon(QtGui.QMainWindow):
     def measurePressed_Callback(self):
         self.calibratePushButton.setEnabled(False)
         self.measurePushButton.setFlat(True)
-        self.statusbar.showMessage('Connected, Mode: Measuring...')
+        self.statusbar.showMessage('Connected, Measuring...')
 
     def measureClicked_Callback(self):
         self.getMeasurement()
         self.measurePushButton.setFlat(False)
         self.updateWidgetEnabled()
+
+    def getMeasurement():
+        pass
 
     def portChanged_Callback(self):
         self.port = str(self.portLineEdit.text())
@@ -168,6 +188,54 @@ class MainWindowCommon(QtGui.QMainWindow):
                 )
         QtGui.QMessageBox.about(self,self.aboutCaption, aboutText)
 
+    def standardRgbLed_Callback(self): 
+        changed = False
+        if (self.dev is not None) and (self.sensorMode != 'standard'):
+            reply = QtGui.QMessageBox.question(
+                    self, 
+                    'Message', 
+                    'Changing sensor mode will clear all data. Continue?', 
+                    QtGui.QMessageBox.Yes, 
+                    QtGui.QMessageBox.No
+                    )
+            if reply == QtGui.QMessageBox.Yes:
+                if not constants.DEVEL_FAKE_MEASURE:    
+                    self.dev.setSensorModeColorSpecific()
+                self.isCalibrated = False
+                self.sensorMode = 'standard'
+                changed = True
+            else:
+                self.actionCustomLed.setChecked(True)
+            self.updateWidgetEnabled()
+        return changed
+
+    def customLed_Callback(self):
+        changed = False
+        if (self.dev is not None) and (self.sensorMode != 'custom'):
+            reply = QtGui.QMessageBox.question(
+                    self, 
+                    'Message', 
+                    'Changing sensor mode will clear all data. Continue?', 
+                    QtGui.QMessageBox.Yes, 
+                    QtGui.QMessageBox.No
+                    )
+            if reply == QtGui.QMessageBox.Yes:
+                if not constants.DEVEL_FAKE_MEASURE: 
+                    self.dev.setSensorModeColorIndependent()
+                self.isCalibrated = False
+                self.sensorMode = 'custom'
+                changed = True
+            else:
+                self.actionStandardRgbLed.setChecked(True)
+            self.updateWidgetEnabled()
+        return changed
+
+    def isStandardRgbLedMode(self):
+        return self.actionStandardRgbLed.isChecked()
+
+    def isCustomLedMode(self):
+        return self.actionCustomLed.isChecked()
+
     def haveData(self):
         return False
 
@@ -187,8 +255,17 @@ class MainWindowCommon(QtGui.QMainWindow):
         event.accept()
 
     def cleanUpAndCloseDevice(self):
-        self.dev.close()
+        if not constants.DEVEL_FAKE_MEASURE:    
+            self.dev.close()
         self.dev = None
+
+    def updateWidgetEnabled(self):
+        if self.dev is None:
+            self.actionStandardRgbLed.setEnabled(False)
+            self.actionCustomLed.setEnabled(False)
+        else:
+            self.actionStandardRgbLed.setEnabled(True)
+            self.actionCustomLed.setEnabled(True)
 
     def main(self):
         self.show()
@@ -244,6 +321,18 @@ class MainWindowWithTable(MainWindowCommon):
                 msgTitle = 'Setup Warning'
                 msgText = 'Unable to create data directory, {0}\n{1}'.format(userTestSolutionDir,str(e))
                 QtGui.QMessageBox.warning(self,msgTitle, msgText)
+
+    def standardRgbLed_Callback(self): 
+        changed = super(MainWindowWithTable,self).standardRgbLed_Callback()
+        if changed:
+            self.tableWidget.clean(True,'')
+        self.updateWidgetEnabled()
+
+    def customLed_Callback(self): 
+        changed = super(MainWindowWithTable,self).customLed_Callback()
+        if changed:
+            self.tableWidget.clean(True,'')
+        self.updateWidgetEnabled()
 
     def loadFile_Callback(self):
         """
@@ -352,6 +441,7 @@ class MainWindowWithTable(MainWindowCommon):
         super(MainWindowWithTable,self).measureClicked_Callback()
         self.updatePlot(create=False)
 
+
     def setLEDColor(self,color):
         button = getattr(self,'{0}RadioButton'.format(color))
         button.setChecked(True)
@@ -364,6 +454,7 @@ class MainWindowWithTable(MainWindowCommon):
         return self.tableWidget.measIndex > 0
 
     def updateWidgetEnabled(self):
+        super(MainWindowWithTable,self).updateWidgetEnabled()
         if self.dev is None:
             self.measurePushButton.setEnabled(False)
             self.calibratePushButton.setEnabled(False)
@@ -394,6 +485,5 @@ class MainWindowWithTable(MainWindowCommon):
                     self.clearPushButton.setEnabled(False)
                 self.measurePushButton.setEnabled(False)
             self.portLineEdit.setEnabled(False)
-            self.statusbar.showMessage('Connected, Mode: Stopped')
-
+            self.statusbar.showMessage('Connected, Stopped')
 

@@ -290,8 +290,8 @@
     <property name="title">
      <string>&amp;Mode</string>
     </property>
-    <addaction name="actionStandardRgbLed"/>
-    <addaction name="actionCustomLed"/>
+    <addaction name="actionStandardRgbLED"/>
+    <addaction name="actionCustomLED"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuMode"/>
@@ -390,7 +390,7 @@
     <string>Polynomial (order=5)</string>
    </property>
   </action>
-  <action name="actionStandardRgbLed">
+  <action name="actionStandardRgbLED">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -398,7 +398,7 @@
     <string>Standard RGB LED</string>
    </property>
   </action>
-  <action name="actionCustomLed">
+  <action name="actionCustomLED">
    <property name="checkable">
     <bool>true</bool>
    </property>

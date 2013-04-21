@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'basic.ui'
 #
-# Created: Sun Apr 14 19:51:07 2013
+# Created: Sat Apr 20 19:32:05 2013
 #      by: PyQt4 UI code generator 4.7.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -191,16 +191,16 @@ class Ui_MainWindow(object):
         self.actionSave.setObjectName("actionSave")
         self.actionAbout = QtGui.QAction(MainWindow)
         self.actionAbout.setObjectName("actionAbout")
-        self.actionStandardRgbLed = QtGui.QAction(MainWindow)
-        self.actionStandardRgbLed.setCheckable(True)
-        self.actionStandardRgbLed.setObjectName("actionStandardRgbLed")
-        self.actionCustomLed = QtGui.QAction(MainWindow)
-        self.actionCustomLed.setCheckable(True)
-        self.actionCustomLed.setObjectName("actionCustomLed")
+        self.actionStandardRgbLED = QtGui.QAction(MainWindow)
+        self.actionStandardRgbLED.setCheckable(True)
+        self.actionStandardRgbLED.setObjectName("actionStandardRgbLED")
+        self.actionCustomLED = QtGui.QAction(MainWindow)
+        self.actionCustomLED.setCheckable(True)
+        self.actionCustomLED.setObjectName("actionCustomLED")
         self.menuFile.addAction(self.actionSave)
         self.menu_Help.addAction(self.actionAbout)
-        self.menuMode.addAction(self.actionStandardRgbLed)
-        self.menuMode.addAction(self.actionCustomLed)
+        self.menuMode.addAction(self.actionStandardRgbLED)
+        self.menuMode.addAction(self.actionCustomLED)
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuMode.menuAction())
         self.menubar.addAction(self.menu_Help.menuAction())
@@ -228,6 +228,6 @@ class Ui_MainWindow(object):
         self.menuMode.setTitle(QtGui.QApplication.translate("MainWindow", "&Mode", None, QtGui.QApplication.UnicodeUTF8))
         self.actionSave.setText(QtGui.QApplication.translate("MainWindow", "Save...", None, QtGui.QApplication.UnicodeUTF8))
         self.actionAbout.setText(QtGui.QApplication.translate("MainWindow", "About", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionStandardRgbLed.setText(QtGui.QApplication.translate("MainWindow", "Standard RGB LED", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionCustomLed.setText(QtGui.QApplication.translate("MainWindow", "Custom LED", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionStandardRgbLED.setText(QtGui.QApplication.translate("MainWindow", "Standard RGB LED", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionCustomLED.setText(QtGui.QApplication.translate("MainWindow", "Custom LED", None, QtGui.QApplication.UnicodeUTF8))
 

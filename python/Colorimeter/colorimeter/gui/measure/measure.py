@@ -203,6 +203,8 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
                 self.plotPushButton.setEnabled(False)
             else:
                 self.calibratePushButton.setEnabled(True)
+        self.repaint() # (Hack) Appears to be needed so that color LED radio buttons 'checked' 
+                       #  will update even when disabled
 
     def updatePlot(self,create=False):
         # Only create new figure is asked to do so

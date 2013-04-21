@@ -121,7 +121,7 @@ class ColorimeterTableWidget(QtGui.QTableWidget):
         """
         if setup:
             reply = QtGui.QMessageBox.Yes
-        elif len(self.item(0,1).text()):
+        elif self.haveData():
             reply = QtGui.QMessageBox.question( self, 'Message', msg, 
                     QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
         else: 
@@ -141,6 +141,9 @@ class ColorimeterTableWidget(QtGui.QTableWidget):
             return True
         else:
             return False
+
+    def haveData(self):
+        return len(self.item(0,1).text())
 
     def addData(self,item0,item1,selectAndEdit=False):
         """

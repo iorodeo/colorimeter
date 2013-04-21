@@ -50,22 +50,19 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
         self.plotCheckBox.setCheckState(QtCore.Qt.Checked)
         self.updateWidgetEnabled()
 
-    def standardRgbLed_Callback(self): 
-        changed = super(BasicMainWindow,self).standardRgbLed_Callback()
-        if changed:
+    def setLEDMode(self,value):
+        super(BasicMainWindow,self).setLEDMode(value)
+        if value == 'standard':
             self.transmissionTextEdit.setText('')
             self.absorbanceTextEdit.setText('')
             self.measValues = None
-        self.updateWidgetEnabled()
-
-    def customLed_Callback(self): 
-        changed = super(BasicMainWindow,self).customLed_Callback()
-        if changed:
+        elif value == 'custom':
             self.transmissionTextEdit.setText('')
             self.absorbanceTextEdit.setText('')
             self.measValues = None
-            self.closeFigure()
-        self.updateWidgetEnabled()
+        else:
+            raise ValueError, 'unknown LED mode {0}'.format(value)
+        self.closeFigure()
 
     def colorCheckBox_Callback(self,color):
         self.updateResultsDisplay()
@@ -98,7 +95,7 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
     def calibrateClicked_Callback(self):
         super(BasicMainWindow,self).calibrateClicked_Callback()
         if self.isCalibrated:
-            if self.isStandardRgbLedMode():
+            if self.isStandardRgbLEDMode():
                 freq = None  
                 tran = 1.0, 1.0, 1.0, 1.0
                 abso = 0.0, 0.0, 0.0, 0.0
@@ -117,13 +114,13 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
 
     def measureClicked_Callback(self):
         super(BasicMainWindow,self).measureClicked_Callback()
-        if self.isStandardRgbLedMode():
+        if self.isStandardRgbLEDMode():
             self.updatePlot(create=True)
         self.updateResultsDisplay()
 
     def getMeasurement(self):
         if constants.DEVEL_FAKE_MEASURE:
-            if self.isStandardRgbLedMode():
+            if self.isStandardRgbLEDMode():
                 freqValues = tuple(numpy.random.random((4,)))
                 tranValues = tuple(numpy.random.random((4,)))
                 absoValues = tuple(numpy.random.random((4,)))
@@ -134,7 +131,7 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
                 absoValues = numpy.random.random((1,))[0]
                 self.measValues = freqValues, tranValues, absoValues
         else:
-            if self.isStandardRgbLedMode():
+            if self.isStandardRgbLEDMode():
                 measurementFunc = self.dev.getMeasurement
             else:
                 measurementFunc = self.dev.getMeasurementBlue
@@ -211,7 +208,7 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
             self.absorbanceTextEdit.setText('')
         else:
             freqValues, tranValues, absoValues = self.measValues
-            if self.isStandardRgbLedMode():
+            if self.isStandardRgbLEDMode():
                 tranStrList, absoStrList = [], []
                 colorNames = sorted(constants.COLOR2LED_DICT)
                 for c in colorNames:
@@ -242,14 +239,18 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
         freqValues, tranValues, absoValues = self.measValues
         colorNames = sorted(constants.COLOR2LED_DICT.keys())
         dataList = []
-        maxNameLen = max([len(c) for c in colorNames])
-        for c in colorNames:
-            n = constants.COLOR2LED_DICT[c]
-            tran = tranValues[n]
-            abso = absoValues[n]
-            if self.isColorChecked(c):
-                cPadded = padString(c,maxNameLen)
-                dataList.append((cPadded,tran,abso))
+
+        if self.isStandardRgbLEDMode():
+            maxNameLen = max([len(c) for c in colorNames])
+            for c in colorNames:
+                n = constants.COLOR2LED_DICT[c]
+                tran = tranValues[n]
+                abso = absoValues[n]
+                if self.isColorChecked(c):
+                    cPadded = padString(c,maxNameLen)
+                    dataList.append((cPadded,tran,abso))
+        else:
+            dataList.append(['custom', tranValues, absoValues])
         return dataList
 
     def haveData(self):
@@ -311,7 +312,7 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
                 self.measurePushButton.setEnabled(True)
             else:
                 self.measurePushButton.setEnabled(False)
-            if self.isCalibrated and self.isStandardRgbLedMode(): 
+            if self.isCalibrated and self.isStandardRgbLEDMode(): 
                 self.redCheckBox.setEnabled(True)
                 self.greenCheckBox.setEnabled(True)
                 self.blueCheckBox.setEnabled(True)

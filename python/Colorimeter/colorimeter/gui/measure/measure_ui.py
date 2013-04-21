@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'measure.ui'
 #
-# Created: Sun Apr 14 19:52:02 2013
+# Created: Sat Apr 20 19:33:55 2013
 #      by: PyQt4 UI code generator 4.7.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -219,12 +219,12 @@ class Ui_MainWindow(object):
         self.actionSampleUnitsPPM = QtGui.QAction(MainWindow)
         self.actionSampleUnitsPPM.setCheckable(True)
         self.actionSampleUnitsPPM.setObjectName("actionSampleUnitsPPM")
-        self.actionStandardRgbLed = QtGui.QAction(MainWindow)
-        self.actionStandardRgbLed.setCheckable(True)
-        self.actionStandardRgbLed.setObjectName("actionStandardRgbLed")
-        self.actionCustomLed = QtGui.QAction(MainWindow)
-        self.actionCustomLed.setCheckable(True)
-        self.actionCustomLed.setObjectName("actionCustomLed")
+        self.actionStandardRgbLED = QtGui.QAction(MainWindow)
+        self.actionStandardRgbLED.setCheckable(True)
+        self.actionStandardRgbLED.setObjectName("actionStandardRgbLED")
+        self.actionCustomLED = QtGui.QAction(MainWindow)
+        self.actionCustomLED.setCheckable(True)
+        self.actionCustomLED.setObjectName("actionCustomLED")
         self.menuFile.addAction(self.actionSave)
         self.menuFile.addAction(self.actionLoad)
         self.menuInclude.addAction(self.actionIncludeUserTestSolutions)
@@ -235,8 +235,8 @@ class Ui_MainWindow(object):
         self.menuOptions.addAction(self.menuInclude.menuAction())
         self.menuOptions.addAction(self.actionEditTestSolutions)
         self.menu_Help.addAction(self.actionAbout)
-        self.menuMode.addAction(self.actionStandardRgbLed)
-        self.menuMode.addAction(self.actionCustomLed)
+        self.menuMode.addAction(self.actionStandardRgbLED)
+        self.menuMode.addAction(self.actionCustomLED)
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuMode.menuAction())
         self.menubar.addAction(self.menuOptions.menuAction())
@@ -277,7 +277,7 @@ class Ui_MainWindow(object):
         self.actionAbout.setText(QtGui.QApplication.translate("MainWindow", "About", None, QtGui.QApplication.UnicodeUTF8))
         self.actionSampleUnitsUM.setText(QtGui.QApplication.translate("MainWindow", "uM", None, QtGui.QApplication.UnicodeUTF8))
         self.actionSampleUnitsPPM.setText(QtGui.QApplication.translate("MainWindow", "ppm", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionStandardRgbLed.setText(QtGui.QApplication.translate("MainWindow", "Standard RGB LED", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionCustomLed.setText(QtGui.QApplication.translate("MainWindow", "Custom LED", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionStandardRgbLED.setText(QtGui.QApplication.translate("MainWindow", "Standard RGB LED", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionCustomLED.setText(QtGui.QApplication.translate("MainWindow", "Custom LED", None, QtGui.QApplication.UnicodeUTF8))
 
 from colorimeter.table_widget import ColorimeterTableWidget

@@ -138,7 +138,6 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
 
         import_export.exportTestSolutionData(self.userHome,dataDict)
 
-
     def fitTypeChanged_Callback(self):
         self.updatePlot()
 
@@ -156,7 +155,6 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
             self.closeFigure()
             return
         xList,yList = zip(*dataList)
-        #yList,xList = zip(*dataList)
 
         fitType, fitParams = self.getFitTypeAndParams()
 
@@ -212,17 +210,26 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
         if constants.DEVEL_FAKE_MEASURE:
             abso = (random.random(),)*4
         else:
-            freq, trans, abso = self.dev.getMeasurement()
+            if self.isStandardRgbLEDMode():
+                freq, trans, abso = self.dev.getMeasurement()
+                absoValue = abso[ledNumber]
+            else:
+                freq, trans, abso = self.dev.getMeasurementBlue()
+                absoValue = abso
+            absoStr = '{0:1.2f}'.format(absoValue)
         self.measurePushButton.setFlat(False)
-        absoStr = '{0:1.2f}'.format(abso[ledNumber])
         self.tableWidget.addData('',absoStr,selectAndEdit=True)
 
     def getSaveFileHeader(self):
         timeStr = time.strftime('%Y-%m-%d %H:%M:%S %Z') 
+        if self.isStandardRgbLEDMode():
+            currentLed = self.currentColor
+        else:
+            currentLed = 'custom'
         headerList = [ 
                 '# {0}'.format(timeStr),
                 '# Colorimeter Data', 
-                '# LED {0}'.format(self.currentColor),
+                '# LED {0}'.format(currentLed),
                 '# -----------------------------', 
                 '# Concentration | Absorbance', 
                 ]
@@ -242,8 +249,11 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
         if self.dev is None:
             self.ledColorWidget.setEnabled(False)
         else:
-            self.ledColorWidget.setEnabled(True)
             self.calibratePushButton.setEnabled(True)
+            if self.isStandardRgbLEDMode():
+                self.ledColorWidget.setEnabled(True)
+            else:
+                self.ledColorWidget.setEnabled(False)
 
     def getFitTypeAndParams(self):
         if self.actionFitTypeLinear.isChecked():

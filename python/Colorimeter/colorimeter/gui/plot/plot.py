@@ -68,8 +68,12 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
         solutionDict = dict(userSolutionDict.items() + dfltSolutionDict.items())
         data = TestSolutionDialog().importData(solutionDict)
         if data is not None:
+            if data['led'] in constants.COLOR2LED_DICT:     
+                self.setLEDMode('standard')
+                self.setLEDColor(data['led'])
+            elif data['led'] == 'custom':
+                self.setLEDMode('custom')
             self.setTableData(data['values'])
-            self.setLEDColor(data['led'])
             self.setFitType(data['fitType'],data['fitParams'])
             self.setConcentrationUnits(data['concentrationUnits'])
         self.updateWidgetEnabled()
@@ -120,10 +124,16 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
                 import_export.deleteTestSolution(self.userHome,solutionName)
 
         dateStr = time.strftime('%Y-%m-%d %H:%M:%S %Z')
+
+        if self.isStandardRgbLEDMode():
+            currentLED = self.currentColor
+        else:
+            currentLED = 'custom'
+
         dataDict = { 
                 'name': solutionName,
                 'date': dateStr,
-                'led': self.currentColor,
+                'led': currentLED,
                 'values': [map(float,x) for x in dataList],
                 'fitType': fitType,
                 'concentrationUnits': self.getConcentrationUnits(),

@@ -124,7 +124,10 @@ class MainWindowCommon(QtGui.QMainWindow):
     def calibrateClicked_Callback(self):
         if not constants.DEVEL_FAKE_MEASURE: 
             try:
-                self.dev.calibrate()
+                if self.isStandardRgbLEDMode():
+                    self.dev.calibrate()
+                else:
+                    self.dev.calibrateBlue()
                 self.isCalibrated = True
             except IOError, e:
                 msgTitle = 'Calibration Error:'
@@ -263,6 +266,12 @@ class MainWindowCommon(QtGui.QMainWindow):
 
     def isCustomLEDMode(self):
         return self.actionCustomLED.isChecked()
+
+    def getLEDMode(self):
+        if self.isStandardRgbLEDMode():
+            return 'standard'
+        else:
+            return 'custom'
 
     def haveData(self):
         return False

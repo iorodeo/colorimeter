@@ -355,7 +355,11 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
         super(MeasureMainWindow,self).setLEDMode(value)
         self.updateTestSolutionDicts()
         self.populateTestSolutionComboBox()
-        self.updateTestSolution(1)
+        if self.testSolutionComboBox.count() > 1:
+            index = 1
+        else:
+            index = 0
+        self.updateTestSolution(index)
 
     def setLEDRadioButtonsEnabled(self,value):
         for color in constants.COLOR2LED_DICT:

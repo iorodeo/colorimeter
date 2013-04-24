@@ -10,7 +10,7 @@ const uint8_t EEPROM_CAL_GREEN = 4;
 const uint8_t EEPROM_CAL_BLUE = 8;
 const uint8_t EEPROM_CAL_WHITE = 12;
 
-const unsigned int DEFAULT_NUM_SAMPLES = 5000;
+const unsigned int DEFAULT_NUM_SAMPLES = 500;
 const SensorMode DEFAULT_SENSOR_MODE = COLOR_SPECIFIC;
 
 Colorimeter::Colorimeter() {

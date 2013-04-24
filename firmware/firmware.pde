@@ -16,7 +16,6 @@ SerialHandler comm;
 void setup() {
     Serial.begin(9600);
     colorimeter.initialize();
-    colorimeter.numSamples = 50;
 }
 
 void loop() {

@@ -17,6 +17,7 @@ class MainWindowCommon(QtGui.QMainWindow):
         super(MainWindowCommon,self).__init__(parent)
 
     def connectActions(self):
+        self.samplesLineEdit.editingFinished.connect(self.samplesChanged_Callback)
         self.portLineEdit.editingFinished.connect(self.portChanged_Callback)
         self.connectPushButton.pressed.connect(self.connectPressed_Callback)
         self.connectPushButton.clicked.connect(self.connectClicked_Callback)
@@ -45,6 +46,7 @@ class MainWindowCommon(QtGui.QMainWindow):
         self.aboutCaption = 'About'
         self.aboutText = 'About Default Text'
         self.sensorMode = 'standard'
+        self.numSamples = None
 
         # Set default port based on system
         osType = platform.system()
@@ -68,31 +70,35 @@ class MainWindowCommon(QtGui.QMainWindow):
             QtGui.QMessageBox.warning(self,msgTitle, msgText)
 
     def connectPressed_Callback(self):
-        if self.dev == None:
+        if self.dev is None:
             self.connectPushButton.setText('Disconnect')
             self.connectPushButton.setFlat(True)
             self.portLineEdit.setEnabled(False)
             self.statusbar.showMessage('Connecting...')
 
     def connectClicked_Callback(self):
-        if self.dev == None:
-            if constants.DEVEL_FAKE_MEASURE:
-                self.dev = 'dummy' 
-                connected = True
-            else:
-                try:
-                    self.dev = Colorimeter(self.port)
-                    self.numSamples = self.dev.getNumSamples()
-                    connected = True
-                except Exception, e:
-                    msgTitle = 'Connection Error'
-                    msgText = 'unable to connect to device: {0}'.format(str(e))
-                    QtGui.QMessageBox.warning(self,msgTitle, msgText)
-                    self.connectPushButton.setText('Connect')
-                    self.statusbar.showMessage('Not Connected')
-                    connected = False
-                    self.dev = None
+        if self.dev is None:
+            self.connectDevice()
+        else:
+            self.disconnectDevice()
+        self.updateWidgetEnabled()
+        self.connectPushButton.setFlat(False)
 
+    def connectDevice(self):
+        if constants.DEVEL_FAKE_MEASURE:
+            self.dev = 'dummy' 
+        else:
+            try:
+                self.dev = Colorimeter(self.port)
+                self.numSamples = self.dev.getNumSamples()
+            except Exception, e:
+                msgTitle = 'Connection Error'
+                msgText = 'unable to connect to device: {0}'.format(str(e))
+                QtGui.QMessageBox.warning(self,msgTitle, msgText)
+                self.connectPushButton.setText('Connect')
+                self.statusbar.showMessage('Not Connected')
+                self.dev = None
+            if self.dev is not None:
                 try:
                     if self.isStandardRgbLEDMode():
                         self.dev.setSensorModeColorSpecific()
@@ -102,19 +108,26 @@ class MainWindowCommon(QtGui.QMainWindow):
                     msgTitle = 'Set LED Mode Error'
                     msgText = 'error setting device LED mode: {0}'.format(str(e))
                     QtGui.QMessageBox.warning(self,msgTitle, msgText)
-        else:
-            if constants.DEVEL_FAKE_MEASURE:
-                self.dev = None
-            else:
-                self.connectPushButton.setText('Connect')
-                try:
-                    self.cleanUpAndCloseDevice()
-                except Exception, e:
-                    QtGui.QMessageBox.critical(self,'Error', str(e))
-            connected = False
+                self.samplesLineEdit.setText('{0}'.format(self.numSamples))
 
-        self.updateWidgetEnabled()
-        self.connectPushButton.setFlat(False)
+    def disconnectDevice(self):
+        if constants.DEVEL_FAKE_MEASURE:
+            self.dev = None
+        else:
+            self.connectPushButton.setText('Connect')
+            try:
+                self.cleanUpAndCloseDevice()
+            except Exception, e:
+                QtGui.QMessageBox.critical(self,'Error', str(e))
+        self.samplesLineEdit.setText('')
+
+    def samplesChanged_Callback(self):
+        valueStr = str(self.samplesLineEdit.text())
+        value = int(valueStr)
+        if value != self.numSamples:
+            self.numSamples = value
+            if self.dev is not None:
+                self.dev.setNumSamples(value)
 
     def calibratePressed_Callback(self):
         self.measurePushButton.setEnabled(False)
@@ -300,9 +313,11 @@ class MainWindowCommon(QtGui.QMainWindow):
         if self.dev is None:
             self.actionStandardRgbLED.setEnabled(False)
             self.actionCustomLED.setEnabled(False)
+            self.samplesLineEdit.setEnabled(False)
         else:
             self.actionStandardRgbLED.setEnabled(True)
             self.actionCustomLED.setEnabled(True)
+            self.samplesLineEdit.setEnabled(True)
 
     def main(self):
         self.show()

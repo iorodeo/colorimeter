@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'measure.ui'
 #
-# Created: Sat Apr 20 19:33:55 2013
+# Created: Wed Apr 24 17:23:18 2013
 #      by: PyQt4 UI code generator 4.7.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -12,7 +12,7 @@ from PyQt4 import QtCore, QtGui
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(600, 537)
+        MainWindow.resize(666, 461)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayout = QtGui.QVBoxLayout(self.centralwidget)
@@ -158,14 +158,29 @@ class Ui_MainWindow(object):
         self.widget_3.setObjectName("widget_3")
         self.horizontalLayout_3 = QtGui.QHBoxLayout(self.widget_3)
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
+        self.label_5 = QtGui.QLabel(self.widget_3)
+        self.label_5.setObjectName("label_5")
+        self.horizontalLayout_3.addWidget(self.label_5)
+        self.samplesLineEdit = QtGui.QLineEdit(self.widget_3)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.samplesLineEdit.sizePolicy().hasHeightForWidth())
+        self.samplesLineEdit.setSizePolicy(sizePolicy)
+        self.samplesLineEdit.setMinimumSize(QtCore.QSize(100, 0))
+        self.samplesLineEdit.setMaximumSize(QtCore.QSize(100, 16777215))
+        self.samplesLineEdit.setObjectName("samplesLineEdit")
+        self.horizontalLayout_3.addWidget(self.samplesLineEdit)
+        spacerItem5 = QtGui.QSpacerItem(10, 20, QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_3.addItem(spacerItem5)
         self.calibratePushButton = QtGui.QPushButton(self.widget_3)
         self.calibratePushButton.setObjectName("calibratePushButton")
         self.horizontalLayout_3.addWidget(self.calibratePushButton)
         self.clearPushButton = QtGui.QPushButton(self.widget_3)
         self.clearPushButton.setObjectName("clearPushButton")
         self.horizontalLayout_3.addWidget(self.clearPushButton)
-        spacerItem5 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_3.addItem(spacerItem5)
+        spacerItem6 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_3.addItem(spacerItem6)
         self.measurePushButton = QtGui.QPushButton(self.widget_3)
         self.measurePushButton.setObjectName("measurePushButton")
         self.horizontalLayout_3.addWidget(self.measurePushButton)
@@ -175,7 +190,7 @@ class Ui_MainWindow(object):
         self.verticalLayout.addWidget(self.widget_3)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 600, 23))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 666, 23))
         self.menubar.setObjectName("menubar")
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
@@ -256,6 +271,7 @@ class Ui_MainWindow(object):
         self.greenRadioButton.setText(QtGui.QApplication.translate("MainWindow", "green", None, QtGui.QApplication.UnicodeUTF8))
         self.blueRadioButton.setText(QtGui.QApplication.translate("MainWindow", "blue", None, QtGui.QApplication.UnicodeUTF8))
         self.whiteRadioButton.setText(QtGui.QApplication.translate("MainWindow", "white", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_5.setText(QtGui.QApplication.translate("MainWindow", "Samples", None, QtGui.QApplication.UnicodeUTF8))
         self.calibratePushButton.setText(QtGui.QApplication.translate("MainWindow", "Calibrate", None, QtGui.QApplication.UnicodeUTF8))
         self.clearPushButton.setText(QtGui.QApplication.translate("MainWindow", "Clear", None, QtGui.QApplication.UnicodeUTF8))
         self.measurePushButton.setText(QtGui.QApplication.translate("MainWindow", "Measure", None, QtGui.QApplication.UnicodeUTF8))

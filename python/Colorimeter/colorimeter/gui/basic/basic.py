@@ -30,7 +30,6 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
 
     def connectActions(self):
         super(BasicMainWindow,self).connectActions()
-        self.samplesLineEdit.editingFinished.connect(self.samplesChanged_Callback)
         self.plotCheckBox.stateChanged.connect(self.plotCheckBox_Callback)
         for color in constants.COLOR2LED_DICT:
             checkBox = getattr(self,'{0}CheckBox'.format(color))
@@ -40,7 +39,6 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
     def initialize(self):
         super(BasicMainWindow,self).initialize()
         self.measValues = None
-        self.numSamples = None
         self.aboutText = constants.BASIC_ABOUT_TEXT
         self.samplesValidator = QtGui.QIntValidator(0,2**16-1,self.samplesLineEdit)
         self.samplesLineEdit.setValidator(self.samplesValidator)
@@ -78,13 +76,6 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
                 self.closeFigure()
         else:
             self.updatePlot(create=True)
-
-    def connectClicked_Callback(self):
-        super(BasicMainWindow,self).connectClicked_Callback()
-        if self.dev is None:
-            self.samplesLineEdit.setText('')
-        else:
-            self.samplesLineEdit.setText('{0}'.format(self.numSamples))
 
     def calibratePressed_Callback(self):
         super(BasicMainWindow,self).calibratePressed_Callback()
@@ -228,13 +219,6 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
         checkBox = getattr(self,'{0}CheckBox'.format(color))
         return checkBox.isChecked()
 
-    def samplesChanged_Callback(self):
-        valueStr = str(self.samplesLineEdit.text())
-        value = int(valueStr)
-        if value != self.numSamples:
-            self.numSamples = value
-            self.dev.setNumSamples(value)
-
     def getData(self):
         freqValues, tranValues, absoValues = self.measValues
         colorNames = sorted(constants.COLOR2LED_DICT.keys())
@@ -291,7 +275,6 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
             self.measurePushButton.setEnabled(False)
             self.transmissionGroupBox.setEnabled(False)
             self.absorbanceGroupBox.setEnabled(False)
-            self.samplesLineEdit.setEnabled(False)
             self.redCheckBox.setEnabled(False)
             self.greenCheckBox.setEnabled(False)
             self.blueCheckBox.setEnabled(False)
@@ -306,7 +289,6 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
             self.calibratePushButton.setEnabled(True)
             self.transmissionGroupBox.setEnabled(True)
             self.absorbanceGroupBox.setEnabled(True)
-            self.samplesLineEdit.setEnabled(True)
             self.portLineEdit.setEnabled(False)
             if self.isCalibrated:
                 self.measurePushButton.setEnabled(True)

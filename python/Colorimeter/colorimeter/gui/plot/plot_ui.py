@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'plot.ui'
 #
-# Created: Sat Apr 20 19:32:57 2013
+# Created: Wed Apr 24 17:26:56 2013
 #      by: PyQt4 UI code generator 4.7.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -12,7 +12,7 @@ from PyQt4 import QtCore, QtGui
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(514, 442)
+        MainWindow.resize(665, 420)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayout = QtGui.QVBoxLayout(self.centralwidget)
@@ -85,7 +85,7 @@ class Ui_MainWindow(object):
         self.whiteRadioButton = QtGui.QRadioButton(self.ledColorWidget)
         self.whiteRadioButton.setObjectName("whiteRadioButton")
         self.horizontalLayout_2.addWidget(self.whiteRadioButton)
-        spacerItem1 = QtGui.QSpacerItem(134, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout_2.addItem(spacerItem1)
         self.verticalLayout.addWidget(self.ledColorWidget)
         self.frame = QtGui.QFrame(self.centralwidget)
@@ -104,6 +104,11 @@ class Ui_MainWindow(object):
         self.tableWidget.setRowCount(0)
         self.horizontalLayout_4.addWidget(self.tableWidget)
         self.verticalLayout.addWidget(self.frame)
+        self.line_2 = QtGui.QFrame(self.centralwidget)
+        self.line_2.setFrameShape(QtGui.QFrame.HLine)
+        self.line_2.setFrameShadow(QtGui.QFrame.Sunken)
+        self.line_2.setObjectName("line_2")
+        self.verticalLayout.addWidget(self.line_2)
         self.widget_3 = QtGui.QWidget(self.centralwidget)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -114,14 +119,29 @@ class Ui_MainWindow(object):
         self.widget_3.setObjectName("widget_3")
         self.horizontalLayout_3 = QtGui.QHBoxLayout(self.widget_3)
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
+        self.samplesLabel = QtGui.QLabel(self.widget_3)
+        self.samplesLabel.setObjectName("samplesLabel")
+        self.horizontalLayout_3.addWidget(self.samplesLabel)
+        self.samplesLineEdit = QtGui.QLineEdit(self.widget_3)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.samplesLineEdit.sizePolicy().hasHeightForWidth())
+        self.samplesLineEdit.setSizePolicy(sizePolicy)
+        self.samplesLineEdit.setMinimumSize(QtCore.QSize(100, 0))
+        self.samplesLineEdit.setMaximumSize(QtCore.QSize(100, 16777215))
+        self.samplesLineEdit.setObjectName("samplesLineEdit")
+        self.horizontalLayout_3.addWidget(self.samplesLineEdit)
+        spacerItem2 = QtGui.QSpacerItem(10, 20, QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_3.addItem(spacerItem2)
         self.calibratePushButton = QtGui.QPushButton(self.widget_3)
         self.calibratePushButton.setObjectName("calibratePushButton")
         self.horizontalLayout_3.addWidget(self.calibratePushButton)
         self.clearPushButton = QtGui.QPushButton(self.widget_3)
         self.clearPushButton.setObjectName("clearPushButton")
         self.horizontalLayout_3.addWidget(self.clearPushButton)
-        spacerItem2 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_3.addItem(spacerItem2)
+        spacerItem3 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_3.addItem(spacerItem3)
         self.measurePushButton = QtGui.QPushButton(self.widget_3)
         self.measurePushButton.setObjectName("measurePushButton")
         self.horizontalLayout_3.addWidget(self.measurePushButton)
@@ -131,7 +151,7 @@ class Ui_MainWindow(object):
         self.verticalLayout.addWidget(self.widget_3)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 514, 23))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 665, 23))
         self.menubar.setObjectName("menubar")
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
@@ -223,6 +243,7 @@ class Ui_MainWindow(object):
         self.greenRadioButton.setText(QtGui.QApplication.translate("MainWindow", "green", None, QtGui.QApplication.UnicodeUTF8))
         self.blueRadioButton.setText(QtGui.QApplication.translate("MainWindow", "blue", None, QtGui.QApplication.UnicodeUTF8))
         self.whiteRadioButton.setText(QtGui.QApplication.translate("MainWindow", "white", None, QtGui.QApplication.UnicodeUTF8))
+        self.samplesLabel.setText(QtGui.QApplication.translate("MainWindow", "Samples", None, QtGui.QApplication.UnicodeUTF8))
         self.calibratePushButton.setText(QtGui.QApplication.translate("MainWindow", "Calibrate", None, QtGui.QApplication.UnicodeUTF8))
         self.clearPushButton.setText(QtGui.QApplication.translate("MainWindow", "Clear", None, QtGui.QApplication.UnicodeUTF8))
         self.measurePushButton.setText(QtGui.QApplication.translate("MainWindow", "Measure", None, QtGui.QApplication.UnicodeUTF8))

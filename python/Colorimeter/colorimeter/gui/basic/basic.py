@@ -40,8 +40,6 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
         super(BasicMainWindow,self).initialize()
         self.measValues = None
         self.aboutText = constants.BASIC_ABOUT_TEXT
-        self.samplesValidator = QtGui.QIntValidator(0,2**16-1,self.samplesLineEdit)
-        self.samplesLineEdit.setValidator(self.samplesValidator)
         for name in constants.COLOR2LED_DICT:
             checkBox = getattr(self,'{0}CheckBox'.format(name))
             checkBox.setCheckState(QtCore.Qt.Checked)
@@ -176,12 +174,13 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
             for y in yticks[1:]:
                 ax.plot(xlim,[y,y],'k:')
 
+            digits = self.getSignificantDigits()
             for p, a, c in zip(posList, absoList, xLabelList): 
                 colorSymb = constants.PLOT_COLOR_DICT[c]
                 ax.bar([p],[a],width=barWidth,color=colorSymb,linewidth=2)
                 textXPos = p+0.5*barWidth
                 textYPos = a+0.01
-                valueStr = '{0:1.3f}'.format(a)
+                valueStr = '{value:1.{digits}f}'.format(value=a,digits=digits)
                 ax.text(textXPos,textYPos,valueStr,ha ='center',va ='bottom')
 
             ax.set_xlim(*xlim)
@@ -199,19 +198,36 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
             self.absorbanceTextEdit.setText('')
         else:
             freqValues, tranValues, absoValues = self.measValues
+            digits = self.getSignificantDigits()
             if self.isStandardRgbLEDMode():
                 tranStrList, absoStrList = [], []
                 colorNames = sorted(constants.COLOR2LED_DICT)
                 for c in colorNames:
                     n = constants.COLOR2LED_DICT[c] 
                     if self.isColorChecked(c):
-                        tranStrList.append('{0}:\t{1:1.3f}'.format(c, tranValues[n]))
-                        absoStrList.append('{0}:\t{1:1.3f}'.format(c, absoValues[n]))
+                        tranStr = '{color}:\t{value:1.{digits}f}'.format(
+                                color=c, 
+                                value=tranValues[n],
+                                digits=digits
+                                )
+                        tranStrList.append(tranStr)
+                        absoStr = '{color}:\t{value:1.{digits}f}'.format(
+                                color=c, 
+                                value=absoValues[n],
+                                digits=digits
+                                )
+                        absoStrList.append(absoStr)
                 tranStr = os.linesep.join(tranStrList)
                 absoStr = os.linesep.join(absoStrList)
             else:
-                tranStr = 'custom led: \t{0:1.3f}'.format(tranValues)
-                absoStr = 'custom led: \t{0:1.3f}'.format(absoValues)
+                tranStr = 'custom led: \t{value:1.{digits}f}'.format(
+                        value=tranValues,
+                        digits=digits
+                        )
+                absoStr = 'custom led: \t{value:1.{digits}f}'.format(
+                        value=absoValues,
+                        digits=digits
+                        )
             self.transmissionTextEdit.setText(tranStr)
             self.absorbanceTextEdit.setText(absoStr)
 

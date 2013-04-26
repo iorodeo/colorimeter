@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'plot.ui'
 #
-# Created: Wed Apr 24 17:26:56 2013
+# Created: Thu Apr 25 19:51:24 2013
 #      by: PyQt4 UI code generator 4.7.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -161,6 +161,8 @@ class Ui_MainWindow(object):
         self.menuFitType.setObjectName("menuFitType")
         self.menuConcentrationUnits = QtGui.QMenu(self.menuOptions)
         self.menuConcentrationUnits.setObjectName("menuConcentrationUnits")
+        self.menuSignificantDigits = QtGui.QMenu(self.menuOptions)
+        self.menuSignificantDigits.setObjectName("menuSignificantDigits")
         self.menu_Help = QtGui.QMenu(self.menubar)
         self.menu_Help.setObjectName("menu_Help")
         self.menuMode = QtGui.QMenu(self.menubar)
@@ -210,6 +212,18 @@ class Ui_MainWindow(object):
         self.actionCustomLED = QtGui.QAction(MainWindow)
         self.actionCustomLED.setCheckable(True)
         self.actionCustomLED.setObjectName("actionCustomLED")
+        self.actionSignificantDigits1 = QtGui.QAction(MainWindow)
+        self.actionSignificantDigits1.setCheckable(True)
+        self.actionSignificantDigits1.setObjectName("actionSignificantDigits1")
+        self.actionSignificantDigits2 = QtGui.QAction(MainWindow)
+        self.actionSignificantDigits2.setCheckable(True)
+        self.actionSignificantDigits2.setObjectName("actionSignificantDigits2")
+        self.actionSignificantDigits3 = QtGui.QAction(MainWindow)
+        self.actionSignificantDigits3.setCheckable(True)
+        self.actionSignificantDigits3.setObjectName("actionSignificantDigits3")
+        self.actionSignificantDigits4 = QtGui.QAction(MainWindow)
+        self.actionSignificantDigits4.setCheckable(True)
+        self.actionSignificantDigits4.setObjectName("actionSignificantDigits4")
         self.menuFile.addAction(self.actionSave)
         self.menuFile.addAction(self.actionLoad)
         self.menuFitType.addAction(self.actionFitTypeLinear)
@@ -224,6 +238,7 @@ class Ui_MainWindow(object):
         self.menuOptions.addAction(self.actionEditTestSolutions)
         self.menuOptions.addAction(self.menuFitType.menuAction())
         self.menuOptions.addAction(self.menuConcentrationUnits.menuAction())
+        self.menuOptions.addAction(self.menuSignificantDigits.menuAction())
         self.menu_Help.addAction(self.actionAbout)
         self.menuMode.addAction(self.actionStandardRgbLED)
         self.menuMode.addAction(self.actionCustomLED)
@@ -252,6 +267,7 @@ class Ui_MainWindow(object):
         self.menuOptions.setTitle(QtGui.QApplication.translate("MainWindow", "&Options", None, QtGui.QApplication.UnicodeUTF8))
         self.menuFitType.setTitle(QtGui.QApplication.translate("MainWindow", "Fit Type", None, QtGui.QApplication.UnicodeUTF8))
         self.menuConcentrationUnits.setTitle(QtGui.QApplication.translate("MainWindow", "Concentration Units", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuSignificantDigits.setTitle(QtGui.QApplication.translate("MainWindow", "Significant Digits", None, QtGui.QApplication.UnicodeUTF8))
         self.menu_Help.setTitle(QtGui.QApplication.translate("MainWindow", "&Help", None, QtGui.QApplication.UnicodeUTF8))
         self.menuMode.setTitle(QtGui.QApplication.translate("MainWindow", "&Mode", None, QtGui.QApplication.UnicodeUTF8))
         self.actionSave.setText(QtGui.QApplication.translate("MainWindow", "Save...", None, QtGui.QApplication.UnicodeUTF8))
@@ -270,5 +286,9 @@ class Ui_MainWindow(object):
         self.actionFitTypePolynomial5.setText(QtGui.QApplication.translate("MainWindow", "Polynomial (order=5)", None, QtGui.QApplication.UnicodeUTF8))
         self.actionStandardRgbLED.setText(QtGui.QApplication.translate("MainWindow", "Standard RGB LED", None, QtGui.QApplication.UnicodeUTF8))
         self.actionCustomLED.setText(QtGui.QApplication.translate("MainWindow", "Custom LED", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionSignificantDigits1.setText(QtGui.QApplication.translate("MainWindow", "1", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionSignificantDigits2.setText(QtGui.QApplication.translate("MainWindow", "2", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionSignificantDigits3.setText(QtGui.QApplication.translate("MainWindow", "3", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionSignificantDigits4.setText(QtGui.QApplication.translate("MainWindow", "4", None, QtGui.QApplication.UnicodeUTF8))
 
 from colorimeter.table_widget import ColorimeterTableWidget

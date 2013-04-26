@@ -218,7 +218,7 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
     def getMeasurement(self):
         ledNumber = constants.COLOR2LED_DICT[self.currentColor]
         if constants.DEVEL_FAKE_MEASURE:
-            abso = (random.random(),)*4
+            absoValue = (random.random(),)*4
         else:
             if self.isStandardRgbLEDMode():
                 freq, trans, abso = self.dev.getMeasurement()
@@ -226,7 +226,8 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
             else:
                 freq, trans, abso = self.dev.getMeasurementBlue()
                 absoValue = abso
-            absoStr = '{0:1.2f}'.format(absoValue)
+        digits = self.getSignificantDigits()
+        absoStr = '{value:1.{digits}f}'.format(value=absoValue,digits=digits)
         self.measurePushButton.setFlat(False)
         self.tableWidget.addData('',absoStr,selectAndEdit=True)
 
@@ -251,7 +252,7 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
         self.tableWidget.clean(setup=True)
         for conc, abso in dataList:
             concStr = str(conc)
-            absoStr = '{0:1.2f}'.format(abso)
+            absoStr = '{value:1.{digits}f}'.format(value=abso,digits=digits)
             self.tableWidget.addData(concStr,absoStr)
 
     def updateWidgetEnabled(self):

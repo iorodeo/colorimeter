@@ -180,7 +180,8 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
                 QtGui.QMessageBox.warning(self,msgTitle, msgText)
                 return
 
-        concStr = '{0:1.2f}'.format(conc)
+        digits = self.getSignificantDigits()
+        concStr = '{value:1.{digits}f}'.format(value=conc,digits=digits)
         self.measurePushButton.setFlat(False)
         self.tableWidget.addData('',concStr,selectAndEdit=True)
 
@@ -247,10 +248,11 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
         ax = self.fig.add_subplot(111)
         ax.bar(posList,concList,width=constants.PLOT_BAR_WIDTH,color='b',linewidth=2)
 
+        digits = self.getSignificantDigits()
         for pos, value in zip(posList, concList): 
             textXPos = pos + 0.5*constants.PLOT_BAR_WIDTH
             textYPos = value + constants.PLOT_TEXT_Y_OFFSET
-            valueStr = '{0:1.3f}'.format(value)
+            valueStr = '{value:1.{digits}f}'.format(value=value,digits=digits)
             ax.text(textXPos,textYPos, valueStr, ha ='center', va ='bottom') 
 
         ax.set_xlim(*xlim)

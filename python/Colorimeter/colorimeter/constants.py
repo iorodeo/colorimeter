@@ -57,3 +57,8 @@ BASIC_ABOUT_TEXT = 'Colorimieter Basic 0.1'
 PLOT_ABOUT_TEXT = 'Colorimieter Plot 0.1'
 MEASURE_ABOUT_TEXT = 'Colorimieter Measure 0.1'
 
+# Significant Digits
+SIGNIFICANT_DIGITS_LIST = [1,2,3,4] 
+DEFAULT_SIGNIFICANT_DIGIT_INDEX = 2
+
+

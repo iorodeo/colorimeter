@@ -122,9 +122,9 @@ class Colorimeter(serial.Serial):
         cmd = '[{0}]'.format(CMD_GET_MEASUREMENT)
         rsp = self.sendCmd(cmd)
         freq = tuple(rsp[1:5])
-        trans = tuple(rsp[5:9])
-        absorb = tuple(rsp[9:])
-        return freq, trans, absorb
+        tran = tuple(rsp[5:9])
+        abso = tuple(rsp[9:])
+        return freq, tran, abso
 
     def getMeasurementRed(self):
         """
@@ -132,8 +132,8 @@ class Colorimeter(serial.Serial):
         """
         cmd = '[{0}]'.format(CMD_GET_MEASUREMENT_RED)
         rsp = self.sendCmd(cmd)
-        freq, trans, absorb = rsp[1:4]
-        return freq, trans, absorb
+        freq, tran, abso = rsp[1:4]
+        return freq, tran, abso
 
     def getMeasurementGreen(self):
         """
@@ -141,8 +141,8 @@ class Colorimeter(serial.Serial):
         """
         cmd = '[{0}]'.format(CMD_GET_MEASUREMENT_GREEN)
         rsp = self.sendCmd(cmd)
-        freq, trans, absorb = rsp[1:4]
-        return freq, trans, absorb
+        freq, tran, abso = rsp[1:4]
+        return freq, tran, abso
 
     def getMeasurementBlue(self):
         """
@@ -150,8 +150,8 @@ class Colorimeter(serial.Serial):
         """
         cmd = '[{0}]'.format(CMD_GET_MEASUREMENT_BLUE)
         rsp = self.sendCmd(cmd)
-        freq, trans, absorb = rsp[1:4]
-        return freq, trans, absorb
+        freq, tran, abso = rsp[1:4]
+        return freq, tran, abso
 
     def getMeasurementWhite(self):
         """
@@ -159,8 +159,8 @@ class Colorimeter(serial.Serial):
         """
         cmd = '[{0}]'.format(CMD_GET_MEASUREMENT_WHITE)
         rsp = self.sendCmd(cmd)
-        freq, trans, absorb = rsp[1:4]
-        return freq, trans, absorb
+        freq, tran, abso = rsp[1:4]
+        return freq, tran, abso
 
     def setNumSamples(self,value):
         """

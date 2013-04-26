@@ -18,6 +18,8 @@ class MainWindowCommon(QtGui.QMainWindow):
 
     def connectActions(self):
         self.samplesLineEdit.editingFinished.connect(self.samplesChanged_Callback)
+        self.samplesValidator = QtGui.QIntValidator(0,2**16-1,self.samplesLineEdit)
+        self.samplesLineEdit.setValidator(self.samplesValidator)
         self.portLineEdit.editingFinished.connect(self.portChanged_Callback)
         self.connectPushButton.pressed.connect(self.connectPressed_Callback)
         self.connectPushButton.clicked.connect(self.connectClicked_Callback)
@@ -37,6 +39,21 @@ class MainWindowCommon(QtGui.QMainWindow):
         self.actionStandardRgbLED.setChecked(True)
         self.actionStandardRgbLED.triggered.connect(self.standardRgbLED_Callback)
         self.actionCustomLED.triggered.connect(self.customLED_Callback)
+
+        self.significantDigitActionGroup = QtGui.QActionGroup(self)
+        self.significantDigitActionGroup.setExclusive(True)
+        self.significantDigitAction2Value = {}
+        
+        for i in constants.SIGNIFICANT_DIGITS_LIST:
+            actionName = 'actionSignificantDigits{0}'.format(i)
+            action = QtGui.QAction(self.menuSignificantDigits)
+            action.setCheckable(True)
+            action.setText('{0}'.format(i))
+            self.menuSignificantDigits.addAction(action)
+            self.significantDigitActionGroup.addAction(action)
+            if i == constants.DEFAULT_SIGNIFICANT_DIGIT_INDEX:
+                action.setChecked(True)
+            self.significantDigitAction2Value[action] = i
 
     def initialize(self):
         self.setAppSize()
@@ -318,6 +335,11 @@ class MainWindowCommon(QtGui.QMainWindow):
             self.actionStandardRgbLED.setEnabled(True)
             self.actionCustomLED.setEnabled(True)
             self.samplesLineEdit.setEnabled(True)
+
+    def getSignificantDigits(self):
+        for action, value in self.significantDigitAction2Value.iteritems():
+            if action.isChecked():
+                return value
 
     def main(self):
         self.show()

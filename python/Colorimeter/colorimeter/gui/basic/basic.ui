@@ -355,8 +355,20 @@
     <addaction name="actionStandardRgbLED"/>
     <addaction name="actionCustomLED"/>
    </widget>
+   <widget class="QMenu" name="menu_Options">
+    <property name="title">
+     <string>&amp;Options</string>
+    </property>
+    <widget class="QMenu" name="menuSignificantDigits">
+     <property name="title">
+      <string>Significant Digits</string>
+     </property>
+    </widget>
+    <addaction name="menuSignificantDigits"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuMode"/>
+   <addaction name="menu_Options"/>
    <addaction name="menu_Help"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -384,6 +396,38 @@
    </property>
    <property name="text">
     <string>Custom LED</string>
+   </property>
+  </action>
+  <action name="actionSignificantDigits1">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>1</string>
+   </property>
+  </action>
+  <action name="actionSignificantDigits2">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>2</string>
+   </property>
+  </action>
+  <action name="actionSignificantDigits3">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>3</string>
+   </property>
+  </action>
+  <action name="actionSignificantDigits4">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>4</string>
    </property>
   </action>
  </widget>

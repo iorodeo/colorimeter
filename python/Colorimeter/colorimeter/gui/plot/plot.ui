@@ -326,11 +326,17 @@
      <addaction name="actionConcentrationUnitsUM"/>
      <addaction name="actionConcentrationUnitsPPM"/>
     </widget>
+    <widget class="QMenu" name="menuSignificantDigits">
+     <property name="title">
+      <string>Significant Digits</string>
+     </property>
+    </widget>
     <addaction name="actionExport"/>
     <addaction name="actionImport"/>
     <addaction name="actionEditTestSolutions"/>
     <addaction name="menuFitType"/>
     <addaction name="menuConcentrationUnits"/>
+    <addaction name="menuSignificantDigits"/>
    </widget>
    <widget class="QMenu" name="menu_Help">
     <property name="title">
@@ -456,6 +462,38 @@
    </property>
    <property name="text">
     <string>Custom LED</string>
+   </property>
+  </action>
+  <action name="actionSignificantDigits1">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>1</string>
+   </property>
+  </action>
+  <action name="actionSignificantDigits2">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>2</string>
+   </property>
+  </action>
+  <action name="actionSignificantDigits3">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>3</string>
+   </property>
+  </action>
+  <action name="actionSignificantDigits4">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>4</string>
    </property>
   </action>
  </widget>

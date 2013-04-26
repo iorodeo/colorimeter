@@ -250,6 +250,7 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
     def setTableData(self,dataList):
         dataList = dataListToFloat(dataList)
         self.tableWidget.clean(setup=True)
+        digits = self.getSignificantDigits()
         for conc, abso in dataList:
             concStr = str(conc)
             absoStr = '{value:1.{digits}f}'.format(value=abso,digits=digits)

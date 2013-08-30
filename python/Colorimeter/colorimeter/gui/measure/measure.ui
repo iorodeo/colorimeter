@@ -453,6 +453,7 @@
     </property>
     <addaction name="actionStandardRgbLED"/>
     <addaction name="actionCustomLED"/>
+    <addaction name="actionCustomLEDVerC"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuMode"/>
@@ -540,7 +541,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Custom LED</string>
+    <string>One custom LED (Ver. B)</string>
    </property>
   </action>
   <action name="actionSignificantDigits1">
@@ -573,6 +574,11 @@
    </property>
    <property name="text">
     <string>4</string>
+   </property>
+  </action>
+  <action name="actionCustomLEDVerC">
+   <property name="text">
+    <string>Two custom LEDs (Ver. C)</string>
    </property>
   </action>
  </widget>

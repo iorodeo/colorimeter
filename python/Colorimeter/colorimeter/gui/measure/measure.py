@@ -152,7 +152,7 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
                 self.coefficientLineEdit.setText(' -- nonlinear --')
             if data['led'] in constants.COLOR2LED_DICT:
                 self.setLEDColor(data['led'])
-            elif data['led'] == 'custom':
+            elif data['led'] in  ('custom', 'custom1', 'custom2'):
                 pass
             else:
                 raise ValueError, 'unknown LED type {0}'.format(data['led'])
@@ -353,8 +353,8 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
             self.sampleUnits = units
         self.tableWidget.setHorizontalHeaderLabels(('Sample', concentrationStr)) 
 
-    def setLEDMode(self,value):
-        super(MeasureMainWindow,self).setLEDMode(value)
+    def setMode(self,value):
+        super(MeasureMainWindow,self).setMode(value)
         self.updateTestSolutionDicts()
         self.populateTestSolutionComboBox()
         if self.testSolutionComboBox.count() > 1:

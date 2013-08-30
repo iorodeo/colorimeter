@@ -69,10 +69,20 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
         data = TestSolutionDialog().importData(solutionDict)
         if data is not None:
             if data['led'] in constants.COLOR2LED_DICT:     
-                self.setLEDMode('standard')
+                self.setMode('standard')
                 self.setLEDColor(data['led'])
             elif data['led'] == 'custom':
-                self.setLEDMode('custom')
+                self.setMode('customLEDVerB')
+            elif data['led'] == 'custom1':
+                self.setMode('customLEDVerC')
+                # --------------------------------------------
+                # TODO
+                # --------------------------------------------
+            elif data['led'] == 'custom2':
+                self.setMode('customLEDVerC')
+                # --------------------------------------------
+                # TODO  
+                # -------------------------------------------
             self.setTableData(data['values'])
             self.setFitType(data['fitType'],data['fitParams'])
             self.setConcentrationUnits(data['concentrationUnits'])

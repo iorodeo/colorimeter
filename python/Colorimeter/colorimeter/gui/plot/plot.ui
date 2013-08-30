@@ -349,7 +349,8 @@
      <string>&amp;Mode</string>
     </property>
     <addaction name="actionStandardRgbLED"/>
-    <addaction name="actionCustomLED"/>
+    <addaction name="actionCustomLEDVerB"/>
+    <addaction name="actionCustomLEDVerC"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuMode"/>
@@ -456,12 +457,12 @@
     <string>Standard RGB LED</string>
    </property>
   </action>
-  <action name="actionCustomLED">
+  <action name="actionCustomLEDVerB">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Custom LED</string>
+    <string>One custom LED  (Ver. B)</string>
    </property>
   </action>
   <action name="actionSignificantDigits1">
@@ -494,6 +495,11 @@
    </property>
    <property name="text">
     <string>4</string>
+   </property>
+  </action>
+  <action name="actionCustomLEDVerC">
+   <property name="text">
+    <string>Two custom LEDs (Ver. C)</string>
    </property>
   </action>
  </widget>

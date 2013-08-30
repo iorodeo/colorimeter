@@ -46,13 +46,9 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
         self.plotCheckBox.setCheckState(QtCore.Qt.Checked)
         self.updateWidgetEnabled()
 
-    def setLEDMode(self,value):
-        super(BasicMainWindow,self).setLEDMode(value)
-        if value == 'standard':
-            self.transmissionTextEdit.setText('')
-            self.absorbanceTextEdit.setText('')
-            self.measValues = None
-        elif value == 'custom':
+    def setMode(self,value):
+        super(BasicMainWindow,self).setMode(value)
+        if value in ('standard', 'customLEDVerB', 'customLEDVerC'):
             self.transmissionTextEdit.setText('')
             self.absorbanceTextEdit.setText('')
             self.measValues = None

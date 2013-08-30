@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'basic.ui'
 #
-# Created: Thu Apr 25 19:50:27 2013
+# Created: Thu Aug 29 13:56:34 2013
 #      by: PyQt4 UI code generator 4.7.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -198,9 +198,9 @@ class Ui_MainWindow(object):
         self.actionStandardRgbLED = QtGui.QAction(MainWindow)
         self.actionStandardRgbLED.setCheckable(True)
         self.actionStandardRgbLED.setObjectName("actionStandardRgbLED")
-        self.actionCustomLED = QtGui.QAction(MainWindow)
-        self.actionCustomLED.setCheckable(True)
-        self.actionCustomLED.setObjectName("actionCustomLED")
+        self.actionCustomLEDVerB = QtGui.QAction(MainWindow)
+        self.actionCustomLEDVerB.setCheckable(True)
+        self.actionCustomLEDVerB.setObjectName("actionCustomLEDVerB")
         self.actionSignificantDigits1 = QtGui.QAction(MainWindow)
         self.actionSignificantDigits1.setCheckable(True)
         self.actionSignificantDigits1.setObjectName("actionSignificantDigits1")
@@ -213,10 +213,13 @@ class Ui_MainWindow(object):
         self.actionSignificantDigits4 = QtGui.QAction(MainWindow)
         self.actionSignificantDigits4.setCheckable(True)
         self.actionSignificantDigits4.setObjectName("actionSignificantDigits4")
+        self.actionCustomLEDVerC = QtGui.QAction(MainWindow)
+        self.actionCustomLEDVerC.setObjectName("actionCustomLEDVerC")
         self.menuFile.addAction(self.actionSave)
         self.menu_Help.addAction(self.actionAbout)
         self.menuMode.addAction(self.actionStandardRgbLED)
-        self.menuMode.addAction(self.actionCustomLED)
+        self.menuMode.addAction(self.actionCustomLEDVerB)
+        self.menuMode.addAction(self.actionCustomLEDVerC)
         self.menu_Options.addAction(self.menuSignificantDigits.menuAction())
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuMode.menuAction())
@@ -249,9 +252,10 @@ class Ui_MainWindow(object):
         self.actionSave.setText(QtGui.QApplication.translate("MainWindow", "Save...", None, QtGui.QApplication.UnicodeUTF8))
         self.actionAbout.setText(QtGui.QApplication.translate("MainWindow", "About", None, QtGui.QApplication.UnicodeUTF8))
         self.actionStandardRgbLED.setText(QtGui.QApplication.translate("MainWindow", "Standard RGB LED", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionCustomLED.setText(QtGui.QApplication.translate("MainWindow", "Custom LED", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionCustomLEDVerB.setText(QtGui.QApplication.translate("MainWindow", "One custom LED (Ver. B)", None, QtGui.QApplication.UnicodeUTF8))
         self.actionSignificantDigits1.setText(QtGui.QApplication.translate("MainWindow", "1", None, QtGui.QApplication.UnicodeUTF8))
         self.actionSignificantDigits2.setText(QtGui.QApplication.translate("MainWindow", "2", None, QtGui.QApplication.UnicodeUTF8))
         self.actionSignificantDigits3.setText(QtGui.QApplication.translate("MainWindow", "3", None, QtGui.QApplication.UnicodeUTF8))
         self.actionSignificantDigits4.setText(QtGui.QApplication.translate("MainWindow", "4", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionCustomLEDVerC.setText(QtGui.QApplication.translate("MainWindow", "Two custom LEDs (Ver. C)", None, QtGui.QApplication.UnicodeUTF8))
 

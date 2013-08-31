@@ -11,12 +11,15 @@ DFLT_PORT_DARWIN = '/dev/tty.usbmodem'
 
 # LEDs
 DFLT_LED_COLOR = 'red'
-COLOR2LED_DICT = {
-        'red'   : 0,
-        'green' : 1,
-        'blue'  : 2,
-        'white' : 3,
-        } 
+LED_NUMBERS = range(4)
+LED_COLORS = ['red', 'green', 'blue', 'white']
+LED_NUM_TO_COLOR = dict([(k,v) for k,v in zip(LED_NUMBERS,LED_COLORS)])
+LED_COLOR_TO_NUM = dict([(v,k) for k,v in LED_NUM_TO_COLOR.iteritems()])
+
+# VerC LED values
+VERC_DFLT_LED = 'D1'
+VERC_LED_NUM_TO_VISIBLE = {0:True, 1:True, 2:False, 3:False}
+VERC_LED_NUM_TO_TEXT = {0:'D1', 1:'D2', 2:'', 3:''}
 
 # Data table
 TABLE_MIN_ROW_COUNT = 4 
@@ -32,13 +35,7 @@ PLOT_TEXT_Y_OFFSET = 0.01
 PLOT_YLIM_ADJUST = 1.15
 PLOT_FIT_NUM_PTS = 500
 PLOT_SLOPE_TEXT_POS = 0.15,0.84
-PLOT_COLOR_DICT = {
-        'red'   : 'r',
-        'green' : 'g',
-        'blue'  : 'b',
-        'white' : 'w',
-        }
-
+PLOT_COLOR_DICT = {'red':'r','green':'g','blue':'b','white': 'w','D1':'r','D2':'b'} 
 # No value symbols
 NO_VALUE_SYMBOL_LABEL = '_nv_'
 NO_VALUE_SYMBOL_NUMBER = 'nan'

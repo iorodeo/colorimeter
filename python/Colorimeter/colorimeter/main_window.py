@@ -70,6 +70,7 @@ class MainWindowCommon(QtGui.QMainWindow):
         self.aboutText = 'About Default Text'
         self.sensorMode = 'standard'
         self.numSamples = None
+        self.setMode(self.sensorMode)
 
         # Set default port based on system
         osType = platform.system()
@@ -91,6 +92,7 @@ class MainWindowCommon(QtGui.QMainWindow):
             msgTitle = 'Development'
             msgText = 'Development mode fake measure is enabled'
             QtGui.QMessageBox.warning(self,msgTitle, msgText)
+
 
     def connectPressed_Callback(self):
         if self.dev is None:
@@ -162,8 +164,11 @@ class MainWindowCommon(QtGui.QMainWindow):
             try:
                 if self.isStandardRgbLEDMode():
                     self.dev.calibrate()
+                elif self.isCustomLED_VerBMode():
+                    self.dev.calibrateBlue()
                 else:
                     self.dev.calibrateBlue()
+                    self.dev.calibrateGreen()
                 self.isCalibrated = True
             except IOError, e:
                 msgTitle = 'Calibration Error:'
@@ -267,6 +272,7 @@ class MainWindowCommon(QtGui.QMainWindow):
             raise ValueError, 'unknown sensorMode {0}'.format(sensorMode)
 
     def setMode(self,value):
+        print('1')
         if value == 'standard': 
             self.actionStandardRgbLED.setChecked(True)
             if (self.dev is not None) and (not constants.DEVEL_FAKE_MEASURE):    
@@ -280,6 +286,7 @@ class MainWindowCommon(QtGui.QMainWindow):
             self.isCalibrated = False
             self.sensorMode = 'customLEDVerB'
         elif value == 'customLEDVerC':
+            print('2')
             self.actionCustomLEDVerC.setChecked(True)
             if (self.dev is not None) and (not constants.DEVEL_FAKE_MEASURE):
                 self.dev.setSensorModeColorIndependent()

@@ -31,32 +31,48 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
     def connectActions(self):
         super(BasicMainWindow,self).connectActions()
         self.plotCheckBox.stateChanged.connect(self.plotCheckBox_Callback)
-        for color in constants.COLOR2LED_DICT:
-            checkBox = getattr(self,'{0}CheckBox'.format(color))
-            callback = functools.partial(self.colorCheckBox_Callback,color)
-            checkBox.stateChanged.connect(callback)
+        for ledNum in constants.LED_NUMBERS:
+            checkBox = getattr(self,'LED{0}CheckBox'.format(ledNum))
+            checkBox.stateChanged.connect(self.ledCheckBox_Callback)
 
     def initialize(self):
         super(BasicMainWindow,self).initialize()
         self.measValues = None
         self.aboutText = constants.BASIC_ABOUT_TEXT
-        for name in constants.COLOR2LED_DICT:
-            checkBox = getattr(self,'{0}CheckBox'.format(name))
+        for ledNum in constants.LED_NUMBERS:
+            checkBox = getattr(self,'LED{0}CheckBox'.format(ledNum))
             checkBox.setCheckState(QtCore.Qt.Checked)
         self.plotCheckBox.setCheckState(QtCore.Qt.Checked)
         self.updateWidgetEnabled()
 
     def setMode(self,value):
         super(BasicMainWindow,self).setMode(value)
-        if value in ('standard', 'customLEDVerB', 'customLEDVerC'):
-            self.transmissionTextEdit.setText('')
-            self.absorbanceTextEdit.setText('')
-            self.measValues = None
+        if value == 'standard':
+            self.LEDLabel.setVisible(True)
+            for ledNum in constants.LED_NUMBERS:
+                checkBox = getattr(self,'LED{0}CheckBox'.format(ledNum))
+                checkBox.setVisible(True)
+                checkBox.setText(constants.LED_NUM_TO_COLOR[ledNum])
+        elif value == 'customLEDVerB':
+            self.LEDLabel.setVisible(False)
+            for ledNum in constants.LED_NUMBERS:
+                checkBox = getattr(self,'LED{0}CheckBox'.format(ledNum))
+                checkBox.setVisible(False)
+                checkBox.setText('')
+        elif value == 'customLEDVerC':
+            self.LEDLabel.setVisible(True)
+            for ledNum in constants.LED_NUMBERS:
+                checkBox = getattr(self,'LED{0}CheckBox'.format(ledNum))
+                checkBox.setVisible(constants.VERC_LED_NUM_TO_VISIBLE[ledNum])
+                checkBox.setText(constants.VERC_LED_NUM_TO_TEXT[ledNum])
         else:
             raise ValueError, 'unknown LED mode {0}'.format(value)
+        self.transmissionTextEdit.setText('')
+        self.absorbanceTextEdit.setText('')
+        self.measValues = None
         self.closeFigure()
 
-    def colorCheckBox_Callback(self,color):
+    def ledCheckBox_Callback(self):
         self.updateResultsDisplay()
         if self.plotCheckBox.isChecked():
             create = True
@@ -72,24 +88,26 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
             self.updatePlot(create=True)
 
     def calibratePressed_Callback(self):
-        super(BasicMainWindow,self).calibratePressed_Callback()
-        self.transmissionTextEdit.setText('')
-        self.absorbanceTextEdit.setText('')
-        self.setWidgetEnabledOnMeasure()
+        print('pressed')
+        #super(BasicMainWindow,self).calibratePressed_Callback()
+        #self.transmissionTextEdit.setText('')
+        #self.absorbanceTextEdit.setText('')
+        #self.setWidgetEnabledOnMeasure()
 
     def calibrateClicked_Callback(self):
-        super(BasicMainWindow,self).calibrateClicked_Callback()
-        if self.isCalibrated:
-            if self.isStandardRgbLEDMode():
-                freq = None  
-                tran = 1.0, 1.0, 1.0, 1.0
-                abso = 0.0, 0.0, 0.0, 0.0
-            else:
-                freq = None
-                tran = 1.0
-                abso = 0.0
-            self.measValues = freq, tran, abso
-        self.updateResultsDisplay()
+        print('clicked')
+        #super(BasicMainWindow,self).calibrateClicked_Callback()
+        #if self.isCalibrated:
+        #    if self.isStandardRgbLEDMode():
+        #        freq = None  
+        #        tran = 1.0, 1.0, 1.0, 1.0
+        #        abso = 0.0, 0.0, 0.0, 0.0
+        #    else:
+        #        freq = None
+        #        tran = 1.0
+        #        abso = 0.0
+        #    self.measValues = freq, tran, abso
+        #self.updateResultsDisplay()
 
     def measurePressed_Callback(self):
         super(BasicMainWindow,self).measurePressed_Callback()
@@ -228,7 +246,8 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
             self.absorbanceTextEdit.setText(absoStr)
 
     def isColorChecked(self,color):
-        checkBox = getattr(self,'{0}CheckBox'.format(color))
+        ledNum = constants.COLOR2LED_DICT[color]
+        checkBox = getattr(self,'LED{0}CheckBox'.format(ledNum))
         return checkBox.isChecked()
 
     def getData(self):
@@ -272,10 +291,7 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
         self.transmissionGroupBox.setEnabled(False)
         self.absorbanceGroupBox.setEnabled(False)
         self.samplesLineEdit.setEnabled(False)
-        self.redCheckBox.setEnabled(False)
-        self.greenCheckBox.setEnabled(False)
-        self.blueCheckBox.setEnabled(False)
-        self.whiteCheckBox.setEnabled(False)
+        self.setLEDCheckBoxesEnabled(False)
         self.plotCheckBox.setEnabled(False)
 
     def updateWidgetEnabled(self):
@@ -287,13 +303,10 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
             self.measurePushButton.setEnabled(False)
             self.transmissionGroupBox.setEnabled(False)
             self.absorbanceGroupBox.setEnabled(False)
-            self.redCheckBox.setEnabled(False)
-            self.greenCheckBox.setEnabled(False)
-            self.blueCheckBox.setEnabled(False)
-            self.whiteCheckBox.setEnabled(False)
+            self.setLEDCheckBoxesEnabled(False)
             self.portLineEdit.setEnabled(True)
             self.plotCheckBox.setEnabled(False)
-            self.ledsLabel.setEnabled(False)
+            self.LEDLabel.setEnabled(False)
             self.statusbar.showMessage('Not Connected')
         else:
             self.transmissionTextEdit.setEnabled(True)
@@ -307,18 +320,18 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
             else:
                 self.measurePushButton.setEnabled(False)
             if self.isCalibrated and self.isStandardRgbLEDMode(): 
-                self.redCheckBox.setEnabled(True)
-                self.greenCheckBox.setEnabled(True)
-                self.blueCheckBox.setEnabled(True)
-                self.whiteCheckBox.setEnabled(True)
+                self.setLEDCheckBoxesEnabled(True)
                 self.plotCheckBox.setEnabled(True)
             else:
-                self.redCheckBox.setEnabled(False)
-                self.greenCheckBox.setEnabled(False)
-                self.blueCheckBox.setEnabled(False)
-                self.whiteCheckBox.setEnabled(False)
+                self.setLEDCheckBoxesEnabled(False)
                 self.plotCheckBox.setEnabled(False)
             self.statusbar.showMessage('Connected, Stopped')
+
+    def setLEDCheckBoxesEnabled(self,value): 
+        for ledNum in constants.LED_NUMBERS: 
+            checkBox = getattr(self,'LED{0}CheckBox'.format(ledNum))
+            checkBox.setEnabled(value)
+
 
 def padString(x,n):
     if len(x) < n:

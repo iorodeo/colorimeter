@@ -45,28 +45,20 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
         self.plotCheckBox.setCheckState(QtCore.Qt.Checked)
         self.updateWidgetEnabled()
 
-    def setMode(self,value):
-        super(BasicMainWindow,self).setMode(value)
-        if value == 'standard':
-            self.LEDLabel.setVisible(True)
-            for ledNum in constants.LED_NUMBERS:
-                checkBox = getattr(self,'LED{0}CheckBox'.format(ledNum))
-                checkBox.setVisible(True)
-                checkBox.setText(constants.LED_NUM_TO_COLOR[ledNum])
-        elif value == 'customLEDVerB':
-            self.LEDLabel.setVisible(False)
-            for ledNum in constants.LED_NUMBERS:
-                checkBox = getattr(self,'LED{0}CheckBox'.format(ledNum))
+    def setMode(self,sensorMode):
+        super(BasicMainWindow,self).setMode(sensorMode)
+        modeConfig = constants.MODE_CONFIG[sensorMode]
+        self.LEDLabel.setVisible(modeConfig['LEDLabelVisible'])
+        for ledNum in constants.LED_NUMBERS:
+            checkBox = getattr(self,'LED{0}CheckBox'.format(ledNum))
+            try:
+                ledValues = modeConfig['LED'][ledNum]
+            except KeyError:
                 checkBox.setVisible(False)
                 checkBox.setText('')
-        elif value == 'customLEDVerC':
-            self.LEDLabel.setVisible(True)
-            for ledNum in constants.LED_NUMBERS:
-                checkBox = getattr(self,'LED{0}CheckBox'.format(ledNum))
-                checkBox.setVisible(constants.VERC_LED_NUM_TO_VISIBLE[ledNum])
-                checkBox.setText(constants.VERC_LED_NUM_TO_TEXT[ledNum])
-        else:
-            raise ValueError, 'unknown LED mode {0}'.format(value)
+                continue
+            checkBox.setVisible(ledValues['visible'])
+            checkBox.setText(ledValues['text'])
         self.transmissionTextEdit.setText('')
         self.absorbanceTextEdit.setText('')
         self.measValues = None
@@ -88,35 +80,30 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
             self.updatePlot(create=True)
 
     def calibratePressed_Callback(self):
-        print('pressed')
-        #super(BasicMainWindow,self).calibratePressed_Callback()
-        #self.transmissionTextEdit.setText('')
-        #self.absorbanceTextEdit.setText('')
-        #self.setWidgetEnabledOnMeasure()
+        super(BasicMainWindow,self).calibratePressed_Callback()
+        self.transmissionTextEdit.setText('')
+        self.absorbanceTextEdit.setText('')
+        self.setWidgetEnabledOnMeasure()
 
     def calibrateClicked_Callback(self):
-        print('clicked')
-        #super(BasicMainWindow,self).calibrateClicked_Callback()
-        #if self.isCalibrated:
-        #    if self.isStandardRgbLEDMode():
-        #        freq = None  
-        #        tran = 1.0, 1.0, 1.0, 1.0
-        #        abso = 0.0, 0.0, 0.0, 0.0
-        #    else:
-        #        freq = None
-        #        tran = 1.0
-        #        abso = 0.0
-        #    self.measValues = freq, tran, abso
-        #self.updateResultsDisplay()
+        super(BasicMainWindow,self).calibrateClicked_Callback()
+        if self.isCalibrated: 
+            freq = None  
+            tran = 1.0, 1.0, 1.0, 1.0
+            abso = 0.0, 0.0, 0.0, 0.0
+            self.measValues = freq, tran, abso
+        self.updateResultsDisplay()
 
     def measurePressed_Callback(self):
         super(BasicMainWindow,self).measurePressed_Callback()
+        print('Basic measure pressed')
         self.setWidgetEnabledOnMeasure()
         self.transmissionTextEdit.setText('')
         self.absorbanceTextEdit.setText('')
 
     def measureClicked_Callback(self):
         super(BasicMainWindow,self).measureClicked_Callback()
+        print('Basic measure clicked')
         if self.isStandardRgbLEDMode():
             self.updatePlot(create=True)
         self.updateResultsDisplay()
@@ -124,29 +111,75 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
     def getMeasurement(self):
         if constants.DEVEL_FAKE_MEASURE:
             if self.isStandardRgbLEDMode():
-                freqValues = tuple(numpy.random.random((4,)))
-                tranValues = tuple(numpy.random.random((4,)))
-                absoValues = tuple(numpy.random.random((4,)))
+                n = constants.STD_NUMBER_OF_LEDS 
+                freqValues = tuple(numpy.random.random((n,)))
+                tranValues = tuple(numpy.random.random((n,)))
+                absoValues = tuple(numpy.random.random((n,)))
                 self.measValues = freqValues, tranValues, absoValues
-            else:
+            elif self.isCustomVerB_LEDMode():
                 freqValues = numpy.random.random((1,))[0]
                 tranValues = numpy.random.random((1,))[0]
                 absoValues = numpy.random.random((1,))[0]
                 self.measValues = freqValues, tranValues, absoValues
-        else:
-            if self.isStandardRgbLEDMode():
-                measurementFunc = self.dev.getMeasurement
             else:
-                measurementFunc = self.dev.getMeasurementBlue
-
-            try:
-                freqValues, tranValues, absoValues = measurementFunc()
+                n = constants.VERC_NUMBER_OF_LEDS
+                freqValues = tuple(numpy.random.random((n,)))
+                tranValues = tuple(numpy.random.random((n,)))
+                absoValues = tuple(numpy.random.random((n,)))
                 self.measValues = freqValues, tranValues, absoValues
-            except IOError, e:
-                msgTitle = 'Measurement Error:'
-                msgText = 'unable to get measurement: {0}'.format(str(e))
-                QtGui.QMessageBox.warning(self,msgTitle, msgText)
-                self.measValues = None 
+        else:
+            error = False
+            if self.isStandardRgbLEDMode():
+                n = constants.STD_NUMBER_OF_LEDS 
+                freqValues = [None for i in range(n)]
+                tranValues = [None for i in range(n)]
+                absoValues = [None for i in range(n)]
+                for i in constants.LED_NUMBERS:
+                    try:
+                        color = constants.STD_LED_NUM_TO_COLOR[i]
+                        freqValues[i], tranValues[i], absoValues[i] = self.dev.getMeasurement(color)
+                    except IOError, e:
+                        msgTitle = 'Measurement Error:'
+                        msgText = 'unable to get {0} measurement: {0}'.format(color, str(e))
+                        QtGui.QMessageBox.warning(self,msgTitle, msgText)
+                        error = True
+                        break
+            elif self.isCustomVerB_LEDMode():
+                devColor = constants.VERB_LED_DEVICE_COLOR
+                try:
+                    freqValues, tranValues, absoValues = self.dev.getMeasurement(devColor)
+                except IOError, e: 
+                    msgTitle = 'Measurement Error:'
+                    msgText = 'unable to get {0} measurement: {0}'.format(color, str(e))
+                    QtGui.QMessageBox.warning(self,msgTitle, msgText)
+                    error = True
+            else:
+                n = constants.STD_NUMBER_OF_LEDS
+                freqValues = [None for i in range(n)]
+                tranValues = [None for i in range(n)]
+                absoValues = [None for i in range(n)]
+                for i, devColor in constants.VERC_LED_NUM_TO_DEVICE_COLOR:
+                    if devColor is not None:
+                        pass
+
+
+
+            if error:
+                self.measValues = None
+            else:
+                self.measValues = freqValues, tranValues, absoValues
+
+            ##else:
+            ##    measurementFunc = self.dev.getMeasurementBlue
+
+            #try:
+            #    freqValues, tranValues, absoValues = measurementFunc()
+            #    self.measValues = freqValues, tranValues, absoValues
+            #except IOError, e:
+            #    msgTitle = 'Measurement Error:'
+            #    msgText = 'unable to get measurement: {0}'.format(str(e))
+            #    QtGui.QMessageBox.warning(self,msgTitle, msgText)
+            #    self.measValues = None 
 
     def updatePlot(self,create=False):
         if not create and not plt.fignum_exists(constants.PLOT_FIGURE_NUM):
@@ -213,40 +246,69 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
         else:
             freqValues, tranValues, absoValues = self.measValues
             digits = self.getSignificantDigits()
+
+            ##########################################################################
+            # TODO
+            ###########################################################################
+
             if self.isStandardRgbLEDMode():
                 tranStrList, absoStrList = [], []
-                colorNames = sorted(constants.COLOR2LED_DICT)
-                for c in colorNames:
-                    n = constants.COLOR2LED_DICT[c] 
-                    if self.isColorChecked(c):
+                colorNames = sorted(constants.STD_LED_COLORS)
+                for color in colorNames:
+                    ledNum = constants.STD_LED_COLOR_TO_NUM[color] 
+                    if self.isLEDChecked(ledNum):
                         tranStr = '{color}:\t{value:1.{digits}f}'.format(
-                                color=c, 
-                                value=tranValues[n],
+                                color=color, 
+                                value=tranValues[ledNum],
                                 digits=digits
                                 )
                         tranStrList.append(tranStr)
                         absoStr = '{color}:\t{value:1.{digits}f}'.format(
-                                color=c, 
-                                value=absoValues[n],
+                                color=color, 
+                                value=absoValues[ledNum],
                                 digits=digits
                                 )
                         absoStrList.append(absoStr)
                 tranStr = os.linesep.join(tranStrList)
                 absoStr = os.linesep.join(absoStrList)
-            else:
-                tranStr = 'custom led: \t{value:1.{digits}f}'.format(
+
+            elif self.isCustomVerB_LEDMode():
+                tranStr = 'Led {name}: \t{value:1.{digits}f}'.format(
+                        name=constants.VERB_LED_TEXT,
                         value=tranValues,
                         digits=digits
                         )
-                absoStr = 'custom led: \t{value:1.{digits}f}'.format(
+                absoStr = 'Led: {name} \t{value:1.{digits}f}'.format(
+                        name = constants.VERB_LED_TEXT,
                         value=absoValues,
                         digits=digits
                         )
+                
+            else: # self.isCustomVerC_LEDMode
+                tranStrList, absoStrList = [], []
+                for ledNum, ledName in constants.VERC_LED_NUM_TO_TEXT.iteritems():
+                    if not ledName:
+                        continue
+                    if self.isLEDChecked(ledNum):
+                        transStr = 'Led {name}:\t{value:1.{digits}f}'.format(
+                                name=ledName,
+                                value=tranValues[ledNum],
+                                digits=digits
+                                ) 
+                        tranStrList.append(transStr)
+                        absoStr = 'Led {name}:\t{value:1.{digits}f}'.format(
+                                name=ledName,
+                                value=absoValues[ledNum],
+                                digits=digits
+                                )
+                        absoStrList.append(absoStr)
+                tranStr = os.linesep.join(tranStrList)
+                absoStr = os.linesep.join(absoStrList)
+
             self.transmissionTextEdit.setText(tranStr)
             self.absorbanceTextEdit.setText(absoStr)
 
-    def isColorChecked(self,color):
-        ledNum = constants.COLOR2LED_DICT[color]
+    def isLEDChecked(self,ledNum):
         checkBox = getattr(self,'LED{0}CheckBox'.format(ledNum))
         return checkBox.isChecked()
 

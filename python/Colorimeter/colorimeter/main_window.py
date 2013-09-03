@@ -33,17 +33,17 @@ class MainWindowCommon(QtGui.QMainWindow):
         self.actionSave.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_A)
 
         self.modeActionGroup = QtGui.QActionGroup(self)
-        self.modeActionGroup.addAction(self.actionStandardRgbLED)
+        self.modeActionGroup.addAction(self.actionStandardRGBLED)
         self.modeActionGroup.addAction(self.actionCustomLEDVerB)
         self.modeActionGroup.addAction(self.actionCustomLEDVerC)
         self.modeActionGroup.setExclusive(True)
-        self.actionStandardRgbLED.setChecked(True)
+        self.actionStandardRGBLED.setChecked(True)
 
-        standardRgbLED_Callback = functools.partial(self.sensorMode_Callback,'standard')
-        self.actionStandardRgbLED.triggered.connect(standardRgbLED_Callback)
-        customVerB_Callback = functools.partial(self.sensorMode_Callback,'customLEDVerB')
+        standardRgbLED_Callback = functools.partial(self.sensorMode_Callback,'StandardRGBLED')
+        self.actionStandardRGBLED.triggered.connect(standardRgbLED_Callback)
+        customVerB_Callback = functools.partial(self.sensorMode_Callback,'CustomLEDVerB')
         self.actionCustomLEDVerB.triggered.connect(customVerB_Callback)
-        customVerC_Callback = functools.partial(self.sensorMode_Callback,'customLEDVerC')
+        customVerC_Callback = functools.partial(self.sensorMode_Callback,'CustomLEDVerC')
         self.actionCustomLEDVerC.triggered.connect(customVerC_Callback)
 
         self.significantDigitActionGroup = QtGui.QActionGroup(self)
@@ -68,7 +68,7 @@ class MainWindowCommon(QtGui.QMainWindow):
         self.isCalibrated = False
         self.aboutCaption = 'About'
         self.aboutText = 'About Default Text'
-        self.sensorMode = 'standard'
+        self.sensorMode = 'StandardRGBLED'
         self.numSamples = None
         self.setMode(self.sensorMode)
 
@@ -124,15 +124,7 @@ class MainWindowCommon(QtGui.QMainWindow):
                 self.statusbar.showMessage('Not Connected')
                 self.dev = None
             if self.dev is not None:
-                try:
-                    if self.isStandardRgbLEDMode():
-                        self.dev.setSensorModeColorSpecific()
-                    else:
-                        self.dev.setSensorModeColorIndependent()
-                except Exception, e:
-                    msgTitle = 'Set LED Mode Error'
-                    msgText = 'error setting device LED mode: {0}'.format(str(e))
-                    QtGui.QMessageBox.warning(self,msgTitle, msgText)
+                self.setDeviceColorMode(constants.MODE_CONFIG[self.sensorMode]['colorMode'])
                 self.samplesLineEdit.setText('{0}'.format(self.numSamples))
 
     def disconnectDevice(self):
@@ -161,31 +153,50 @@ class MainWindowCommon(QtGui.QMainWindow):
 
     def calibrateClicked_Callback(self):
         if not constants.DEVEL_FAKE_MEASURE: 
-            try:
-                if self.isStandardRgbLEDMode():
-                    self.dev.calibrate()
-                elif self.isCustomLED_VerBMode():
-                    self.dev.calibrateBlue()
-                else:
-                    self.dev.calibrateBlue()
-                    self.dev.calibrateGreen()
+            modeConfig = constants.MODE_CONFIG[self.sensorMode]
+            error = False
+            for ledNum, ledValues in modeConfig['LED'].iteritems():
+                try:
+                    self.dev.calibrate(ledValues['devColor'])
+                except IOError, e:
+                    msgTitle = 'Calibration Error:'
+                    msgText = 'unable to calibrate device: {0}'.format(str(e))
+                    QtGui.QMessageBox.warning(self,msgTitle, msgText)
+                    error = True
+            if error:
+                self.isCalibrated = False
+            else:
                 self.isCalibrated = True
-            except IOError, e:
-                msgTitle = 'Calibration Error:'
-                msgText = 'unable to calibrate device: {0}'.format(str(e))
-                QtGui.QMessageBox.warning(self,msgTitle, msgText)
-                self.updateWidgetEnabled()
+
+            #try:
+            #    if self.isStandardRgbLEDMode():
+            #        self.dev.calibrate()
+            #    elif self.isCustomVerB_LEDMode():
+            #        self.dev.calibrate(constants.VERB_LED_DEVICE_COLOR)
+            #    else: 
+            #        for ledNum in constants.LED_NUMBERS:
+            #            devColor = constants.VERC_LED_NUM_TO_DEVICE_COLOR[ledNum]
+            #            if devColor is not None:
+            #                self.dev.calibrate(devColor)
+            #    self.isCalibrated = True
+            #except IOError, e:
+            #    msgTitle = 'Calibration Error:'
+            #    msgText = 'unable to calibrate device: {0}'.format(str(e))
+            #    QtGui.QMessageBox.warning(self,msgTitle, msgText)
+            #    self.updateWidgetEnabled()
         else:
             self.isCalibrated = True
         self.calibratePushButton.setFlat(False)
         self.updateWidgetEnabled()
 
     def measurePressed_Callback(self):
+        print('measure pressed')
         self.calibratePushButton.setEnabled(False)
         self.measurePushButton.setFlat(True)
         self.statusbar.showMessage('Connected, Measuring...')
 
     def measureClicked_Callback(self):
+        print('measure clicked')
         self.getMeasurement()
         self.measurePushButton.setFlat(False)
         self.updateWidgetEnabled()
@@ -262,42 +273,30 @@ class MainWindowCommon(QtGui.QMainWindow):
 
 
     def sensorModeSetChecked(self,sensorMode):
-        if sensorMode == 'standard':
-            self.actionStandardRgbLed.setChecked(True)
-        elif sensorMode == 'customVerB':
-            self.actionCustomLEDVerB.setChecked(True)
-        elif sensorMode == 'customVerC':
-            self.actionCustomLEDVerC.setChecked(True)
-        else:
-            raise ValueError, 'unknown sensorMode {0}'.format(sensorMode)
+        modeAction = getattr(self, 'action{0}'.format(sensorMode))
+        modeAction.setChecked(True)
 
-    def setMode(self,value):
-        print('1')
-        if value == 'standard': 
-            self.actionStandardRgbLED.setChecked(True)
-            if (self.dev is not None) and (not constants.DEVEL_FAKE_MEASURE):    
-                self.dev.setSensorModeColorSpecific()
+    def setMode(self,sensorMode):
+        self.sensorModeSetChecked(sensorMode)
+        if (self.dev is not None) and (not constants.DEVEL_FAKE_MEASURE):
+            self.setDeviceColorMode(constants.MODE_CONFIG[sensorMode]['colorMode'])
             self.isCalibrated = False
-            self.sensorMode = 'standard'
-        elif value == 'customLEDVerB':
-            self.actionCustomLEDVerB.setChecked(True)
-            if (self.dev is not None) and (not constants.DEVEL_FAKE_MEASURE): 
-                self.dev.setSensorModeColorIndependent()
-            self.isCalibrated = False
-            self.sensorMode = 'customLEDVerB'
-        elif value == 'customLEDVerC':
-            print('2')
-            self.actionCustomLEDVerC.setChecked(True)
-            if (self.dev is not None) and (not constants.DEVEL_FAKE_MEASURE):
-                self.dev.setSensorModeColorIndependent()
-            self.isCalibrated = False
-            self.sensorMode = 'customLEDVerC'
-        else:
-            raise ValueError, 'unknown LED mode {0}'.format(value)
+            self.sensorMode = sensorMode 
         self.updateWidgetEnabled()
 
+    def setDeviceColorMode(self,colorMode): 
+        try:
+            if colorMode == 'specific':
+                self.dev.setSensorModeColorSpecific()
+            else:
+                self.dev.setSensorModeColorIndependent()
+        except Exception, e:
+            msgTitle = 'Set LED Mode Error'
+            msgText = 'error setting device LED mode: {0}'.format(str(e))
+            QtGui.QMessageBox.warning(self,msgTitle, msgText)
+
     def isStandardRgbLEDMode(self):
-        return self.actionStandardRgbLED.isChecked()
+        return self.actionStandardRGBLED.isChecked()
 
     def isCustomVerB_LEDMode(self):
         return self.actionCustomLEDVerB.isChecked()
@@ -330,12 +329,12 @@ class MainWindowCommon(QtGui.QMainWindow):
 
     def updateWidgetEnabled(self):
         if self.dev is None:
-            self.actionStandardRgbLED.setEnabled(False)
+            self.actionStandardRGBLED.setEnabled(False)
             self.actionCustomLEDVerB.setEnabled(False)
             self.actionCustomLEDVerC.setEnabled(False)
             self.samplesLineEdit.setEnabled(False)
         else:
-            self.actionStandardRgbLED.setEnabled(True)
+            self.actionStandardRGBLED.setEnabled(True)
             self.actionCustomLEDVerB.setEnabled(True)
             self.actionCustomLEDVerC.setEnabled(True)
             self.samplesLineEdit.setEnabled(True)
@@ -386,7 +385,7 @@ class MainWindowWithTable(MainWindowCommon):
     def initialize(self):
         super(MainWindowWithTable,self).initialize()
         self.lastLoadDir = self.userHome
-        self.setLEDColor(constants.DFLT_LED_COLOR)
+        self.setLEDColor(constants.STD_DFLT_LED_COLOR)
         self.tableWidget.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
         self.checkUserTestSolutionDir()
 
@@ -402,7 +401,7 @@ class MainWindowWithTable(MainWindowCommon):
 
     def setMode(self,value):
         super(MainWindowWithTable,self).setMode(value)
-        if value == 'standard':
+        if value == 'StandardRGBLED':
             self.tableWidget.clean(True,'')
             self.setColorLEDChecks()
         elif value == 'custom':
@@ -438,7 +437,7 @@ class MainWindowWithTable(MainWindowCommon):
             QtGui.QMessageBox.warning(self,msgTitle, msgText)
         else:
             if ledColor in constants.COLOR2LED_DICT:
-                self.setMode('standard')
+                self.setMode('StandardRGBLED')
                 self.setLEDColor(ledColor)
             elif ledColor == 'custom':
                 self.setMode('custom')

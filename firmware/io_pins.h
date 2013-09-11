@@ -1,6 +1,8 @@
 #ifndef _IO_PINS_H_
 #define _IO_PINS_H_
 
+//#define BLE_SHIELD
+
 // RGB LED Control Pins
 extern const int LED_BLU_PIN; 
 extern const int LED_GRN_PIN; 

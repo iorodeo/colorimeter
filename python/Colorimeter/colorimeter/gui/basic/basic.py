@@ -47,7 +47,7 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
 
     def setMode(self,sensorMode):
         super(BasicMainWindow,self).setMode(sensorMode)
-        modeConfig = constants.MODE_CONFIG[sensorMode]
+        modeConfig = self.getModeConfig(sensorMode)
         self.LEDLabel.setVisible(modeConfig['LEDLabelVisible'])
         for ledNum in constants.LED_NUMBERS:
             checkBox = getattr(self,'LED{0}CheckBox'.format(ledNum))
@@ -96,92 +96,49 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
 
     def measurePressed_Callback(self):
         super(BasicMainWindow,self).measurePressed_Callback()
-        print('Basic measure pressed')
         self.setWidgetEnabledOnMeasure()
         self.transmissionTextEdit.setText('')
         self.absorbanceTextEdit.setText('')
 
     def measureClicked_Callback(self):
         super(BasicMainWindow,self).measureClicked_Callback()
-        print('Basic measure clicked')
-        if self.isStandardRgbLEDMode():
+        modeConfig = self.getModeConfig()
+        if len(modeConfig['LED']) > 1: 
             self.updatePlot(create=True)
         self.updateResultsDisplay()
 
     def getMeasurement(self):
+        modeConfig = self.getModeConfig()
         if constants.DEVEL_FAKE_MEASURE:
-            if self.isStandardRgbLEDMode():
-                n = constants.STD_NUMBER_OF_LEDS 
-                freqValues = tuple(numpy.random.random((n,)))
-                tranValues = tuple(numpy.random.random((n,)))
-                absoValues = tuple(numpy.random.random((n,)))
-                self.measValues = freqValues, tranValues, absoValues
-            elif self.isCustomVerB_LEDMode():
-                freqValues = numpy.random.random((1,))[0]
-                tranValues = numpy.random.random((1,))[0]
-                absoValues = numpy.random.random((1,))[0]
-                self.measValues = freqValues, tranValues, absoValues
-            else:
-                n = constants.VERC_NUMBER_OF_LEDS
-                freqValues = tuple(numpy.random.random((n,)))
-                tranValues = tuple(numpy.random.random((n,)))
-                absoValues = tuple(numpy.random.random((n,)))
-                self.measValues = freqValues, tranValues, absoValues
+            n = len(modeConfig['LED'])
+            freqValues = tuple(numpy.random.random((n,)))
+            tranValues = tuple(numpy.random.random((n,)))
+            absoValues = tuple(numpy.random.random((n,)))
+            self.measValues = freqValues, tranValues, absoValues
         else:
             error = False
-            if self.isStandardRgbLEDMode():
-                n = constants.STD_NUMBER_OF_LEDS 
-                freqValues = [None for i in range(n)]
-                tranValues = [None for i in range(n)]
-                absoValues = [None for i in range(n)]
-                for i in constants.LED_NUMBERS:
-                    try:
-                        color = constants.STD_LED_NUM_TO_COLOR[i]
-                        freqValues[i], tranValues[i], absoValues[i] = self.dev.getMeasurement(color)
-                    except IOError, e:
-                        msgTitle = 'Measurement Error:'
-                        msgText = 'unable to get {0} measurement: {0}'.format(color, str(e))
-                        QtGui.QMessageBox.warning(self,msgTitle, msgText)
-                        error = True
-                        break
-            elif self.isCustomVerB_LEDMode():
-                devColor = constants.VERB_LED_DEVICE_COLOR
+            n = len(modeConfig['LED']) 
+            freqValues = [None for i in range(n)]
+            tranValues = [None for i in range(n)]
+            absoValues = [None for i in range(n)]
+            for i, ledNum  in enumerate(modeConfig['LED']):
+                devColor = modeConfig['LED'][ledNum]['devColor']
                 try:
-                    freqValues, tranValues, absoValues = self.dev.getMeasurement(devColor)
+                    freqValues[i], tranValues[i], absoValues[i] = self.dev.getMeasurement(devColor)
                 except IOError, e: 
                     msgTitle = 'Measurement Error:'
                     msgText = 'unable to get {0} measurement: {0}'.format(color, str(e))
                     QtGui.QMessageBox.warning(self,msgTitle, msgText)
                     error = True
-            else:
-                n = constants.STD_NUMBER_OF_LEDS
-                freqValues = [None for i in range(n)]
-                tranValues = [None for i in range(n)]
-                absoValues = [None for i in range(n)]
-                for i, devColor in constants.VERC_LED_NUM_TO_DEVICE_COLOR:
-                    if devColor is not None:
-                        pass
-
-
-
+                    break
             if error:
                 self.measValues = None
             else:
                 self.measValues = freqValues, tranValues, absoValues
 
-            ##else:
-            ##    measurementFunc = self.dev.getMeasurementBlue
-
-            #try:
-            #    freqValues, tranValues, absoValues = measurementFunc()
-            #    self.measValues = freqValues, tranValues, absoValues
-            #except IOError, e:
-            #    msgTitle = 'Measurement Error:'
-            #    msgText = 'unable to get measurement: {0}'.format(str(e))
-            #    QtGui.QMessageBox.warning(self,msgTitle, msgText)
-            #    self.measValues = None 
-
     def updatePlot(self,create=False):
+        print('updatePlot')
+        modeConfig = self.getModeConfig()
         if not create and not plt.fignum_exists(constants.PLOT_FIGURE_NUM):
             return
         if self.measValues is None:
@@ -190,17 +147,11 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
 
         if self.plotCheckBox.isChecked():
             barWidth = constants.PLOT_BAR_WIDTH 
-            colorNames = sorted(constants.COLOR2LED_DICT.keys())
-
-            xLabelList = []
-            absoList= []
-
-            for c in colorNames:
-                ledNumber = constants.COLOR2LED_DICT[c]
-                a = absoValues[ledNumber]
-                if self.isColorChecked(c):
-                    xLabelList.append(c) 
-                    absoList.append(a)
+            xLabelList, absoList = [], []
+            for ledNum, ledDict in modeConfig['LED'].iteritems():
+                if self.isLEDChecked(ledNum):
+                    xLabelList.append(ledDict['text'])
+                    absoList.append(absoValues[ledNum])
             if not absoList:
                 self.closeFigure()
                 return
@@ -212,7 +163,6 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
                     posList[-1] + 1.5*constants.PLOT_BAR_WIDTH,
                     )
             ylim = (0,max(constants.PLOT_YLIM_ADJUST*max(absoList),1.0))
-
             plt.clf()
             self.fig = plt.figure(constants.PLOT_FIGURE_NUM)
             self.fig.canvas.manager.set_window_title('Colorimeter Basic: Absorbance Plot')
@@ -246,65 +196,24 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
         else:
             freqValues, tranValues, absoValues = self.measValues
             digits = self.getSignificantDigits()
-
-            ##########################################################################
-            # TODO
-            ###########################################################################
-
-            if self.isStandardRgbLEDMode():
-                tranStrList, absoStrList = [], []
-                colorNames = sorted(constants.STD_LED_COLORS)
-                for color in colorNames:
-                    ledNum = constants.STD_LED_COLOR_TO_NUM[color] 
-                    if self.isLEDChecked(ledNum):
-                        tranStr = '{color}:\t{value:1.{digits}f}'.format(
-                                color=color, 
-                                value=tranValues[ledNum],
-                                digits=digits
-                                )
-                        tranStrList.append(tranStr)
-                        absoStr = '{color}:\t{value:1.{digits}f}'.format(
-                                color=color, 
-                                value=absoValues[ledNum],
-                                digits=digits
-                                )
-                        absoStrList.append(absoStr)
-                tranStr = os.linesep.join(tranStrList)
-                absoStr = os.linesep.join(absoStrList)
-
-            elif self.isCustomVerB_LEDMode():
-                tranStr = 'Led {name}: \t{value:1.{digits}f}'.format(
-                        name=constants.VERB_LED_TEXT,
-                        value=tranValues,
-                        digits=digits
-                        )
-                absoStr = 'Led: {name} \t{value:1.{digits}f}'.format(
-                        name = constants.VERB_LED_TEXT,
-                        value=absoValues,
-                        digits=digits
-                        )
-                
-            else: # self.isCustomVerC_LEDMode
-                tranStrList, absoStrList = [], []
-                for ledNum, ledName in constants.VERC_LED_NUM_TO_TEXT.iteritems():
-                    if not ledName:
-                        continue
-                    if self.isLEDChecked(ledNum):
-                        transStr = 'Led {name}:\t{value:1.{digits}f}'.format(
-                                name=ledName,
-                                value=tranValues[ledNum],
-                                digits=digits
-                                ) 
-                        tranStrList.append(transStr)
-                        absoStr = 'Led {name}:\t{value:1.{digits}f}'.format(
-                                name=ledName,
-                                value=absoValues[ledNum],
-                                digits=digits
-                                )
-                        absoStrList.append(absoStr)
-                tranStr = os.linesep.join(tranStrList)
-                absoStr = os.linesep.join(absoStrList)
-
+            modeConfig = self.getModeConfig()
+            tranStrList, absoStrList = [], []
+            for ledNum, ledDict in modeConfig['LED'].iteritems():
+                if self.isLEDChecked(ledNum):
+                    tranStr = '{color}:\t{value:1.{digits}f}'.format(
+                            color=ledDict['text'], 
+                            value=tranValues[ledNum],
+                            digits=digits
+                            )
+                    tranStrList.append(tranStr)
+                    absoStr = '{color}:\t{value:1.{digits}f}'.format(
+                            color=ledDict['text'], 
+                            value=absoValues[ledNum],
+                            digits=digits
+                            )
+                    absoStrList.append(absoStr)
+            tranStr = os.linesep.join(tranStrList)
+            absoStr = os.linesep.join(absoStrList)
             self.transmissionTextEdit.setText(tranStr)
             self.absorbanceTextEdit.setText(absoStr)
 
@@ -314,20 +223,15 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
 
     def getData(self):
         freqValues, tranValues, absoValues = self.measValues
-        colorNames = sorted(constants.COLOR2LED_DICT.keys())
+        modeConfig = self.getModeConfig()
+        maxNameLen = max([len(d['text']) for d in modeConfig['LED'].values()])
         dataList = []
-
-        if self.isStandardRgbLEDMode():
-            maxNameLen = max([len(c) for c in colorNames])
-            for c in colorNames:
-                n = constants.COLOR2LED_DICT[c]
-                tran = tranValues[n]
-                abso = absoValues[n]
-                if self.isColorChecked(c):
-                    cPadded = padString(c,maxNameLen)
-                    dataList.append((cPadded,tran,abso))
-        else:
-            dataList.append(['custom', tranValues, absoValues])
+        for ledNum, ledDict in modeConfig['LED'].iteritems():
+            tran = tranValues[ledNum]
+            abso = absoValues[ledNum]
+            if self.isLEDChecked(ledNum):
+                textPadded = padString(ledDict['text'],maxNameLen)
+                dataList.append((textPadded,tran,abso))
         return dataList
 
     def haveData(self):
@@ -377,11 +281,12 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
             self.transmissionGroupBox.setEnabled(True)
             self.absorbanceGroupBox.setEnabled(True)
             self.portLineEdit.setEnabled(False)
+            modeConfig = self.getModeConfig()
             if self.isCalibrated:
                 self.measurePushButton.setEnabled(True)
             else:
                 self.measurePushButton.setEnabled(False)
-            if self.isCalibrated and self.isStandardRgbLEDMode(): 
+            if self.isCalibrated and (len(modeConfig['LED']) > 1): 
                 self.setLEDCheckBoxesEnabled(True)
                 self.plotCheckBox.setEnabled(True)
             else:

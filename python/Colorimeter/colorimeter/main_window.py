@@ -124,7 +124,8 @@ class MainWindowCommon(QtGui.QMainWindow):
                 self.statusbar.showMessage('Not Connected')
                 self.dev = None
             if self.dev is not None:
-                self.setDeviceColorMode(constants.MODE_CONFIG[self.sensorMode]['colorMode'])
+                modeConfig = self.getModeConfig()
+                self.setDeviceColorMode(modeConfig['colorMode'])
                 self.samplesLineEdit.setText('{0}'.format(self.numSamples))
 
     def disconnectDevice(self):
@@ -153,7 +154,7 @@ class MainWindowCommon(QtGui.QMainWindow):
 
     def calibrateClicked_Callback(self):
         if not constants.DEVEL_FAKE_MEASURE: 
-            modeConfig = constants.MODE_CONFIG[self.sensorMode]
+            modeConfig = self.getModeConfig()
             error = False
             for ledNum, ledValues in modeConfig['LED'].iteritems():
                 try:
@@ -200,6 +201,8 @@ class MainWindowCommon(QtGui.QMainWindow):
         self.getMeasurement()
         self.measurePushButton.setFlat(False)
         self.updateWidgetEnabled()
+
+
 
     def getMeasurement():
         pass
@@ -276,13 +279,20 @@ class MainWindowCommon(QtGui.QMainWindow):
         modeAction = getattr(self, 'action{0}'.format(sensorMode))
         modeAction.setChecked(True)
 
+
     def setMode(self,sensorMode):
         self.sensorModeSetChecked(sensorMode)
+        modeConfig = self.getModeConfig(sensorMode)
         if (self.dev is not None) and (not constants.DEVEL_FAKE_MEASURE):
-            self.setDeviceColorMode(constants.MODE_CONFIG[sensorMode]['colorMode'])
-            self.isCalibrated = False
-            self.sensorMode = sensorMode 
+            self.setDeviceColorMode(modeConfig['colorMode'])
+        self.isCalibrated = False
+        self.sensorMode = sensorMode 
         self.updateWidgetEnabled()
+
+    def getModeConfig(self,sensorMode=None):
+        if sensorMode == None:
+            sensorMode = self.sensorMode
+        return constants.MODE_CONFIG_DICT[sensorMode]
 
     def setDeviceColorMode(self,colorMode): 
         try:

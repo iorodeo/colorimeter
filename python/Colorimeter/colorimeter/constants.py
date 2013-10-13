@@ -31,8 +31,8 @@ LED_NUMBERS = range(4)
 #VERC_LED_NUM_TO_TEXT = {0:'D1', 1:'D2', 2:'', 3:''}
 #VERC_LED_NUM_TO_DEVICE_COLOR = {0:'blue',1:'green',2:None,3:None}  # legacy 'device color' specifies which dio to use.
 
-MODE_CONFIG = {}
-MODE_CONFIG['StandardRGBLED'] = {
+MODE_CONFIG_DICT = {}
+MODE_CONFIG_DICT['StandardRGBLED'] = {
         'LED' : { 
             0 : { 
                 'text'     : 'red', 
@@ -60,10 +60,10 @@ MODE_CONFIG['StandardRGBLED'] = {
         }
 
 
-MODE_CONFIG['CustomLEDVerB'] = {
+MODE_CONFIG_DICT['CustomLEDVerB'] = {
         'LED' : { 
             0 : { 
-                'text'     : '', 
+                'text'     : 'D1', 
                 'visible'  : False, 
                 'devColor' : 'blue', 
                 },
@@ -72,7 +72,7 @@ MODE_CONFIG['CustomLEDVerB'] = {
         'LEDLabelVisible' : False,
         }
 
-MODE_CONFIG['CustomLEDVerC'] = {
+MODE_CONFIG_DICT['CustomLEDVerC'] = {
         'LED' : { 
             0 : {
                 'text'     : 'D1',

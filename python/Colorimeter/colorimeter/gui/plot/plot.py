@@ -24,8 +24,8 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
     def __init__(self,parent=None):
         super(PlotMainWindow,self).__init__(parent)
         self.setupUi(self)
-        self.connectActions()
         self.initialize()
+        self.connectActions()
 
     def connectActions(self):
         super(PlotMainWindow,self).connectActions()

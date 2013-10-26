@@ -137,7 +137,6 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
                 self.measValues = freqValues, tranValues, absoValues
 
     def updatePlot(self,create=False):
-        print('updatePlot')
         modeConfig = self.getModeConfig()
         if not create and not plt.fignum_exists(constants.PLOT_FIGURE_NUM):
             return

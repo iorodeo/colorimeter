@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'plot.ui'
 #
-# Created: Fri Oct 25 17:24:10 2013
+# Created: Sat Oct 26 13:02:36 2013
 #      by: PyQt4 UI code generator 4.7.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -225,6 +225,7 @@ class Ui_MainWindow(object):
         self.actionSignificantDigits4.setCheckable(True)
         self.actionSignificantDigits4.setObjectName("actionSignificantDigits4")
         self.actionCustomLEDVerC = QtGui.QAction(MainWindow)
+        self.actionCustomLEDVerC.setCheckable(True)
         self.actionCustomLEDVerC.setObjectName("actionCustomLEDVerC")
         self.menuFile.addAction(self.actionSave)
         self.menuFile.addAction(self.actionLoad)

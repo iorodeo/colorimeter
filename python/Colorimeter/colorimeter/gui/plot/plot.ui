@@ -498,6 +498,9 @@
    </property>
   </action>
   <action name="actionCustomLEDVerC">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Two custom LEDs (Ver. C)</string>
    </property>

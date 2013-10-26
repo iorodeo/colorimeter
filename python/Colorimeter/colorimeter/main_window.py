@@ -253,7 +253,6 @@ class MainWindowCommon(QtGui.QMainWindow):
             else:
                 self.sensorModeSetChecked(self.sensorMode)
 
-
     def sensorModeSetChecked(self,sensorMode):
         modeAction = getattr(self, 'action{0}'.format(sensorMode))
         modeAction.setChecked(True)
@@ -374,7 +373,7 @@ class MainWindowWithTable(MainWindowCommon):
         self.actionEditTestSolutions.triggered.connect(self.editTestSolutions_Callback)
 
     def initialize(self):
-        self.setLED(0)
+        self.setLED(0) # default is first led 
         super(MainWindowWithTable,self).initialize()
         self.lastLoadDir = self.userHome
         self.tableWidget.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
@@ -391,15 +390,12 @@ class MainWindowWithTable(MainWindowCommon):
                 QtGui.QMessageBox.warning(self,msgTitle, msgText)
 
     def setMode(self,value):
+        self.setLED(0)
         super(MainWindowWithTable,self).setMode(value)
-        if value == 'StandardRGBLED':
-            self.tableWidget.clean(True,'')
-            self.setLEDChecks()
-        elif value == 'custom':
-            self.tableWidget.clean(True,'')
-            self.setLEDChecks()
-        else:
-            raise ValueError, 'unkown LED mode {0}'.format(value)
+        self.tableWidget.clean(True,'')
+        self.setLEDChecks()
+        self.setLEDText()
+        self.setLEDVisible()
 
     def loadFile_Callback(self):
         """
@@ -521,6 +517,12 @@ class MainWindowWithTable(MainWindowCommon):
         button.setChecked(True)
         self.currentLED = num
 
+    def setLEDByText(self,ledText):
+        modeConfig = self.getModeConfig()
+        text2Num = dict([(d['text'], n) for n, d in modeConfig['LED'].iteritems()])
+        ledNum = text2Num[ledText]
+        self.setLED(ledNum)
+
     def getData(self):
         return self.tableWidget.getData(noValueSymb=self.noValueSymbol)
 
@@ -561,22 +563,37 @@ class MainWindowWithTable(MainWindowCommon):
             self.portLineEdit.setEnabled(False)
             self.statusbar.showMessage('Connected, Stopped')
 
-    def clearColorLEDChecks(self):
-        for color in constants.COLOR2LED_DICT:
-            button = getattr(self,'{0}RadioButton'.format(color))
-            button.setChecked(False)
-            button.setCheckable(False)
-
     def setLEDChecks(self):
         modeConfig = self.getModeConfig()
         for ledNum, ledDict in modeConfig['LED'].iteritems():
             button = getattr(self,'LED{0}RadioButton'.format(ledNum))
             button.setCheckable(True)
-            button.setText(ledDict['text'])
             if ledNum == self.currentLED:
                 button.setChecked(True)
             else:
                 button.setChecked(False)
+
+    def setLEDText(self):
+        modeConfig = self.getModeConfig()
+        for ledNum, ledDict in modeConfig['LED'].iteritems():
+            button = getattr(self,'LED{0}RadioButton'.format(ledNum))
+            button.setText(ledDict['text'])
+
+    def setLEDVisible(self):
+        modeConfig = self.getModeConfig()
+        for ledNum in constants.LED_NUMBERS:
+            button = getattr(self,'LED{0}RadioButton'.format(ledNum))
+            if ledNum in modeConfig['LED']:
+                button.setVisible(True)
+            else:
+                button.setVisible(False)
+
+
+
+
+               
+
+                
 
            
 

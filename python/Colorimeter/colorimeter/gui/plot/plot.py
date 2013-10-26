@@ -226,20 +226,17 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
         plt.draw()
 
     def getMeasurement(self):
-        ledNumber = constants.COLOR2LED_DICT[self.currentColor]
         if constants.DEVEL_FAKE_MEASURE:
-            absoValue = (random.random(),)*4
+            absorbance = random.random()
         else:
-            if self.isStandardRgbLEDMode():
-                freq, trans, abso = self.dev.getMeasurement()
-                absoValue = abso[ledNumber]
-            else:
-                freq, trans, abso = self.dev.getMeasurementBlue()
-                absoValue = abso
+            modeConfig = self.getModeConfig()
+            ledDict = modeConfig['LED'][self.currentLED] 
+            dummy0, dummy1, absorbance = self.dev.getMeasurement(ledDict['devColor'])
+            print(absorbance)
         digits = self.getSignificantDigits()
-        absoStr = '{value:1.{digits}f}'.format(value=absoValue,digits=digits)
+        absorbanceStr = '{value:1.{digits}f}'.format(value=absorbance,digits=digits)
         self.measurePushButton.setFlat(False)
-        self.tableWidget.addData('',absoStr,selectAndEdit=True)
+        self.tableWidget.addData('',absorbanceStr,selectAndEdit=True)
 
     def getSaveFileHeader(self):
         timeStr = time.strftime('%Y-%m-%d %H:%M:%S %Z') 

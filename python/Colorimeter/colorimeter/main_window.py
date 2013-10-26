@@ -368,10 +368,6 @@ class MainWindowWithTable(MainWindowCommon):
             button = getattr(self,'LED{0}RadioButton'.format(num))
             callback = functools.partial(self.LEDRadioButtonClicked_Callback,num)
             button.clicked.connect(callback)
-        #for color in constants.COLOR2LED_DICT:
-        #    button = getattr(self,'{0}RadioButton'.format(color))
-        #    callback = functools.partial(self.colorRadioButtonClicked_Callback, color)
-        #    button.clicked.connect(callback)
         self.plotPushButton.clicked.connect(self.plotPushButtonClicked_Callback)
         self.actionLoad.triggered.connect(self.loadFile_Callback)
         self.actionLoad.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_L)
@@ -483,15 +479,6 @@ class MainWindowWithTable(MainWindowCommon):
     def plotPushButtonClicked_Callback(self):
         self.updatePlot(create=True)
 
-    #def colorRadioButtonClicked_Callback(self,color):
-    #    if len(self.tableWidget.item(0,1).text()):
-    #        chn_msg = "Changing channels will clear all data. Continue?"
-    #        response = self.tableWidget.clean(msg=chn_msg)
-    #        if not response:
-    #            self.closeFigure()
-    #            self.setLEDColor(self.currentColor)
-    #    self.currentColor = color
-
     def LEDRadioButtonClicked_Callback(self,num):
         if len(self.tableWidget.item(0,1).text()):
             chnMsg = 'Changing channels will clear all data. Continue?'
@@ -500,7 +487,6 @@ class MainWindowWithTable(MainWindowCommon):
                 self.closeFigure()
                 self.setLED(self.currentLED)
         self.currentLED = num 
-            
 
     def clearPressed_Callback(self):
         if len(self.tableWidget.item(0,1).text()):
@@ -529,11 +515,6 @@ class MainWindowWithTable(MainWindowCommon):
     def measureClicked_Callback(self):
         super(MainWindowWithTable,self).measureClicked_Callback()
         self.updatePlot(create=False)
-
-    #def setLEDColor(self,color):
-    #    button = getattr(self,'{0}RadioButton'.format(color))
-    #    button.setChecked(True)
-    #    self.currentColor = color
 
     def setLED(self,num):
         button = getattr(self,'LED{0}RadioButton'.format(num))
@@ -596,15 +577,6 @@ class MainWindowWithTable(MainWindowCommon):
                 button.setChecked(True)
             else:
                 button.setChecked(False)
-
-    #def setColorLEDChecks(self):
-    #    for color in constants.COLOR2LED_DICT:
-    #        button = getattr(self,'{0}RadioButton'.format(color))
-    #        button.setCheckable(True)
-    #        if color == self.currentColor:
-    #            button.setChecked(True)
-    #        else:
-    #            button.setChecked(False)
 
            
 

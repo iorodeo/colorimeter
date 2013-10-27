@@ -70,7 +70,6 @@ class MainWindowCommon(QtGui.QMainWindow):
         self.aboutText = 'About Default Text'
         self.sensorMode = 'StandardRGBLED'
         self.numSamples = None
-        self.setMode(self.sensorMode)
 
         # Set default port based on system
         osType = platform.system()
@@ -87,6 +86,8 @@ class MainWindowCommon(QtGui.QMainWindow):
         self.lastSaveDir = self.userHome
         self.statusbar.showMessage('Not Connected')
         self.portLineEdit.setText(self.port) 
+
+        self.setMode(self.sensorMode)
 
         if constants.DEVEL_FAKE_MEASURE: 
             msgTitle = 'Development'
@@ -290,7 +291,7 @@ class MainWindowCommon(QtGui.QMainWindow):
         return self.actionCustomLEDVerB.isChecked()
 
     def isCustomVerC_LEDMode(self):
-        return self.actionCustomLEDVerB.isChecked()
+        return self.actionCustomLEDVerC.isChecked()
 
     def haveData(self):
         return False
@@ -331,6 +332,20 @@ class MainWindowCommon(QtGui.QMainWindow):
         for action, value in self.significantDigitAction2Value.iteritems():
             if action.isChecked():
                 return value
+
+    def getLEDText(self,num=None):
+        modeConfig = self.getModeConfig()
+        if num is None:
+            num = self.currentLED
+        return modeConfig['LED'][num]['text']
+
+    def getLEDSaveInfoStr(self):
+        if self.isStandardRgbLEDMode():
+            ledInfoStr = self.getLEDText()
+        else:
+            ledText = self.getLEDText()
+            ledInfoStr = '{0}, {1}'.format(ledText, self.sensorMode)
+        return ledInfoStr
 
     def main(self):
         self.show()
@@ -587,6 +602,7 @@ class MainWindowWithTable(MainWindowCommon):
                 button.setVisible(True)
             else:
                 button.setVisible(False)
+
 
 
 

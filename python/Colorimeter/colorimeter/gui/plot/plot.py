@@ -67,44 +67,10 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
         dfltSolutionDict = import_export.loadDefaultTestSolutionDict(tag='D')
         solutionDict = dict(userSolutionDict.items() + dfltSolutionDict.items())
         data = TestSolutionDialog().importData(solutionDict)
-
         if data is not None:
-
-            isNewStyle = True 
-            try:
-                sensorMode = data['mode']
-            except KeyError:
-                isNewStyle = False 
-
-            if isNewStyle:
-                ledText = data['led']
-            else:
-                if data['led'] == 'custom':
-                    sensorMode = 'CustomLEDVerB'
-                    ledText = 'D1'
-                else:
-                    sensorMode = 'StandardRGBLED'
-                    ledText = data['led']
-
+            sensorMode, ledText  = import_export.getModeAndLEDTextFromData(data)
             self.setMode(sensorMode)
             self.setLEDByText(ledText)
-
-            #if data['led'] in constants.COLOR2LED_DICT:     
-            #    self.setMode('standard')
-            #    self.setLEDColor(data['led'])
-            #elif data['led'] == 'custom':
-            #    self.setMode('customLEDVerB')
-            #elif data['led'] == 'custom1':
-            #    self.setMode('customLEDVerC')
-            #    # --------------------------------------------
-            #    # TODO
-            #    # --------------------------------------------
-            #elif data['led'] == 'custom2':
-            #    self.setMode('customLEDVerC')
-            #    # --------------------------------------------
-            #    # TODO  
-            #    # -------------------------------------------
-
             self.setTableData(data['values'])
             self.setFitType(data['fitType'],data['fitParams'])
             self.setConcentrationUnits(data['concentrationUnits'])
@@ -245,13 +211,6 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
                     )
         plt.draw()
 
-    def getLEDText(self,num=None):
-        modeConfig = self.getModeConfig()
-        if num is None:
-            num = self.currentLED
-        return modeConfig['LED'][num]['text']
-
-
     def getMeasurement(self):
         if constants.DEVEL_FAKE_MEASURE:
             absorbance = random.random()
@@ -266,13 +225,7 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
 
     def getSaveFileHeader(self):
         timeStr = time.strftime('%Y-%m-%d %H:%M:%S %Z') 
-        if self.isStandardRgbLEDMode():
-            ledInfoStr = self.getLEDText()
-            
-        else:
-            ledText = self.getLEDText()
-            ledInfoStr = '{0}, {1}'.format(ledText, self.sensorMode)
-            currentLed = 'custom'
+        ledInfoStr = self.getLEDSaveInfoStr()
         headerList = [ 
                 '# {0}'.format(timeStr),
                 '# Colorimeter Data', 

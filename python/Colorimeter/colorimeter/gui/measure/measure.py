@@ -24,8 +24,15 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
     def __init__(self,parent=None):
         super(MeasureMainWindow,self).__init__(parent)
         self.setupUi(self)
-        self.connectActions()
+        self.createActionGroup()
         self.initialize()
+        self.connectActions()
+
+    def createActionGroup(self):
+        self.sampleUnitsActionGroup = QtGui.QActionGroup(self)
+        self.sampleUnitsActionGroup.addAction(self.actionSampleUnitsUM)
+        self.sampleUnitsActionGroup.addAction(self.actionSampleUnitsPPM)
+        self.sampleUnitsActionGroup.setExclusive(True)
 
     def connectActions(self):
         super(MeasureMainWindow,self).connectActions()
@@ -46,12 +53,7 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
         coeffValidator.fixup = self.coeffFixup
         self.coefficientLineEdit.setValidator(coeffValidator)
 
-        self.sampleUnitsActionGroup = QtGui.QActionGroup(self)
-        self.sampleUnitsActionGroup.addAction(self.actionSampleUnitsUM)
-        self.sampleUnitsActionGroup.addAction(self.actionSampleUnitsPPM)
-        self.sampleUnitsActionGroup.setExclusive(True)
         self.sampleUnitsActionGroup.triggered.connect(self.sampleUnitsChanged_Callback)
-
 
     def initialize(self):
         super(MeasureMainWindow,self).initialize()
@@ -121,10 +123,11 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
     def updateTestSolution(self,index):
         if index <= 0:
             self.coeffLEDWidget.setEnabled(True)
-            if self.isStandardRgbLEDMode():
+            if self.isStandardRgbLEDMode() or self.isCustomVerC_LEDMode():
                 self.setLEDRadioButtonsEnabled(True)
             else:
                 self.setLEDRadioButtonsEnabled(False)
+
             self.sampleUnitsActionGroup.setEnabled(True)
             self.coefficientLineEdit.setText("")
             self.coeff = None
@@ -150,38 +153,31 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
                 self.coefficientLineEdit.setText('{0:1.1f}'.format(1.0e6*self.coeff))
             else:
                 self.coefficientLineEdit.setText(' -- nonlinear --')
-            if data['led'] in constants.COLOR2LED_DICT:
-                self.setLEDColor(data['led'])
-            elif data['led'] in  ('custom', 'custom1', 'custom2'):
-                pass
+            if data['led'] == 'custom':
+                ledText = 'D1'
             else:
-                raise ValueError, 'unknown LED type {0}'.format(data['led'])
+                ledText = data['led']
+            self.setLEDByText(ledText)
+
         self.testSolutionIndex = index
         self.updateWidgetEnabled()
 
     def getMeasurement(self):
-        ledNumber = constants.COLOR2LED_DICT[self.currentColor]
-        if constants.DEVEL_FAKE_MEASURE:  
-            absorb = random.random()
-            conc = self.getConcentration(absorb) 
+        if constants.DEVEL_FAKE_MEASURE:    
+            absobValue = random.random()
         else:
-            if self.isStandardRgbLEDMode():
-                freq, trans, absorb = self.dev.getMeasurement()
-                absorbValue = absorb[ledNumber]
-            else:
-                freq, trans, absorb = self.dev.getMeasurementBlue()
-                absorbValue = absorb
-
-            try:
-                conc = self.getConcentration(absorbValue)
-            except ValueError, err:
-                msgTitle = 'Range Error'
-                msgText = str(err)
-                QtGui.QMessageBox.warning(self,msgTitle, msgText)
-                return
-
+            modeConfig = self.getModeConfig()
+            ledDict = modeConfig['LED'][self.currentLED]
+            dummy0, dummy1, absorbValue = self.dev.getMeasurement(color=ledDict['devColor'])
+        try:
+            concValue = self.getConcentration(absorbValue)
+        except ValueError, err: 
+            msgTitle = 'Range Error'
+            msgText = str(err)
+            QtGui.QMessageBox.warning(self,msgTitle, msgText)
+            return
         digits = self.getSignificantDigits()
-        concStr = '{value:1.{digits}f}'.format(value=conc,digits=digits)
+        concStr = '{value:1.{digits}f}'.format(value=concValue,digits=digits)
         self.measurePushButton.setFlat(False)
         self.tableWidget.addData('',concStr,selectAndEdit=True)
 
@@ -194,14 +190,11 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
 
     def getSaveFileHeader(self):
         timeStr = time.strftime('%Y-%m-%d %H:%M:%S %Z') 
-        if self.isStandardRgbLEDMode():
-            currentLED = self.currentColor
-        else:
-            currentLED = 'custom'
+        ledInfoStr = self.getLEDSaveInfoStr()
         headerList = [ 
                 '# {0}'.format(timeStr), 
                 '# Colorimeter Data', 
-                '# LED {0}'.format(currentLED),
+                '# LED {0}'.format(ledInfoStr),
                 '# ----------------------------', 
                 '# Label    |    Concentration ',
                 ]
@@ -268,22 +261,21 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
         self.user_TestSolutionDict = self.loadUserTestSolutionDict()
         self.user_TestSolutionDict = self.filterTestSolutionDict(
                 self.user_TestSolutionDict, 
-                self.getLEDMode()
+                self.sensorMode
                 )
         # Default test solutinos
         self.default_TestSolutionDict = self.loadDefaultTestSolutionDict()
         self.default_TestSolutionDict = self.filterTestSolutionDict(
                 self.default_TestSolutionDict,
-                self.getLEDMode()
+                self.sensorMode
                 )
 
     def filterTestSolutionDict(self,testSolutionDict,mode):
         newTestSolutionDict = {}
-        for testName,pathName in testSolutionDict.iteritems():
+        for testName, pathName in testSolutionDict.iteritems():
             data = import_export.importTestSolutionData(pathName)
-            if (mode == 'standard') and (data['led'] in constants.COLOR2LED_DICT):
-                newTestSolutionDict[testName] = pathName
-            if (mode == 'custom') and (data['led'] == 'custom'):
+            dataSensorMode, dummy = import_export.getModeAndLEDTextFromData(data)
+            if dataSensorMode == mode:
                 newTestSolutionDict[testName] = pathName
         return newTestSolutionDict
 
@@ -364,8 +356,9 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
         self.updateTestSolution(index)
 
     def setLEDRadioButtonsEnabled(self,value):
-        for color in constants.COLOR2LED_DICT:
-            button = getattr(self,'{0}RadioButton'.format(color))
+        modeConfig = self.getModeConfig()
+        for ledNum in modeConfig['LED']:
+            button = getattr(self,'LED{0}RadioButton'.format(ledNum))
             button.setEnabled(value)
 
 def dataListToLabelAndFloat(dataList):

@@ -66,7 +66,7 @@ MODE_CONFIG_DICT['CustomLEDVerC'] = {
                 'devColor' : 'green',
                 }, 
             },
-        'colorMode'       : 'colorIndependent',
+        'colorMode'       : 'independent',
         'LEDLabelVisible' : True,
         }
 

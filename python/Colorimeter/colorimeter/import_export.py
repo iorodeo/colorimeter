@@ -5,6 +5,7 @@ import time
 import pkg_resources
 import constants
 
+
 def getUserTestSolutionDir(userHome): 
     return os.path.join(userHome,constants.USER_DATA_DIR)
 
@@ -132,3 +133,26 @@ def getUniqueSolutionFileName(userHome, solutionName):
         fileName = os.path.join(testSolutionDir,'{0}_{1}.yaml'.format(fileNameBase,cnt))
     return fileName
 
+def getModeAndLEDTextFromData(data):
+    """
+    Returns mode and led from import file data.
+    """
+    if data is not None:
+        isNewStyle = True 
+        try:
+            sensorMode = data['mode']
+        except KeyError:
+            isNewStyle = False 
+
+        if isNewStyle:
+            ledText = data['led']
+        else:
+            if data['led'] == 'custom':
+                sensorMode = 'CustomLEDVerB'
+                ledText = 'D1'
+            else:
+                sensorMode = 'StandardRGBLED'
+                ledText = data['led']
+        return sensorMode, ledText
+    else:
+        return None

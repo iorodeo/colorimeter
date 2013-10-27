@@ -10,13 +10,65 @@ DFLT_PORT_LINUX = '/dev/ttyACM0'
 DFLT_PORT_DARWIN = '/dev/tty.usbmodem'
 
 # LEDs
-DFLT_LED_COLOR = 'red'
-COLOR2LED_DICT = {
-        'red'   : 0,
-        'green' : 1,
-        'blue'  : 2,
-        'white' : 3,
-        } 
+LED_NUMBERS = range(4)
+
+MODE_CONFIG_DICT = {}
+MODE_CONFIG_DICT['StandardRGBLED'] = {
+        'LED' : { 
+            0 : { 
+                'text'     : 'red', 
+                'visible'  : True, 
+                'devColor' : 'red' 
+                },
+            1 : {
+                'text'     : 'green',
+                'visible'  : True,
+                'devColor' : 'green',
+                },
+            2 : {
+                'text'     : 'blue',
+                'visible'  : True,
+                'devColor' : 'blue',
+                },
+            3 : {
+                'text'     : 'white',
+                'visible'  : True,
+                'devColor' : 'white',
+                },
+            },
+        'colorMode'       : 'specific',
+        'LEDLabelVisible' : True,
+        }
+
+
+MODE_CONFIG_DICT['CustomLEDVerB'] = {
+        'LED' : { 
+            0 : { 
+                'text'     : 'D1', 
+                'visible'  : False, 
+                'devColor' : 'blue', 
+                },
+            },
+        'colorMode'       : 'independent',
+        'LEDLabelVisible' : False,
+        }
+
+MODE_CONFIG_DICT['CustomLEDVerC'] = {
+        'LED' : { 
+            0 : {
+                'text'     : 'D1',
+                'visible'  : True,
+                'devColor'  : 'blue',
+                },
+            1 : {
+                'text'     : 'D2',
+                'visible'  : True,
+                'devColor' : 'green',
+                }, 
+            },
+        'colorMode'       : 'colorIndependent',
+        'LEDLabelVisible' : True,
+        }
 
 # Data table
 TABLE_MIN_ROW_COUNT = 4 
@@ -32,13 +84,7 @@ PLOT_TEXT_Y_OFFSET = 0.01
 PLOT_YLIM_ADJUST = 1.15
 PLOT_FIT_NUM_PTS = 500
 PLOT_SLOPE_TEXT_POS = 0.15,0.84
-PLOT_COLOR_DICT = {
-        'red'   : 'r',
-        'green' : 'g',
-        'blue'  : 'b',
-        'white' : 'w',
-        }
-
+PLOT_COLOR_DICT = {'red':'r','green':'g','blue':'b','white': 'w','D1':'r','D2':'b'} 
 # No value symbols
 NO_VALUE_SYMBOL_LABEL = '_nv_'
 NO_VALUE_SYMBOL_NUMBER = 'nan'

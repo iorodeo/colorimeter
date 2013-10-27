@@ -87,7 +87,7 @@
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
-        <widget class="QRadioButton" name="redRadioButton">
+        <widget class="QRadioButton" name="LED0RadioButton">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -95,12 +95,12 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>red</string>
+          <string>LED0</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QRadioButton" name="greenRadioButton">
+        <widget class="QRadioButton" name="LED1RadioButton">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -108,12 +108,12 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>green</string>
+          <string>LED1</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QRadioButton" name="blueRadioButton">
+        <widget class="QRadioButton" name="LED2RadioButton">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -121,14 +121,14 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>blue</string>
+          <string>LED2</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QRadioButton" name="whiteRadioButton">
+        <widget class="QRadioButton" name="LED3RadioButton">
          <property name="text">
-          <string>white</string>
+          <string>LED3</string>
          </property>
         </widget>
        </item>
@@ -348,8 +348,9 @@
     <property name="title">
      <string>&amp;Mode</string>
     </property>
-    <addaction name="actionStandardRgbLED"/>
-    <addaction name="actionCustomLED"/>
+    <addaction name="actionStandardRGBLED"/>
+    <addaction name="actionCustomLEDVerB"/>
+    <addaction name="actionCustomLEDVerC"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuMode"/>
@@ -448,7 +449,7 @@
     <string>Polynomial (order=5)</string>
    </property>
   </action>
-  <action name="actionStandardRgbLED">
+  <action name="actionStandardRGBLED">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -456,12 +457,12 @@
     <string>Standard RGB LED</string>
    </property>
   </action>
-  <action name="actionCustomLED">
+  <action name="actionCustomLEDVerB">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Custom LED</string>
+    <string>One custom LED  (Ver. B)</string>
    </property>
   </action>
   <action name="actionSignificantDigits1">
@@ -494,6 +495,14 @@
    </property>
    <property name="text">
     <string>4</string>
+   </property>
+  </action>
+  <action name="actionCustomLEDVerC">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Two custom LEDs (Ver. C)</string>
    </property>
   </action>
  </widget>

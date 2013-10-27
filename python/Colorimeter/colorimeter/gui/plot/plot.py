@@ -24,8 +24,8 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
     def __init__(self,parent=None):
         super(PlotMainWindow,self).__init__(parent)
         self.setupUi(self)
-        self.connectActions()
         self.initialize()
+        self.connectActions()
 
     def connectActions(self):
         super(PlotMainWindow,self).connectActions()
@@ -68,11 +68,9 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
         solutionDict = dict(userSolutionDict.items() + dfltSolutionDict.items())
         data = TestSolutionDialog().importData(solutionDict)
         if data is not None:
-            if data['led'] in constants.COLOR2LED_DICT:     
-                self.setLEDMode('standard')
-                self.setLEDColor(data['led'])
-            elif data['led'] == 'custom':
-                self.setLEDMode('custom')
+            sensorMode, ledText  = import_export.getModeAndLEDTextFromData(data)
+            self.setMode(sensorMode)
+            self.setLEDByText(ledText)
             self.setTableData(data['values'])
             self.setFitType(data['fitType'],data['fitParams'])
             self.setConcentrationUnits(data['concentrationUnits'])
@@ -124,16 +122,13 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
                 import_export.deleteTestSolution(self.userHome,solutionName)
 
         dateStr = time.strftime('%Y-%m-%d %H:%M:%S %Z')
-
-        if self.isStandardRgbLEDMode():
-            currentLED = self.currentColor
-        else:
-            currentLED = 'custom'
-
+        modeConfig = self.getModeConfig()
+        ledText = modeConfig['LED'][self.currentLED]['text']
         dataDict = { 
                 'name': solutionName,
                 'date': dateStr,
-                'led': currentLED,
+                'led':  ledText,
+                'mode': self.sensorMode, 
                 'values': [map(float,x) for x in dataList],
                 'fitType': fitType,
                 'concentrationUnits': self.getConcentrationUnits(),
@@ -205,7 +200,8 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
         ax.grid('on')
         units = self.getConcentrationUnits()
         ax.set_xlabel('Concentration ({0})'.format(units))
-        ax.set_ylabel('Absorbance ('+self.currentColor+' led)')
+        currentLEDText = self.getLEDText()
+        ax.set_ylabel('Absorbance ('+currentLEDText+' led)')
         if haveSlope:
             self.fig.text(
                     constants.PLOT_SLOPE_TEXT_POS[0],
@@ -216,31 +212,24 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
         plt.draw()
 
     def getMeasurement(self):
-        ledNumber = constants.COLOR2LED_DICT[self.currentColor]
         if constants.DEVEL_FAKE_MEASURE:
-            absoValue = (random.random(),)*4
+            absorbance = random.random()
         else:
-            if self.isStandardRgbLEDMode():
-                freq, trans, abso = self.dev.getMeasurement()
-                absoValue = abso[ledNumber]
-            else:
-                freq, trans, abso = self.dev.getMeasurementBlue()
-                absoValue = abso
+            modeConfig = self.getModeConfig()
+            ledDict = modeConfig['LED'][self.currentLED] 
+            dummy0, dummy1, absorbance = self.dev.getMeasurement(ledDict['devColor'])
         digits = self.getSignificantDigits()
-        absoStr = '{value:1.{digits}f}'.format(value=absoValue,digits=digits)
+        absorbanceStr = '{value:1.{digits}f}'.format(value=absorbance,digits=digits)
         self.measurePushButton.setFlat(False)
-        self.tableWidget.addData('',absoStr,selectAndEdit=True)
+        self.tableWidget.addData('',absorbanceStr,selectAndEdit=True)
 
     def getSaveFileHeader(self):
         timeStr = time.strftime('%Y-%m-%d %H:%M:%S %Z') 
-        if self.isStandardRgbLEDMode():
-            currentLed = self.currentColor
-        else:
-            currentLed = 'custom'
+        ledInfoStr = self.getLEDSaveInfoStr()
         headerList = [ 
                 '# {0}'.format(timeStr),
                 '# Colorimeter Data', 
-                '# LED {0}'.format(currentLed),
+                '# LED {0}'.format(ledInfoStr),
                 '# -----------------------------', 
                 '# Concentration | Absorbance', 
                 ]
@@ -262,10 +251,7 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
             self.ledColorWidget.setEnabled(False)
         else:
             self.calibratePushButton.setEnabled(True)
-            if self.isStandardRgbLEDMode():
-                self.ledColorWidget.setEnabled(True)
-            else:
-                self.ledColorWidget.setEnabled(False)
+            self.ledColorWidget.setEnabled(True)
 
     def getFitTypeAndParams(self):
         if self.actionFitTypeLinear.isChecked():

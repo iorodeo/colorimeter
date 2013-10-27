@@ -123,7 +123,7 @@
         </spacer>
        </item>
        <item>
-        <widget class="QLabel" name="ledsLabel">
+        <widget class="QLabel" name="LEDLabel">
          <property name="text">
           <string>LEDs</string>
          </property>
@@ -146,7 +146,7 @@
         </spacer>
        </item>
        <item>
-        <widget class="QCheckBox" name="redCheckBox">
+        <widget class="QCheckBox" name="LED0CheckBox">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -160,7 +160,7 @@
           </size>
          </property>
          <property name="text">
-          <string>red</string>
+          <string>LED0</string>
          </property>
          <property name="checked">
           <bool>true</bool>
@@ -168,7 +168,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="greenCheckBox">
+        <widget class="QCheckBox" name="LED1CheckBox">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -182,7 +182,7 @@
           </size>
          </property>
          <property name="text">
-          <string>green</string>
+          <string>LED1</string>
          </property>
          <property name="checked">
           <bool>true</bool>
@@ -190,7 +190,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="blueCheckBox">
+        <widget class="QCheckBox" name="LED2CheckBox">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -204,7 +204,7 @@
           </size>
          </property>
          <property name="text">
-          <string>blue</string>
+          <string>LED2</string>
          </property>
          <property name="checked">
           <bool>true</bool>
@@ -212,7 +212,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="whiteCheckBox">
+        <widget class="QCheckBox" name="LED3CheckBox">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -226,7 +226,7 @@
           </size>
          </property>
          <property name="text">
-          <string>white</string>
+          <string>LED3</string>
          </property>
          <property name="checked">
           <bool>true</bool>
@@ -352,8 +352,9 @@
     <property name="title">
      <string>&amp;Mode</string>
     </property>
-    <addaction name="actionStandardRgbLED"/>
-    <addaction name="actionCustomLED"/>
+    <addaction name="actionStandardRGBLED"/>
+    <addaction name="actionCustomLEDVerB"/>
+    <addaction name="actionCustomLEDVerC"/>
    </widget>
    <widget class="QMenu" name="menu_Options">
     <property name="title">
@@ -382,7 +383,7 @@
     <string>About</string>
    </property>
   </action>
-  <action name="actionStandardRgbLED">
+  <action name="actionStandardRGBLED">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -390,12 +391,12 @@
     <string>Standard RGB LED</string>
    </property>
   </action>
-  <action name="actionCustomLED">
+  <action name="actionCustomLEDVerB">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Custom LED</string>
+    <string>LED Board B - single LED</string>
    </property>
   </action>
   <action name="actionSignificantDigits1">
@@ -428,6 +429,14 @@
    </property>
    <property name="text">
     <string>4</string>
+   </property>
+  </action>
+  <action name="actionCustomLEDVerC">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>LED Board C - dual LED</string>
    </property>
   </action>
  </widget>

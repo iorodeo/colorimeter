@@ -27,6 +27,8 @@ CMD_GET_SENSOR_MODE = 15
 SENSOR_MODE_COLOR_SPECIFIC = 0
 SENSOR_MODE_COLOR_INDEPENDENT = 1
 
+LED_COLOR_LIST = 'red', 'green', 'blue', 'white'
+
 RSP_ERROR = 0
 RSP_SUCCESS = 1
 
@@ -69,12 +71,19 @@ class Colorimeter(serial.Serial):
 
         return rsp
         
-    def calibrate(self):
+    def calibrate(self,color=None):
         """
         Calibrate the colorimeter (all channels).
         """
-        cmd = '[{0}]'.format(CMD_CALIBRATE) 
-        rsp = self.sendCmd(cmd)
+        if color is None:
+            cmd = '[{0}]'.format(CMD_CALIBRATE) 
+            rsp = self.sendCmd(cmd)
+        else:
+            color = color.lower()
+            if not color in LED_COLOR_LIST:
+                raise ValueError, 'unknown device color {0}'.format(color)
+            calFunc = getattr(self,'calibrate{0}'.format(color.title()))
+            rsp = calFunc()
 
     def calibrateRed(self):
         """
@@ -115,15 +124,21 @@ class Colorimeter(serial.Serial):
         rsp = self.sendCmd(cmd)
         return rsp[1:5] 
 
-    def getMeasurement(self):
+    def getMeasurement(self,color='all'):
         """
         Get a measurement from the device. 
         """
-        cmd = '[{0}]'.format(CMD_GET_MEASUREMENT)
-        rsp = self.sendCmd(cmd)
-        freq = tuple(rsp[1:5])
-        tran = tuple(rsp[5:9])
-        abso = tuple(rsp[9:])
+        if color == 'all':
+            cmd = '[{0}]'.format(CMD_GET_MEASUREMENT)
+            rsp = self.sendCmd(cmd)
+            freq = tuple(rsp[1:5])
+            tran = tuple(rsp[5:9])
+            abso = tuple(rsp[9:])
+        elif color in ('red', 'green', 'blue', 'white'):
+            measureFunc = getattr(self,'getMeasurement{0}'.format(color.title()))
+            freq, tran, abso = measureFunc()
+        else:
+            raise ValueError, 'unknown color {0}'.format(color)
         return freq, tran, abso
 
     def getMeasurementRed(self):

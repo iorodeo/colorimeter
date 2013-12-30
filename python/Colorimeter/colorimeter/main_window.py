@@ -344,8 +344,9 @@ class MainWindowCommon(QtGui.QMainWindow):
             ledInfoStr = self.getLEDText()
         else:
             ledText = self.getLEDText()
-            ledInfoStr = '{0}, {1}'.format(ledText, self.sensorMode)
+            ledInfoStr = '{0} {1}'.format(ledText, self.sensorMode)
         return ledInfoStr
+
 
     def main(self):
         self.show()
@@ -432,24 +433,44 @@ class MainWindowWithTable(MainWindowCommon):
         if not filename:
             return 
         self.lastLoadDir =  os.path.split(filename)[0]
-        dataList, ledColor = self.loadDataFromFile(filename)
+        dataList, ledColor, sensorMode = self.loadDataFromFile(filename)
+
         if ledColor is None:
             msgTitle = 'Import Warning'
-            msgText = 'Unable to determine LED color from data file'
+            msgText = 'Unable to determine LED from data file' 
             QtGui.QMessageBox.warning(self,msgTitle, msgText)
         else:
-            if ledColor in constants.COLOR2LED_DICT:
-                self.setMode('StandardRGBLED')
-                self.setLEDColor(ledColor)
-            elif ledColor == 'custom':
-                self.setMode('custom')
+            standardLEDColors = self.getAllowedLEDColors('StandardRGBLED')
+            if sensorMode is None and ledColor in standardLEDColors:
+                sensorMode = 'StandardRGBLED'
+
+            modeConfig = self.getModeConfig()
+            allowedSensorModes = self.getAllowedSensorModes()
+            if not sensorMode in allowedSensorModes:
+                msgTitle = 'Import Warning'
+                msgText = 'Unknown sensor mode, {0}, in data file'.format(sensorMode)
+                QtGui.QMessageBox.warning(self,msgTitle, msgText)
+
+            allowedColors = self.getAllowedLEDColors(sensorMode)
+            if ledColor in allowedColors:
+                self.setMode(sensorMode)
+                self.setLEDByText(ledColor)
             else:
                 msgTitle = 'Import Warning'
-                msgText = 'Unknown LED color, {0}, in data file'.format(ledColor)
+                msgText = 'Unknown LED color for given mode, {0}, in data file'.format(ledColor)
                 QtGui.QMessageBox.warning(self,msgTitle, msgText)
+
         self.setTableData(dataList)
         self.updateWidgetEnabled()
         self.updatePlot(create=False)
+
+    def getAllowedLEDColors(self,sensorMode): 
+        modeConfig = self.getModeConfig(sensorMode)
+        allowedColors = [v['text'] for k,v in modeConfig['LED'].iteritems()]
+        return allowedColors
+
+    def getAllowedSensorModes(self):
+        return constants.MODE_CONFIG_DICT.keys()
 
     def loadDataFromFile(self,filename):
         """
@@ -467,17 +488,28 @@ class MainWindowWithTable(MainWindowCommon):
 
         dataList = []
         ledColor = None
+        sensorMode = None
+
         for line in fileLines:
             line = line.split()
             if not line:
                 continue
             if 'LED' in line:
+                colorIndex = line.index('LED')+1
+                sensorModeIndex = colorIndex+1
                 try:
-                    color = line[line.index('LED')+1].lower()
+                    ledColor = line[colorIndex]
                 except IndexError, e:
                     continue
-                if color in constants.COLOR2LED_DICT or color=='custom':
-                    ledColor = color
+                try:
+                    sensorMode = line[sensorModeIndex]
+                except IndexError, e:
+                    continue
+                if ledColor == 'custom':
+                    # For backwards compatibility
+                    ledColor = 'D1'
+                    sensorMode = 'CustomLEDVerB'
+                    continue
                 continue
             if line[0] == '#':
                 continue
@@ -485,7 +517,7 @@ class MainWindowWithTable(MainWindowCommon):
                 x = ' '.join(line[:-1])
                 y = line[-1]
             dataList.append((x,y))
-        return dataList, ledColor
+        return dataList, ledColor, sensorMode
 
     def plotPushButtonClicked_Callback(self):
         self.updatePlot(create=True)

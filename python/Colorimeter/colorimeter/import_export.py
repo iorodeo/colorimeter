@@ -1,5 +1,6 @@
 from __future__ import print_function
 import os
+import sys
 import yaml
 import time
 import pkg_resources
@@ -48,7 +49,7 @@ def loadUserTestSolutionDict(userHome,tag=''):
 def loadDefaultTestSolutionDict(tag='D'):
     try:
         fileList = getTestSolutionFilesFromResources()
-    except AssertionError, e:
+    except: 
         default_TestSolutionDir = getPyInstallerResourcePath('data')
         fileList = getTestSolutionFilesFromDir(default_TestSolutionDir)
     return loadTestSolutionDict(fileList,tag=tag)
@@ -62,7 +63,12 @@ def getTestSolutionFilesFromResources():
     return testFiles
 
 def getPyInstallerResourcePath(relative_path): 
-    base_path = os.environ.get("_MEIPASS2", os.path.abspath("."))
+    # Old way - pyinstaller 1.5 
+    #-------------------------------------------------------------
+    #base_path = os.environ.get("_MEIPASS2", os.path.abspath("."))
+    # New way - pyinstaller 2.0
+    #-------------------------------------------------------------
+    base_path = sys._MEIPASS
     resource_path = os.path.join(base_path, relative_path)
     return resource_path
 

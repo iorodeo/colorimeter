@@ -350,6 +350,7 @@ class MainWindowCommon(QtGui.QMainWindow):
 
     def main(self):
         self.show()
+        self.raise_()
 
 class MainWindowWithTable(MainWindowCommon):
 

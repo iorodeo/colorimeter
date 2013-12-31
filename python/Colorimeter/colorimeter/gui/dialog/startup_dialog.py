@@ -52,6 +52,7 @@ class StartupDialog(QtGui.QDialog,Ui_startupDialog):
 
     def run(self):
         self.show()
+        self.raise_()
         self.exec_()
         return self.program
 

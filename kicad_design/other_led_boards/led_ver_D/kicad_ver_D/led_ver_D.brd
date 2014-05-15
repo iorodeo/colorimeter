@@ -1,4 +1,4 @@
-PCBNEW-BOARD Version 1 date Thu 15 May 2014 10:35:14 AM PDT
+PCBNEW-BOARD Version 1 date Thu 15 May 2014 11:08:10 AM PDT
 
 # Created by Pcbnew(2012-apr-16-27)-stable
 
@@ -59,7 +59,7 @@ PadSize 787 512
 PadDrill 0
 Pad2MaskClearance 100
 AuxiliaryAxisOrg 0 0
-PcbPlotParams (pcbplotparams (layerselection 284196865) (usegerberextensions true) (excludeedgelayer true) (linewidth 60) (plotframeref false) (viasonmask false) (mode 1) (useauxorigin false) (hpglpennumber 1) (hpglpenspeed 20) (hpglpendiameter 15) (hpglpenoverlay 0) (pscolor true) (psnegative false) (psa4output false) (plotreference true) (plotvalue true) (plotothertext true) (plotinvisibletext false) (padsonsilk false) (subtractmaskfromsilk false) (outputformat 1) (mirror false) (drillshape 1) (scaleselection 1) (outputdirectory gerber_v1.0/))
+PcbPlotParams (pcbplotparams (layerselection 284196865) (usegerberextensions true) (excludeedgelayer true) (linewidth 60) (plotframeref false) (viasonmask false) (mode 1) (useauxorigin false) (hpglpennumber 1) (hpglpenspeed 20) (hpglpendiameter 15) (hpglpenoverlay 0) (pscolor true) (psnegative false) (psa4output false) (plotreference true) (plotvalue true) (plotothertext true) (plotinvisibletext false) (padsonsilk false) (subtractmaskfromsilk false) (outputformat 1) (mirror false) (drillshape 1) (scaleselection 1) (outputdirectory /home/jo/repos/colorimeter/kicad_design/other_led_boards/led_ver_D/kicad_ver_D/gerber_led_ver_D/))
 $EndSETUP
 
 $EQUIPOT
@@ -246,62 +246,6 @@ Of 0.000000 0.000000 0.000000
 Ro 0.000000 0.000000 0.000000
 $EndSHAPE3D
 $EndMODULE  SM0805
-$MODULE LED_5050
-Po 39000 25000 0 15 5374F82A 5374F0DB ~~
-Li LED_5050
-Sc 5374F0DB
-AR /537440C2
-Op 0 0 0
-T0 0 -2283 600 600 0 120 N V 21 N "D1"
-T1 -1992 197 600 600 900 120 N I 21 N "LED_5050"
-DS 984 -1181 984 1181 79 21
-DS 984 1181 -984 1181 79 21
-DS -984 1181 -984 -945 79 21
-DS -984 -945 -551 -1181 79 21
-DS -551 -1181 984 -1181 79 21
-$PAD
-Sh "1" R 787 512 0 0 0
-Dr 0 0 0
-At SMD N 00FC8000
-Ne 0 ""
-Po -866 -630
-$EndPAD
-$PAD
-Sh "6" R 787 512 0 0 0
-Dr 0 0 0
-At SMD N 00FC8000
-Ne 0 ""
-Po 866 -630
-$EndPAD
-$PAD
-Sh "2" R 787 512 0 0 0
-Dr 0 0 0
-At SMD N 00FC8000
-Ne 4 "N-000006"
-Po -866 0
-$EndPAD
-$PAD
-Sh "5" R 787 512 0 0 0
-Dr 0 0 0
-At SMD N 00FC8000
-Ne 5 "N-000008"
-Po 866 0
-$EndPAD
-$PAD
-Sh "3" R 787 512 0 0 0
-Dr 0 0 0
-At SMD N 00FC8000
-Ne 0 ""
-Po -866 630
-$EndPAD
-$PAD
-Sh "4" R 787 512 0 0 0
-Dr 0 0 0
-At SMD N 00FC8000
-Ne 0 ""
-Po 866 630
-$EndPAD
-$EndMODULE  LED_5050
 $MODULE smt_4-pin
 Po 45400 25144 900 15 5374F865 5374F63F ~~
 Li smt_4-pin
@@ -343,6 +287,62 @@ Ne 3 "GND"
 Po 1500 998
 $EndPAD
 $EndMODULE  smt_4-pin
+$MODULE LED_5050
+Po 39000 25000 0 15 5375026C 5374F0DB ~~
+Li LED_5050
+Sc 5374F0DB
+AR /537440C2
+Op 0 0 0
+T0 -24 -1772 600 600 0 120 N V 21 N "D1"
+T1 -1402 1772 600 600 0 120 N I 21 N "LED_5050"
+DS 984 -1181 984 1181 79 21
+DS 984 1181 -984 1181 79 21
+DS -984 1181 -984 -945 79 21
+DS -984 -945 -551 -1181 79 21
+DS -551 -1181 984 -1181 79 21
+$PAD
+Sh "1" R 787 512 0 0 0
+Dr 0 0 0
+At SMD N 00A88000
+Ne 0 ""
+Po -866 -630
+$EndPAD
+$PAD
+Sh "6" R 787 512 0 0 0
+Dr 0 0 0
+At SMD N 00A88000
+Ne 0 ""
+Po 866 -630
+$EndPAD
+$PAD
+Sh "2" R 787 512 0 0 0
+Dr 0 0 0
+At SMD N 00A88000
+Ne 4 "N-000006"
+Po -866 0
+$EndPAD
+$PAD
+Sh "5" R 787 512 0 0 0
+Dr 0 0 0
+At SMD N 00A88000
+Ne 5 "N-000008"
+Po 866 0
+$EndPAD
+$PAD
+Sh "3" R 787 512 0 0 0
+Dr 0 0 0
+At SMD N 00A88000
+Ne 0 ""
+Po -866 630
+$EndPAD
+$PAD
+Sh "4" R 787 512 0 0 0
+Dr 0 0 0
+At SMD N 00A88000
+Ne 0 ""
+Po 866 630
+$EndPAD
+$EndMODULE  LED_5050
 $TEXTPCB
 Te "GND"
 Po 41976 22924 394 394 79 0
@@ -375,10 +375,6 @@ Po 0 30000 30000 48000 30000 150
 De 28 0 900 0 0
 $EndDRAWSEGMENT
 $TRACK
-Po 0 45894 27697 45730 27861 250 -1
-De 15 0 1 0 0
-Po 0 45894 26216 45894 27697 250 -1
-De 15 0 1 0 0
 Po 0 45822 26144 45894 26216 250 -1
 De 15 0 1 0 0
 Po 0 44970 26144 45822 26144 250 -1
@@ -391,6 +387,10 @@ Po 0 46398 25644 44898 25644 250 -1
 De 15 0 1 0 400000
 Po 0 45730 27861 41142 27861 250 -1
 De 15 0 1 0 800000
+Po 0 45894 27697 45730 27861 250 -1
+De 15 0 1 0 0
+Po 0 45894 26216 45894 27697 250 -1
+De 15 0 1 0 0
 Po 0 41492 27061 41922 27061 250 -1
 De 15 0 2 0 400000
 Po 0 44402 26644 42339 26644 250 -1

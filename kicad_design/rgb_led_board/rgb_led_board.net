@@ -1,51 +1,80 @@
-# EESchema Netlist Version 1.1 created  Fri 02 Mar 2012 03:26:25 PM PST
+# EESchema Netlist Version 1.1 created  Wed 14 May 2014 04:53:15 PM PDT
 (
- ( /4F345F7F smt_4-pin P1 CONN_4
-  ( 1 /blue )
-  ( 2 /green )
-  ( 3 /red )
-  ( 4 GND )
+ ( /4F345F7F $noname  P1 CONN_4 {Lib=CONN_4}
+  (    1 /blue )
+  (    2 /green )
+  (    3 /red )
+  (    4 GND )
  )
- ( /4F035CCA SM0805 R1 90
-  ( 1 N-000004 )
-  ( 2 GND )
+ ( /4F035E14 $noname  U1 RGB_MULTILED {Lib=RGB_MULTILED}
+  (   A1 /blue )
+  (   A2 /green )
+  (   A3 /red )
+  (   C1 N-000005 )
+  (   C2 N-000002 )
+  (   C3 N-000004 )
  )
- ( /4F035CCF SM0805 R2 90
-  ( 1 N-000002 )
-  ( 2 GND )
+ ( /4F035CD1 $noname  R3 150 {Lib=R}
+  (    1 N-000004 )
+  (    2 GND )
  )
- ( /4F035CD1 SM0805 R3 150
-  ( 1 N-000003 )
-  ( 2 GND )
+ ( /4F035CCF $noname  R2 90 {Lib=R}
+  (    1 N-000002 )
+  (    2 GND )
  )
- ( /4F035E14 RGB_MULTILED U1 RGB_MULTILED
-  ( A1 /blue )
-  ( A2 /green )
-  ( A3 /red )
-  ( C1 N-000004 )
-  ( C2 N-000002 )
-  ( C3 N-000003 )
+ ( /4F035CCA $noname  R1 90 {Lib=R}
+  (    1 N-000005 )
+  (    2 GND )
  )
 )
 *
 { Allowed footprints by component:
-$component R1
+$component R3
  R?
  SM0603
  SM0805
  R?-*
+ SM1206
 $endlist
 $component R2
  R?
  SM0603
  SM0805
  R?-*
+ SM1206
 $endlist
-$component R3
+$component R1
  R?
  SM0603
  SM0805
  R?-*
+ SM1206
 $endlist
 $endfootprintlist
 }
+{ Pin List by Nets
+Net 1 "/blue" "blue"
+ P1 1
+ U1 A1
+Net 2 "" ""
+ U1 C2
+ R2 1
+Net 3 "/red" "red"
+ P1 3
+ U1 A3
+Net 4 "" ""
+ R3 1
+ U1 C3
+Net 5 "" ""
+ R1 1
+ U1 C1
+Net 6 "GND" "GND"
+ P1 4
+ R2 2
+ R3 2
+ R1 2
+Net 7 "/green" "green"
+ U1 A2
+ P1 2
+}
+#End

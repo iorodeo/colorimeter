@@ -1,0 +1,381 @@
+PCBNEW-BOARD Version 1 date Thu 15 May 2014 10:25:05 AM PDT
+
+# Created by Pcbnew(2012-apr-16-27)-stable
+
+$GENERAL
+encoding utf-8
+LayerCount 2
+Ly 1FFF8001
+EnabledLayers 1FFF8001
+Links 5
+NoConn 5
+Di 29849 19849 48251 30151
+Ndraw 7
+Ntrack 0
+Nzone 0
+BoardThickness 630
+Nmodule 8
+Nnets 6
+$EndGENERAL
+
+$SHEETDESCR
+Sheet A4 11700 8267
+Title ""
+Date "15 may 2014"
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndSHEETDESCR
+
+$SETUP
+InternalUnit 0.000100 INCH
+Layers 2
+Layer[0] Back signal
+Layer[15] Front signal
+TrackWidth 250
+TrackClearence 100
+ZoneClearence 200
+TrackMinWidth 80
+DrawSegmWidth 150
+EdgeSegmWidth 150
+ViaSize 350
+ViaDrill 250
+ViaMinSize 350
+ViaMinDrill 200
+MicroViaSize 200
+MicroViaDrill 50
+MicroViasAllowed 0
+MicroViaMinSize 200
+MicroViaMinDrill 50
+TextPcbWidth 120
+TextPcbSize 600 800
+EdgeModWidth 150
+TextModSize 600 600
+TextModWidth 120
+PadSize 787 512
+PadDrill 0
+Pad2MaskClearance 100
+AuxiliaryAxisOrg 0 0
+PcbPlotParams (pcbplotparams (layerselection 284196865) (usegerberextensions true) (excludeedgelayer true) (linewidth 60) (plotframeref false) (viasonmask false) (mode 1) (useauxorigin false) (hpglpennumber 1) (hpglpenspeed 20) (hpglpendiameter 15) (hpglpenoverlay 0) (pscolor true) (psnegative false) (psa4output false) (plotreference true) (plotvalue true) (plotothertext true) (plotinvisibletext false) (padsonsilk false) (subtractmaskfromsilk false) (outputformat 1) (mirror false) (drillshape 1) (scaleselection 1) (outputdirectory gerber_v1.0/))
+$EndSETUP
+
+$EQUIPOT
+Na 0 ""
+St ~
+$EndEQUIPOT
+$EQUIPOT
+Na 1 "/9V"
+St ~
+$EndEQUIPOT
+$EQUIPOT
+Na 2 "/Blue"
+St ~
+$EndEQUIPOT
+$EQUIPOT
+Na 3 "GND"
+St ~
+$EndEQUIPOT
+$EQUIPOT
+Na 4 "N-000006"
+St ~
+$EndEQUIPOT
+$EQUIPOT
+Na 5 "N-000008"
+St ~
+$EndEQUIPOT
+$NCLASS
+Name "Default"
+Desc "This is the default net class."
+Clearance 100
+TrackWidth 250
+ViaDia 350
+ViaDrill 250
+uViaDia 200
+uViaDrill 50
+AddNet ""
+AddNet "/9V"
+AddNet "/Blue"
+AddNet "GND"
+AddNet "N-000006"
+AddNet "N-000008"
+$EndNCLASS
+$MODULE MOUNT_HOLE_4_40
+Po 31000 21000 0 15 4F036C65 4F036949 ~~
+Li MOUNT_HOLE_4_40
+Sc 4F036949
+AR MOUNT_HOLE_4_40
+Op 0 0 0
+T0 0 -800 100 100 0 25 N I 21 N "M1"
+T1 0 1000 100 100 0 25 N I 21 N ""
+$PAD
+Sh "" C 1300 1300 0 0 0
+Dr 1200 0 0
+At STD N 00F0FFFF
+Ne 0 ""
+Po 0 0
+$EndPAD
+$EndMODULE  MOUNT_HOLE_4_40
+$MODULE MOUNT_HOLE_4_40
+Po 31000 29000 0 15 4F036C5E 4F03694F ~~
+Li MOUNT_HOLE_4_40
+Sc 4F03694F
+AR MOUNT_HOLE_4_40
+Op 0 0 0
+T0 0 -800 100 100 0 25 N I 21 N "M2"
+T1 0 -1000 100 100 0 25 N I 21 N ""
+$PAD
+Sh "" C 1300 1300 0 0 0
+Dr 1200 0 0
+At STD N 00F0FFFF
+Ne 0 ""
+Po 0 0
+$EndPAD
+$EndMODULE  MOUNT_HOLE_4_40
+$MODULE MOUNT_HOLE_4_40
+Po 47000 29000 0 15 4F036C57 4F036957 ~~
+Li MOUNT_HOLE_4_40
+Sc 4F036957
+AR MOUNT_HOLE_4_40
+Op 0 0 0
+T0 0 -800 100 100 0 25 N I 21 N "M3"
+T1 0 -1000 100 100 0 25 N I 21 N ""
+$PAD
+Sh "" C 1300 1300 0 0 0
+Dr 1200 0 0
+At STD N 00F0FFFF
+Ne 0 ""
+Po 0 0
+$EndPAD
+$EndMODULE  MOUNT_HOLE_4_40
+$MODULE MOUNT_HOLE_4_40
+Po 47000 21000 0 15 4F036C4D 4F036960 ~~
+Li MOUNT_HOLE_4_40
+Sc 4F036960
+AR MOUNT_HOLE_4_40
+Op 0 0 0
+T0 0 -800 100 100 0 25 N I 21 N "M4"
+T1 0 1000 100 100 0 25 N I 21 N ""
+$PAD
+Sh "" C 1300 1300 0 0 0
+Dr 1200 0 0
+At STD N 00F0FFFF
+Ne 0 ""
+Po 0 0
+$EndPAD
+$EndMODULE  MOUNT_HOLE_4_40
+$MODULE SOT23EBC
+Po 41142 27461 0 15 5374F857 5374F020 ~~
+Li SOT23EBC
+Cd Module CMS SOT23 Transistore EBC
+Kw CMS SOT
+Sc 5374F020
+AR /537445AC
+Op 0 0 0
+At SMD 
+T0 0 -950 300 300 0 75 N V 21 N "Q1"
+T1 -985 -99 300 300 900 75 N I 21 N "NPN"
+DS -600 -150 600 -150 50 21
+DS 600 -150 600 150 50 21
+DS 600 150 -600 150 50 21
+DS -600 150 -600 -150 50 21
+$PAD
+Sh "1" R 360 360 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 5 "N-000008"
+Po -350 -400
+$EndPAD
+$PAD
+Sh "2" R 360 360 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 2 "/Blue"
+Po 350 -400
+$EndPAD
+$PAD
+Sh "3" R 360 360 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 1 "/9V"
+Po 0 400
+$EndPAD
+$SHAPE3D
+Na "smd/cms_sot23.wrl"
+Sc 0.130000 0.150000 0.150000
+Of 0.000000 0.000000 0.000000
+Ro 0.000000 0.000000 0.000000
+$EndSHAPE3D
+$EndMODULE  SOT23EBC
+$MODULE SM0805
+Po 33024 25000 2700 15 5374F84C 5374F129 ~~
+Li SM0805
+Sc 5374F129
+AR /4F035CCA
+Op 0 0 0
+At SMD 
+T0 -1000 24 250 250 3600 50 N V 21 N "R1"
+T1 0 642 250 250 2700 50 N I 21 N "R"
+DC -650 300 -650 250 50 21
+DS -200 300 -600 300 50 21
+DS -600 300 -600 -300 50 21
+DS -600 -300 -200 -300 50 21
+DS 200 -300 600 -300 50 21
+DS 600 -300 600 300 50 21
+DS 600 300 200 300 50 21
+$PAD
+Sh "1" R 350 550 0 0 2700
+Dr 0 0 0
+At SMD N 00888000
+Ne 3 "GND"
+Po -375 0
+$EndPAD
+$PAD
+Sh "2" R 350 550 0 0 2700
+Dr 0 0 0
+At SMD N 00888000
+Ne 4 "N-000006"
+Po 375 0
+$EndPAD
+$SHAPE3D
+Na "smd/chip_cms.wrl"
+Sc 0.100000 0.100000 0.100000
+Of 0.000000 0.000000 0.000000
+Ro 0.000000 0.000000 0.000000
+$EndSHAPE3D
+$EndMODULE  SM0805
+$MODULE LED_5050
+Po 39000 25000 0 15 5374F82A 5374F0DB ~~
+Li LED_5050
+Sc 5374F0DB
+AR /537440C2
+Op 0 0 0
+T0 0 -2283 600 600 0 120 N V 21 N "D1"
+T1 -1992 197 600 600 900 120 N I 21 N "LED_5050"
+DS 984 -1181 984 1181 79 21
+DS 984 1181 -984 1181 79 21
+DS -984 1181 -984 -945 79 21
+DS -984 -945 -551 -1181 79 21
+DS -551 -1181 984 -1181 79 21
+$PAD
+Sh "1" R 787 512 0 0 0
+Dr 0 0 0
+At SMD N 00FC8000
+Ne 0 ""
+Po -866 -630
+$EndPAD
+$PAD
+Sh "6" R 787 512 0 0 0
+Dr 0 0 0
+At SMD N 00FC8000
+Ne 0 ""
+Po 866 -630
+$EndPAD
+$PAD
+Sh "2" R 787 512 0 0 0
+Dr 0 0 0
+At SMD N 00FC8000
+Ne 4 "N-000006"
+Po -866 0
+$EndPAD
+$PAD
+Sh "5" R 787 512 0 0 0
+Dr 0 0 0
+At SMD N 00FC8000
+Ne 5 "N-000008"
+Po 866 0
+$EndPAD
+$PAD
+Sh "3" R 787 512 0 0 0
+Dr 0 0 0
+At SMD N 00FC8000
+Ne 0 ""
+Po -866 630
+$EndPAD
+$PAD
+Sh "4" R 787 512 0 0 0
+Dr 0 0 0
+At SMD N 00FC8000
+Ne 0 ""
+Po 866 630
+$EndPAD
+$EndMODULE  LED_5050
+$MODULE smt_4-pin
+Po 45400 25144 900 15 5374F865 5374F63F ~~
+Li smt_4-pin
+Sc 5374F63F
+AR /4F345F7F
+Op 0 0 0
+T0 2801 -26 600 600 1800 120 N V 21 N "P1"
+T1 144 -3077 600 600 900 120 N I 21 N "CONN_4"
+DS -2200 -2600 2200 -2600 150 21
+DS 2200 -2600 2200 2600 150 21
+DS 2200 2600 -2200 2600 150 21
+DS -2200 2600 -2200 -2600 150 21
+$PAD
+Sh "1" R 500 2500 0 0 900
+Dr 0 0 0
+At SMD N 00888000
+Ne 2 "/Blue"
+Po -1500 -998
+$EndPAD
+$PAD
+Sh "2" R 500 2500 0 0 900
+Dr 0 0 0
+At SMD N 00888000
+Ne 1 "/9V"
+Po -500 998
+$EndPAD
+$PAD
+Sh "3" R 500 2500 0 0 900
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po 500 -998
+$EndPAD
+$PAD
+Sh "4" R 500 2500 0 0 900
+Dr 0 0 0
+At SMD N 00888000
+Ne 3 "GND"
+Po 1500 998
+$EndPAD
+$EndMODULE  smt_4-pin
+$TEXTPCB
+Te "GND"
+Po 41976 22924 394 394 79 0
+De 21 1 0 Normal C
+$EndTEXTPCB
+$TEXTPCB
+Te "IO Rodeo Inc."
+Po 39000 21000 600 800 120 0
+De 21 1 0 Normal C
+$EndTEXTPCB
+$TEXTPCB
+Te "Colorimeter LED Board D v1.0"
+Po 39250 29000 600 800 120 0
+De 21 1 0 Normal C
+$EndTEXTPCB
+$DRAWSEGMENT
+Po 0 30000 20000 48000 20000 150
+De 28 0 900 0 0
+$EndDRAWSEGMENT
+$DRAWSEGMENT
+Po 0 48000 30000 48000 20000 150
+De 28 0 900 0 0
+$EndDRAWSEGMENT
+$DRAWSEGMENT
+Po 0 30000 30000 30000 20000 150
+De 28 0 900 0 0
+$EndDRAWSEGMENT
+$DRAWSEGMENT
+Po 0 30000 30000 48000 30000 150
+De 28 0 900 0 0
+$EndDRAWSEGMENT
+$TRACK
+$EndTRACK
+$ZONE
+$EndZONE
+$EndBOARD

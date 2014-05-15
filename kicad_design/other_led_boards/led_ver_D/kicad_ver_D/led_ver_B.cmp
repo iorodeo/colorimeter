@@ -1,0 +1,31 @@
+Cmp-Mod V01 Genere par PcbNew le Thu 15 May 2014 10:12:42 AM PDT
+
+BeginCmp
+TimeStamp = /537440C2;
+Reference = D1;
+ValeurCmp = LED_5050;
+IdModule  = LED_5050;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F345F7F;
+Reference = P1;
+ValeurCmp = CONN_4;
+IdModule  = smt_4-pin;
+EndCmp
+
+BeginCmp
+TimeStamp = /537445AC;
+Reference = Q1;
+ValeurCmp = NPN;
+IdModule  = SOT23EBC;
+EndCmp
+
+BeginCmp
+TimeStamp = /4F035CCA;
+Reference = R1;
+ValeurCmp = R;
+IdModule  = SM0805;
+EndCmp
+
+EndListe

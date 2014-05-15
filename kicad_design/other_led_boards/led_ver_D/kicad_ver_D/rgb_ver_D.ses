@@ -1,0 +1,142 @@
+
+(session led_ver_B.ses
+  (base_design led_ver_B.dsn)
+  (placement
+    (resolution mil 10)
+    (component MOUNT_HOLE_4_40
+      (place M1 31000 -21000 front 0)
+      (place M2 31000 -29000 front 0)
+      (place M3 47000 -29000 front 0)
+      (place M4 47000 -21000 front 0)
+    )
+    (component SOT23EBC
+      (place Q1 41142 -27461 front 0)
+    )
+    (component SM0805
+      (place R1 33024 -25000 front 270)
+    )
+    (component LED_5050
+      (place D1 39000 -25000 front 0)
+    )
+    (component "smt_4-pin"
+      (place P1 45400 -25144 front 90)
+    )
+  )
+  (was_is
+  )
+  (routes 
+    (resolution mil 10)
+    (parser
+      (host_cad "KiCad's Pcbnew")
+      (host_version "(2012-apr-16-27)-stable")
+    )
+    (library_out 
+      (padstack "Via[0-1]_35:25_mil"
+        (shape
+          (circle Front 350 0 0)
+        )
+        (shape
+          (circle Back 350 0 0)
+        )
+        (attach off)
+      )
+      (padstack "Via[0-1]_35:0_mil"
+        (shape
+          (circle Front 350 0 0)
+        )
+        (shape
+          (circle Back 350 0 0)
+        )
+        (attach off)
+      )
+    )
+    (network_out 
+      (net /9V
+        (wire
+          (path Front 250
+            46398 -25644
+            44898 -25644
+          )
+        )
+        (wire
+          (path Front 250
+            44898 -25644
+            44898 -26072
+            44970 -26144
+            45822 -26144
+            45894 -26216
+            45894 -27697
+            45730 -27861
+            41142 -27861
+          )
+        )
+      )
+      (net /Blue
+        (wire
+          (path Front 250
+            41492 -27061
+            41922 -27061
+          )
+        )
+        (wire
+          (path Front 250
+            44402 -26644
+            42339 -26644
+            41922 -27061
+          )
+        )
+      )
+      (net GND
+        (wire
+          (path Front 250
+            33024 -24625
+            33024 -24200
+          )
+        )
+        (wire
+          (path Front 250
+            46398 -23644
+            33580 -23644
+            33024 -24200
+          )
+        )
+      )
+      (net "N-000006"
+        (wire
+          (path Front 250
+            38134 -25000
+            37491 -25000
+          )
+        )
+        (wire
+          (path Front 250
+            37491 -25000
+            37116 -25375
+            33024 -25375
+          )
+        )
+      )
+      (net "N-000008"
+        (wire
+          (path Front 250
+            40792 -27061
+            40792 -26631
+          )
+        )
+        (wire
+          (path Front 250
+            39866 -25000
+            40510 -25000
+          )
+        )
+        (wire
+          (path Front 250
+            40510 -25000
+            40510 -26349
+            40792 -26631
+          )
+        )
+      )
+    )
+  )
+)

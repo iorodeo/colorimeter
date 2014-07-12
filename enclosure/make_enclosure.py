@@ -10,7 +10,8 @@ INCH2MM = 25.4
 #x,y,z = 2.5*INCH2MM, 3.0*INCH2MM, 1.75*INCH2MM
 x,y,z = 2.61*INCH2MM, 3.0*INCH2MM, 1.75*INCH2MM
 wall_thickness = 3.0 
-cuvette_size = 12.35,12.35
+cuvette_size = 12.35,12.35           #REGULAR
+#cuvette_size = 14.00,19.70          #LARGE
 cuvette_offset = -0.11*INCH2MM
 
 hole_list = []

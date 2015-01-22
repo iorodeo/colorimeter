@@ -68,7 +68,10 @@ class MainWindowCommon(QtGui.QMainWindow):
         self.isCalibrated = False
         self.aboutCaption = 'About'
         self.aboutText = 'About Default Text'
+        # WBD DEVEL
         self.sensorMode = 'StandardRGBLED'
+        #self.sensorMode = 'CustomLEDVerB'
+        #self.sensorMode = 'CustomLEDVerC'
         self.numSamples = None
 
         # Set default port based on system
@@ -270,7 +273,11 @@ class MainWindowCommon(QtGui.QMainWindow):
 
     def getModeConfig(self,sensorMode=None):
         if sensorMode == None:
-            sensorMode = self.sensorMode
+            try:
+                sensorMode = self.sensorMode
+            except AttributeError:
+                # Dummy value used when setting up widges prior to initialization
+                sensorMode = 'StandardRGBLED' 
         return constants.MODE_CONFIG_DICT[sensorMode]
 
     def setDeviceColorMode(self,colorMode): 
@@ -390,8 +397,9 @@ class MainWindowWithTable(MainWindowCommon):
         self.actionEditTestSolutions.triggered.connect(self.editTestSolutions_Callback)
 
     def initialize(self):
-        self.setLED(0) # default is first led 
+        #self.setLED(0) # default is first led 
         super(MainWindowWithTable,self).initialize()
+        self.setLED(0) # default is first led 
         self.lastLoadDir = self.userHome
         self.tableWidget.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
         self.checkUserTestSolutionDir()

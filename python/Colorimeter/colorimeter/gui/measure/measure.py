@@ -25,8 +25,8 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
         super(MeasureMainWindow,self).__init__(parent)
         self.setupUi(self)
         self.createActionGroup()
-        self.initialize()
         self.connectActions()
+        self.initialize()
 
     def createActionGroup(self):
         self.sampleUnitsActionGroup = QtGui.QActionGroup(self)
@@ -80,6 +80,10 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
         self.setSampleUnits('um')
         self.updateWidgetEnabled()
 
+    def connectClicked_Callback(self):
+        super(MeasureMainWindow,self).connectClicked_Callback()
+        self.updateTestSolution(self.testSolutionIndex)
+
     def coeffEditingFinished_Callback(self):
         value = self.coefficientLineEdit.text()
         value = float(value)
@@ -103,7 +107,13 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
             self.populateTestSolutionComboBox()
 
     def testSolutionChanged_Callback(self,index):
-        if index != self.testSolutionIndex:
+        try:
+            testSolutionIndex = self.testSolutionIndex
+        except AttributeError:
+            # Dummy value used prior to initializion - when setting up widgets
+            testSolutionIndex = 0
+
+        if index != testSolutionIndex:
             erase_msg = "Change test solution and clear all data?"
             rsp = self.tableWidget.clean(msg=erase_msg)
             if rsp:
@@ -123,11 +133,7 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
     def updateTestSolution(self,index):
         if index <= 0:
             self.coeffLEDWidget.setEnabled(True)
-            if self.isStandardRgbLEDMode() or self.isCustomVerC_LEDMode():
-                self.setLEDRadioButtonsEnabled(True)
-            else:
-                self.setLEDRadioButtonsEnabled(False)
-
+            self.setLEDRadioButtonsEnabled(True)
             self.sampleUnitsActionGroup.setEnabled(True)
             self.coefficientLineEdit.setText("")
             self.coeff = None

@@ -30,15 +30,16 @@ def getPolynomialFit(xList,yList,order=3,numPts=500):
 
     # Fit data and remove any non-monotonic section  
     fitCoeff, xFit, yFit = polyFitThruZero(xTrim,yTrim,order,numPts) 
+
     ind = numpy.arange(yFit.shape[0])
     yFitDiff = yFit[1:] - yFit[:-1]
-    maskNeg = yFitDiff < 0
-    indNeg =ind[maskNeg]
+    maskPos = yFitDiff > 0
+    indPos = ind[maskPos]
+    indTrim = getLargestContiguousBlock(indPos)
 
     try:
-        firstNeg= indNeg[0]
-        xFitTrim = xFit[:firstNeg]
-        yFitTrim = yFit[:firstNeg]
+        xFitTrim = xFit[indTrim]
+        yFitTrim = yFit[indTrim]
     except IndexError:
         xFitTrim = xFit
         yFitTrim = yFit
@@ -50,6 +51,22 @@ def getPolynomialFit(xList,yList,order=3,numPts=500):
     fitCoeff = (interpFunc, yFitMin, yFitMax)
     return fitCoeff, xFitTrim, yFitTrim
     
+
+def getLargestContiguousBlock(ind):
+    contiguousBlockList = []
+    currentBlock = [ind[0]]
+    for i in range(1,ind.shape[0]):
+        diff = ind[i] - ind[i-1]
+        if diff > 1:
+            congituousBlockList.append(list(currentBlock))
+            currentBlock = [ind[i]]
+        else:
+            currentBlock.append(ind[i])
+    contiguousBlockList.append(currentBlock)
+    sizeList = [(len(block),block) for block in contiguousBlockList]
+    maxBlockSize, maxBlock = max(sizeList)
+    return maxBlock
+
 
 def getValueFromFit(fitCoeff,inputValue,numPts=500):
     interpFunc, minVal, maxVal = fitCoeff

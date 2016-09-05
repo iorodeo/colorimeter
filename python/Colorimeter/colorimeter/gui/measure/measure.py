@@ -60,6 +60,7 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
         self.coeff = None
         self.fitType = 'linear'
         self.fitParam = None
+        self.fitValues = None
         self.testSolutionIndex = 1
         self.user_TestSolutionDict = {}
         self.default_TestSolutionDict = {} 
@@ -153,6 +154,7 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
                 return
             self.fitType = data['fitType']
             self.fitParams = data['fitParams']
+            self.fitValues = data['values']
             self.setSampleUnits(data['concentrationUnits'])
             self.coeff = getCoefficientFromData(data,self.fitType,self.fitParams)
             if self.fitType == 'linear':
@@ -170,11 +172,17 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
 
     def getMeasurement(self):
         if constants.DEVEL_FAKE_MEASURE:    
-            absobValue = random.random()
+            absorbValue = random.random()
+            #  TestFit
+            #  ----------------------------------------
+            #for concIn, abso in self.fitValues:
+            #    concOut = self.getConcentration(abso)
+            #    print(abso, concIn, concOut)
         else:
             modeConfig = self.getModeConfig()
             ledDict = modeConfig['LED'][self.currentLED]
             dummy0, dummy1, absorbValue = self.dev.getMeasurement(color=ledDict['devColor'])
+
         try:
             concValue = self.getConcentration(absorbValue)
         except ValueError, err: 
@@ -185,6 +193,7 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
         digits = self.getSignificantDigits()
         concStr = '{value:1.{digits}f}'.format(value=concValue,digits=digits)
         self.measurePushButton.setFlat(False)
+
         self.tableWidget.addData('',concStr,selectAndEdit=True)
 
     def getConcentration(self,absorb):

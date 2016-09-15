@@ -403,7 +403,7 @@
      <x>0</x>
      <y>0</y>
      <width>666</width>
-     <height>23</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -424,17 +424,18 @@
      <addaction name="actionIncludeUserTestSolutions"/>
      <addaction name="actionIncludeDefaultTestSolutions"/>
     </widget>
+    <widget class="QMenu" name="menuSignificantDigits">
+     <property name="title">
+      <string>Significant Digits</string>
+     </property>
+    </widget>
     <widget class="QMenu" name="menuSample_Units">
      <property name="title">
       <string>Sample Units</string>
      </property>
      <addaction name="actionSampleUnitsUM"/>
      <addaction name="actionSampleUnitsPPM"/>
-    </widget>
-    <widget class="QMenu" name="menuSignificantDigits">
-     <property name="title">
-      <string>Significant Digits</string>
-     </property>
+     <addaction name="actionSampleUnitsPH"/>
     </widget>
     <addaction name="menuSample_Units"/>
     <addaction name="menuSignificantDigits"/>
@@ -582,6 +583,14 @@
    </property>
    <property name="text">
     <string>Two custom LEDs (Ver. C)</string>
+   </property>
+  </action>
+  <action name="actionSampleUnitsPH">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>pH</string>
    </property>
   </action>
  </widget>

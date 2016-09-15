@@ -43,11 +43,12 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
         self.fitTypeActionGroup.setExclusive(True)
         self.fitTypeActionGroup.triggered.connect(self.fitTypeChanged_Callback)
 
-        self.concUnitsActionGroup = QtGui.QActionGroup(self)
-        self.concUnitsActionGroup.addAction(self.actionConcentrationUnitsUM)
-        self.concUnitsActionGroup.addAction(self.actionConcentrationUnitsPPM)
-        self.concUnitsActionGroup.setExclusive(True)
-        self.concUnitsActionGroup.triggered.connect(self.concUnitsChanged_Callback)
+        self.unitsActionGroup = QtGui.QActionGroup(self)
+        self.unitsActionGroup.addAction(self.actionUnitsUM)
+        self.unitsActionGroup.addAction(self.actionUnitsPPM)
+        self.unitsActionGroup.addAction(self.actionUnitsPH)
+        self.unitsActionGroup.setExclusive(True)
+        self.unitsActionGroup.triggered.connect(self.unitsChanged_Callback)
 
         itemDelegate = DoubleItemDelegate(self.tableWidget)
         self.tableWidget.setItemDelegateForColumn(0,itemDelegate)
@@ -60,7 +61,7 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
         self.tableWidget.updateFunc = self.updatePlot
         self.updateWidgetEnabled()
         self.setFitType('linear',None)
-        self.setConcentrationUnits('uM')
+        self.setUnits('uM')
 
     def importData_Callback(self):
         userSolutionDict = import_export.loadUserTestSolutionDict(self.userHome,tag='U')
@@ -73,7 +74,7 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
             self.setLEDByText(ledText)
             self.setTableData(data['values'])
             self.setFitType(data['fitType'],data['fitParams'])
-            self.setConcentrationUnits(data['concentrationUnits'])
+            self.setUnits(data['units'])
         self.updateWidgetEnabled()
         self.updatePlot(create=False)
         
@@ -131,7 +132,7 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
                 'mode': self.sensorMode, 
                 'values': [map(float,x) for x in dataList],
                 'fitType': fitType,
-                'concentrationUnits': self.getConcentrationUnits(),
+                'units': self.getUnits(),
                 }
         if fitParams is not None:
             try:
@@ -146,8 +147,8 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
     def fitTypeChanged_Callback(self):
         self.updatePlot()
 
-    def concUnitsChanged_Callback(self):
-        self.setConcentrationStr()
+    def unitsChanged_Callback(self):
+        self.setUnitStr()
         self.updatePlot()
 
     def updatePlot(self,create=False):
@@ -198,8 +199,11 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
 
         ax.plot(xList,yList,'ob')
         ax.grid('on')
-        units = self.getConcentrationUnits()
-        ax.set_xlabel('Concentration ({0})'.format(units))
+        units = self.getUnits()
+        if units in ('um', 'ppm'):
+            ax.set_xlabel('Concentration ({0})'.format(units))
+        else:
+            ax.set_xlabel('({0})'.format(units))
         currentLEDText = self.getLEDText()
         ax.set_ylabel('Absorbance ('+currentLEDText+' led)')
         if haveSlope:
@@ -231,8 +235,13 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
                 '# Colorimeter Data', 
                 '# LED {0}'.format(ledInfoStr),
                 '# -----------------------------', 
-                '# Concentration | Absorbance', 
                 ]
+        units = self.getUnits()
+        if units in ('um','ppm'):
+            headerList.append('# Concentration | Absorbance')
+        else:
+            headerList.append('# PH | Absorbance')
+
         headerStr = os.linesep.join(headerList)
         return headerStr
 
@@ -304,28 +313,38 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
             msgText += ' - must have at least 2 points'
             QtGui.QMessageBox.warning(self,msgTitle, msgText)
 
-    def getConcentrationUnits(self):
-        if self.actionConcentrationUnitsUM.isChecked():
+    def getUnits(self):
+        if self.actionUnitsUM.isChecked():
             return 'uM'
-        else:
+        elif self.actionUnitsPPM.isChecked():
             return 'ppm'
+        else:
+            return 'pH'
 
-    def setConcentrationUnits(self,units):
+    def setUnits(self,units):
         if  units.lower() == 'um':
-            self.actionConcentrationUnitsUM.setChecked(True)
-            self.actionConcentrationUnitsPPM.setChecked(False)
+            self.actionUnitsUM.setChecked(True)
+            self.actionUnitsPPM.setChecked(False)
+            self.actionUnitsPH.setChecked(False)
+        elif units.lower() == 'ppm':
+            self.actionUnitsUM.setChecked(False)
+            self.actionUnitsPPM.setChecked(True)
+            self.actionUnitsPH.setChecked(False)
         else:
-            self.actionConcentrationUnitsUM.setChecked(False)
-            self.actionConcentrationUnitsPPM.setChecked(True)
-        self.setConcentrationStr()
+            self.actionUnitsUM.setChecked(False)
+            self.actionUnitsPPM.setChecked(False)
+            self.actionUnitsPH.setChecked(True)
+        self.setUnitStr()
 
-    def setConcentrationStr(self):
-        concUnits = self.getConcentrationUnits().lower()
-        if concUnits == 'um':
-            concentrationStr = QtCore.QString.fromUtf8("Concentration (\xc2\xb5M)")
+    def setUnitStr(self):
+        units = self.getUnits().lower()
+        if units == 'um':
+            unitStr = QtCore.QString.fromUtf8("Concentration (\xc2\xb5M)")
+        elif units == 'ppm':
+            unitStr = QtCore.QString('Concentration (ppm)')
         else:
-            concentrationStr = QtCore.QString('Concentration (ppm)')
-        self.tableWidget.setHorizontalHeaderLabels((concentrationStr,'Absorbance')) 
+            unitStr = QtCore.QString('(pH)')
+        self.tableWidget.setHorizontalHeaderLabels((unitStr,'Absorbance')) 
 
 def dataListToFloat(dataList):
     dataListFloat = []

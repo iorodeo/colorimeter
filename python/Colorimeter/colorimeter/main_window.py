@@ -442,7 +442,7 @@ class MainWindowWithTable(MainWindowCommon):
         if not filename:
             return 
         self.lastLoadDir =  os.path.split(filename)[0]
-        dataList, ledColor, sensorMode = self.loadDataFromFile(filename)
+        dataList, ledColor, sensorMode, units = self.loadDataFromFile(filename)
 
         if ledColor is None:
             msgTitle = 'Import Warning'
@@ -468,6 +468,8 @@ class MainWindowWithTable(MainWindowCommon):
                 msgTitle = 'Import Warning'
                 msgText = 'Unknown LED color for given mode, {0}, in data file'.format(ledColor)
                 QtGui.QMessageBox.warning(self,msgTitle, msgText)
+
+        self.setUnits(units);
 
         self.setTableData(dataList)
         self.updateWidgetEnabled()
@@ -498,35 +500,43 @@ class MainWindowWithTable(MainWindowCommon):
         dataList = []
         ledColor = None
         sensorMode = None
+        units = 'uM'
 
         for line in fileLines:
             line = line.split()
             if not line:
                 continue
-            if 'LED' in line:
-                colorIndex = line.index('LED')+1
-                sensorModeIndex = colorIndex+1
-                try:
-                    ledColor = line[colorIndex]
-                except IndexError, e:
-                    continue
-                try:
-                    sensorMode = line[sensorModeIndex]
-                except IndexError, e:
-                    continue
-                if ledColor == 'custom':
-                    # For backwards compatibility
-                    ledColor = 'D1'
-                    sensorMode = 'CustomLEDVerB'
-                    continue
-                continue
             if line[0] == '#':
+                if 'LED' in line:
+                    colorIndex = line.index('LED')+1
+                    sensorModeIndex = colorIndex+1
+                    try:
+                        ledColor = line[colorIndex]
+                    except IndexError, e:
+                        continue
+                    try:
+                        sensorMode = line[sensorModeIndex]
+                    except IndexError, e:
+                        continue
+                    if ledColor == 'custom':
+                        # For backwards compatibility
+                        ledColor = 'D1'
+                        sensorMode = 'CustomLEDVerB'
+                        continue
+                    continue
+                if ('Label' in line) or ('Absorbance' in line):
+                    if 'uM' in line:
+                        units = 'uM'
+                    if 'ppm' in line:
+                        units = 'ppm'
+                    if 'pH' in line:
+                        units = 'pH'
                 continue
             if len(line) >= 2: 
                 x = ' '.join(line[:-1])
                 y = line[-1]
             dataList.append((x,y))
-        return dataList, ledColor, sensorMode
+        return dataList, ledColor, sensorMode, units
 
     def plotPushButtonClicked_Callback(self):
         self.updatePlot(create=True)

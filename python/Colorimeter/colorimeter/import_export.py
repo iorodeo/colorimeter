@@ -85,8 +85,11 @@ def importTestSolutionData(fileName):
         data['fitType'] = 'linear'
     if not 'fitParams' in data: 
         data['fitParams'] = None
-    if not 'concentrationUnits' in data:
+    if (not 'concentrationUnits' in data) and (not 'units' in data):
         data['concentrationUnits'] = 'uM'
+    if 'concentrationUnits' in data:
+        data['units'] = data['concentrationUnits']
+        del data['concentrationUnits']
     if data['fitParams'] in ('None', 'none'):
         data['fitParams'] = None
     return data

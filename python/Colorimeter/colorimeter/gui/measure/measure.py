@@ -29,10 +29,11 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
         self.initialize()
 
     def createActionGroup(self):
-        self.sampleUnitsActionGroup = QtGui.QActionGroup(self)
-        self.sampleUnitsActionGroup.addAction(self.actionSampleUnitsUM)
-        self.sampleUnitsActionGroup.addAction(self.actionSampleUnitsPPM)
-        self.sampleUnitsActionGroup.setExclusive(True)
+        self.unitsActionGroup = QtGui.QActionGroup(self)
+        self.unitsActionGroup.addAction(self.actionSampleUnitsUM)
+        self.unitsActionGroup.addAction(self.actionSampleUnitsPPM)
+        self.unitsActionGroup.addAction(self.actionSampleUnitsPH)
+        self.unitsActionGroup.setExclusive(True)
 
     def connectActions(self):
         super(MeasureMainWindow,self).connectActions()
@@ -53,7 +54,7 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
         coeffValidator.fixup = self.coeffFixup
         self.coefficientLineEdit.setValidator(coeffValidator)
 
-        self.sampleUnitsActionGroup.triggered.connect(self.sampleUnitsChanged_Callback)
+        self.unitsActionGroup.triggered.connect(self.unitsChanged_Callback)
 
     def initialize(self):
         super(MeasureMainWindow,self).initialize()
@@ -78,7 +79,7 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
         self.populateTestSolutionComboBox()
         self.testSolutionComboBox.setCurrentIndex(self.testSolutionIndex)
 
-        self.setSampleUnits('um')
+        self.setUnits('um')
         self.updateWidgetEnabled()
 
     def connectClicked_Callback(self):
@@ -125,22 +126,25 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
                         self.testSolutionIndex
                         )
 
-    def sampleUnitsChanged_Callback(self):
+    def unitsChanged_Callback(self):
         if self.actionSampleUnitsUM.isChecked():
-            self.setSampleUnits('uM')
+            self.setUnits('uM')
+        elif self.actionSampleUnitsPPM.isChecked():
+            self.setUnits('ppm')
         else:
-            self.setSampleUnits('ppm')
+            self.setUnits('pH')
+
 
     def updateTestSolution(self,index):
         if index <= 0:
             self.coeffLEDWidget.setEnabled(True)
             self.setLEDRadioButtonsEnabled(True)
-            self.sampleUnitsActionGroup.setEnabled(True)
+            self.unitsActionGroup.setEnabled(True)
             self.coefficientLineEdit.setText("")
             self.coeff = None
         else:
             self.coeffLEDWidget.setEnabled(False)
-            self.sampleUnitsActionGroup.setEnabled(False)
+            self.unitsActionGroup.setEnabled(False)
             itemText = str(self.testSolutionComboBox.itemText(index))
             testSolutionDict = {}
             testSolutionDict.update(self.user_TestSolutionDict)
@@ -155,7 +159,7 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
             self.fitType = data['fitType']
             self.fitParams = data['fitParams']
             self.fitValues = data['values']
-            self.setSampleUnits(data['concentrationUnits'])
+            self.setUnits(data['units'])
             self.coeff = getCoefficientFromData(data,self.fitType,self.fitParams)
             if self.fitType == 'linear':
                 self.coefficientLineEdit.setText('{0:1.1f}'.format(1.0e6*self.coeff))
@@ -175,33 +179,34 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
             absorbValue = random.random()
             #  TestFit
             #  ----------------------------------------
-            #for concIn, abso in self.fitValues:
-            #    concOut = self.getConcentration(abso)
-            #    print(abso, concIn, concOut)
+            #for valueIn, abso in self.fitValues:
+            #    valueOut = self.absorbanceToUnit(abso)
+            #    print(abso, valueIn, valueOut)
         else:
             modeConfig = self.getModeConfig()
             ledDict = modeConfig['LED'][self.currentLED]
             dummy0, dummy1, absorbValue = self.dev.getMeasurement(color=ledDict['devColor'])
 
         try:
-            concValue = self.getConcentration(absorbValue)
+            measurementValue = self.absorbanceToUnit(absorbValue)
         except ValueError, err: 
             msgTitle = 'Range Error'
             msgText = str(err)
             QtGui.QMessageBox.warning(self,msgTitle, msgText)
             return
         digits = self.getSignificantDigits()
-        concStr = '{value:1.{digits}f}'.format(value=concValue,digits=digits)
+        measurementStr = '{value:1.{digits}f}'.format(value=measurementValue,digits=digits)
         self.measurePushButton.setFlat(False)
 
-        self.tableWidget.addData('',concStr,selectAndEdit=True)
+        self.tableWidget.addData('',measurementStr,selectAndEdit=True)
 
-    def getConcentration(self,absorb):
+    def absorbanceToUnit(self,absorb):
         if self.fitType == 'linear':
-            conc = absorb/self.coeff
+            value = absorb/self.coeff
         else:
-            conc = nonlinear_fit.getValueFromFit(self.coeff,absorb)
-        return conc
+            value = nonlinear_fit.getValueFromFit(self.coeff,absorb)
+        return value
+
 
     def getSaveFileHeader(self):
         timeStr = time.strftime('%Y-%m-%d %H:%M:%S %Z') 
@@ -211,8 +216,11 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
                 '# Colorimeter Data', 
                 '# LED {0}'.format(ledInfoStr),
                 '# ----------------------------', 
-                '# Label    |    Concentration ',
                 ]
+        if self.units.lower() in ('ppm','um'):
+            headerList.append('# Label    |    Concentration ')
+        else:
+            headerList.append('# Label    |    pH ')
         headerStr = os.linesep.join(headerList)
         return headerStr
 
@@ -243,21 +251,27 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
             self.closeFigure()
             return 
         # Unpack data and create plot 
-        labelList, concList = zip(*dataList)
-        posList = range(1,len(concList)+1)
+        labelList, sampleList = zip(*dataList)
+        posList = range(1,len(sampleList)+1)
         xlim = (
                 posList[0]  - 0.5*constants.PLOT_BAR_WIDTH, 
                 posList[-1] + 1.5*constants.PLOT_BAR_WIDTH,
                 )
-        ylim = (0,constants.PLOT_YLIM_ADJUST*max(concList))
+        ylim = (0,constants.PLOT_YLIM_ADJUST*max(sampleList))
         plt.clf()
         self.fig = plt.figure(constants.PLOT_FIGURE_NUM)
-        self.fig.canvas.manager.set_window_title('Colorimeter Measurement: Concentration Plot')
+        if self.units.lower() in ('um','ppm'):
+            titleStr = 'Colorimeter Measurement: Concentration Plot'
+            yLabelStr = 'Concentration ({0})'.format(self.units)
+        else:
+            titleStr = 'Colorimeter Measurement: PH'
+            yLabelStr = '(PH)'
+        self.fig.canvas.manager.set_window_title(titleStr)
         ax = self.fig.add_subplot(111)
-        ax.bar(posList,concList,width=constants.PLOT_BAR_WIDTH,color='b',linewidth=2)
+        ax.bar(posList,sampleList,width=constants.PLOT_BAR_WIDTH,color='b',linewidth=2)
 
         digits = self.getSignificantDigits()
-        for pos, value in zip(posList, concList): 
+        for pos, value in zip(posList, sampleList): 
             textXPos = pos + 0.5*constants.PLOT_BAR_WIDTH
             textYPos = value + constants.PLOT_TEXT_Y_OFFSET
             valueStr = '{value:1.{digits}f}'.format(value=value,digits=digits)
@@ -267,7 +281,7 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
         ax.set_ylim(*ylim)
         ax.set_xticks([x+0.5*constants.PLOT_BAR_WIDTH for x in posList])
         ax.set_xticklabels(labelList)
-        ax.set_ylabel('Concentration')
+        ax.set_ylabel(yLabelStr)
         ax.set_xlabel('Samples')
         plt.draw() 
 
@@ -347,18 +361,24 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
                 return False
         return True
 
-    def setSampleUnits(self,units):
+    def setUnits(self,units):
         if units.lower() == 'um':
             self.actionSampleUnitsUM.setChecked(True)
             self.actionSampleUnitsPPM.setChecked(False)
-            concentrationStr = QtCore.QString.fromUtf8("Concentration (\xc2\xb5M)")
-            self.sampleUnits = units
-        else:
+            self.actionSampleUnitsPH.setChecked(False)
+            unitStr = QtCore.QString.fromUtf8("Concentration (\xc2\xb5M)")
+        elif units.lower() == 'ppm':
             self.actionSampleUnitsUM.setChecked(False)
             self.actionSampleUnitsPPM.setChecked(True)
-            concentrationStr = QtCore.QString('Concentration (ppm)')
-            self.sampleUnits = units
-        self.tableWidget.setHorizontalHeaderLabels(('Sample', concentrationStr)) 
+            self.actionSampleUnitsPH.setChecked(False)
+            unitStr = QtCore.QString('Concentration (ppm)')
+        else:
+            self.actionSampleUnitsUM.setChecked(False)
+            self.actionSampleUnitsPPM.setChecked(False)
+            self.actionSampleUnitsPH.setChecked(True)
+            unitStr = QtCore.QString('(pH)')
+        self.units = units
+        self.tableWidget.setHorizontalHeaderLabels(('Sample', unitStr)) 
 
     def setMode(self,value):
         super(MeasureMainWindow,self).setMode(value)

@@ -295,7 +295,7 @@
      <x>0</x>
      <y>0</y>
      <width>665</width>
-     <height>23</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -319,12 +319,13 @@
      <addaction name="actionFitTypePolynomial4"/>
      <addaction name="actionFitTypePolynomial5"/>
     </widget>
-    <widget class="QMenu" name="menuConcentrationUnits">
+    <widget class="QMenu" name="menuUnits">
      <property name="title">
-      <string>Concentration Units</string>
+      <string>Units</string>
      </property>
-     <addaction name="actionConcentrationUnitsUM"/>
-     <addaction name="actionConcentrationUnitsPPM"/>
+     <addaction name="actionUnitsUM"/>
+     <addaction name="actionUnitsPPM"/>
+     <addaction name="actionUnitsPH"/>
     </widget>
     <widget class="QMenu" name="menuSignificantDigits">
      <property name="title">
@@ -335,7 +336,7 @@
     <addaction name="actionImport"/>
     <addaction name="actionEditTestSolutions"/>
     <addaction name="menuFitType"/>
-    <addaction name="menuConcentrationUnits"/>
+    <addaction name="menuUnits"/>
     <addaction name="menuSignificantDigits"/>
    </widget>
    <widget class="QMenu" name="menu_Help">
@@ -409,7 +410,7 @@
     <string>Polynomial (order=2)</string>
    </property>
   </action>
-  <action name="actionConcentrationUnitsUM">
+  <action name="actionUnitsUM">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -417,7 +418,7 @@
     <string>uM</string>
    </property>
   </action>
-  <action name="actionConcentrationUnitsPPM">
+  <action name="actionUnitsPPM">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -503,6 +504,14 @@
    </property>
    <property name="text">
     <string>Two custom LEDs (Ver. C)</string>
+   </property>
+  </action>
+  <action name="actionUnitsPH">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>pH</string>
    </property>
   </action>
  </widget>

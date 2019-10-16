@@ -6,12 +6,13 @@ import time
 import numpy
 import matplotlib
 import matplotlib.pyplot as plt 
-plt.ion()
+#plt.ion()
 
-from PyQt4 import QtCore
-from PyQt4 import QtGui
+from PyQt5 import QtCore
+from PyQt5 import QtGui
+from PyQt5 import QtWidgets
 
-from plot_ui import Ui_MainWindow 
+from .plot_ui import Ui_MainWindow 
 from colorimeter import constants
 from colorimeter import import_export 
 from colorimeter import standard_curve
@@ -34,7 +35,7 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
         self.actionImport.triggered.connect(self.importData_Callback)
         self.actionImport.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_I)
 
-        self.fitTypeActionGroup = QtGui.QActionGroup(self)
+        self.fitTypeActionGroup = QtWidgets.QActionGroup(self)
         self.fitTypeActionGroup.addAction(self.actionFitTypeLinear)
         self.fitTypeActionGroup.addAction(self.actionFitTypePolynomial2)
         self.fitTypeActionGroup.addAction(self.actionFitTypePolynomial3)
@@ -43,7 +44,7 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
         self.fitTypeActionGroup.setExclusive(True)
         self.fitTypeActionGroup.triggered.connect(self.fitTypeChanged_Callback)
 
-        self.unitsActionGroup = QtGui.QActionGroup(self)
+        self.unitsActionGroup = QtWidgets.QActionGroup(self)
         self.unitsActionGroup.addAction(self.actionUnitsUM)
         self.unitsActionGroup.addAction(self.actionUnitsPPM)
         self.unitsActionGroup.addAction(self.actionUnitsPH)
@@ -87,7 +88,7 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
                 msgTitle = 'Export Error'
                 msgText = 'insufficient data for export w/ linear fit' 
                 msgText += ' - must have at least 2 points'
-                QtGui.QMessageBox.warning(self,msgTitle, msgText)
+                QtWidgets.QMessageBox.warning(self,msgTitle, msgText)
                 return
 
         elif fitType == 'polynomial':
@@ -96,10 +97,10 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
                 msgTitle = 'Export Error'
                 msgText = 'insufficient data for export w/ order={0} polynomial'.format(order)
                 msgText += ', must have at least {0} points'.format(order+1)
-                QtGui.QMessageBox.warning(self,msgTitle, msgText)
+                QtWidgets.QMessageBox.warning(self,msgTitle, msgText)
                 return
 
-        solutionName, flag = QtGui.QInputDialog.getText(
+        solutionName, flag = QtWidgets.QInputDialog.getText(
                 self,
                 'Export: Test Solultion Data',
                 'Enter name for test solution:',
@@ -110,14 +111,14 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
         solutionName = str(solutionName)
         if not import_export.isUniqueSolutionName(self.userHome,solutionName):
             msg = 'User Test solution, {0}, already exists - overwrite?'.format(solutionName)
-            reply = QtGui.QMessageBox.question(
+            reply = QtWidgets.QMessageBox.question(
                     self,
                     'Export Warning', 
                     msg,
-                    QtGui.QMessageBox.Yes, 
-                    QtGui.QMessageBox.No
+                    QtWidgets.QMessageBox.Yes, 
+                    QtWidgets.QMessageBox.No
                     )
-            if reply == QtGui.QMessageBox.No:
+            if reply == QtWidgets.QMessageBox.No:
                 return
             else:
                 import_export.deleteTestSolution(self.userHome,solutionName)
@@ -152,6 +153,8 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
         self.updatePlot()
 
     def updatePlot(self,create=False):
+
+        plt.ion()
 
         if not create and not plt.fignum_exists(constants.PLOT_FIGURE_NUM):
             return
@@ -214,6 +217,7 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
                     color='r'
                     )
         plt.draw()
+        plt.ioff()
 
     def getMeasurement(self):
         if constants.DEVEL_FAKE_MEASURE:
@@ -311,7 +315,7 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
             msgTitle = 'Export Error'
             msgText = 'insufficient data for export w/ linear fit' 
             msgText += ' - must have at least 2 points'
-            QtGui.QMessageBox.warning(self,msgTitle, msgText)
+            QtWidgets.QMessageBox.warning(self,msgTitle, msgText)
 
     def getUnits(self):
         if self.actionUnitsUM.isChecked():
@@ -339,11 +343,11 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
     def setUnitStr(self):
         units = self.getUnits().lower()
         if units == 'um':
-            unitStr = QtCore.QString.fromUtf8("Concentration (\xc2\xb5M)")
+            unitStr = "Concentration (\xb5M)"
         elif units == 'ppm':
-            unitStr = QtCore.QString('Concentration (ppm)')
+            unitStr = 'Concentration (ppm)'
         else:
-            unitStr = QtCore.QString('(pH)')
+            unitStr = '(pH)'
         self.tableWidget.setHorizontalHeaderLabels((unitStr,'Absorbance')) 
 
 def dataListToFloat(dataList):
@@ -362,11 +366,11 @@ def startPlotMainWindow(app):
     app.exec_()
 
 def startPlotApp():
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     startPlotMainWindow(app)
 
 
-class DoubleItemDelegate(QtGui.QStyledItemDelegate):
+class DoubleItemDelegate(QtWidgets.QStyledItemDelegate):
 
     def __init__(self,*args,**kwargs):
         super(DoubleItemDelegate,self).__init__(*args,**kwargs)

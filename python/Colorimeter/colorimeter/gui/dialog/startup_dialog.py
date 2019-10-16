@@ -1,14 +1,15 @@
 from __future__ import print_function
 import sys
-from PyQt4 import QtCore
-from PyQt4 import QtGui
-from startup_dialog_ui import Ui_startupDialog
+from PyQt5 import QtCore
+from PyQt5 import QtGui
+from PyQt5 import QtWidgets
+from .startup_dialog_ui import Ui_startupDialog
 from colorimeter import constants
 from colorimeter.gui.basic import startBasicMainWindow
 from colorimeter.gui.plot import startPlotMainWindow
 from colorimeter.gui.measure import startMeasureMainWindow
 
-class StartupDialog(QtGui.QDialog,Ui_startupDialog):
+class StartupDialog(QtWidgets.QDialog,Ui_startupDialog):
 
     def __init__(self,parent=None):
         super(StartupDialog,self).__init__(parent)
@@ -44,7 +45,7 @@ class StartupDialog(QtGui.QDialog,Ui_startupDialog):
         self.close()
 
     def setAppSize(self):
-        availGeom = QtGui.QApplication.desktop().availableGeometry()
+        availGeom = QtWidgets.QApplication.desktop().availableGeometry()
         x, y = constants.START_POS_X, constants.START_POS_Y
         width = min([0.9*(availGeom.width()-x), self.geometry().width()])
         height = min([0.9*(availGeom.height()-y), self.geometry().height()])
@@ -57,7 +58,7 @@ class StartupDialog(QtGui.QDialog,Ui_startupDialog):
         return self.program
 
 def startColorimeterApp():
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     dlg = StartupDialog()
     program = dlg.run()
     if program is not None:

@@ -2,16 +2,17 @@ from __future__ import print_function
 import os
 import functools
 import platform
-from PyQt4 import QtCore
-from PyQt4 import QtGui
+from PyQt5 import QtCore
+from PyQt5 import QtGui
+from PyQt5 import QtWidgets
 import matplotlib.pyplot as plt 
 
-import constants
-import import_export
-from colorimeter_serial import Colorimeter
+from . import constants
+from . import import_export
+from .colorimeter_serial import Colorimeter
 from colorimeter.gui.dialog.test_solution_dialog import TestSolutionDialog
 
-class MainWindowCommon(QtGui.QMainWindow):
+class MainWindowCommon(QtWidgets.QMainWindow):
 
     def __init__(self,parent=None):
         super(MainWindowCommon,self).__init__(parent)
@@ -32,7 +33,7 @@ class MainWindowCommon(QtGui.QMainWindow):
         self.actionAbout.triggered.connect(self.about_Callback)
         self.actionSave.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_A)
 
-        self.modeActionGroup = QtGui.QActionGroup(self)
+        self.modeActionGroup = QtWidgets.QActionGroup(self)
         self.modeActionGroup.addAction(self.actionStandardRGBLED)
         self.modeActionGroup.addAction(self.actionCustomLEDVerB)
         self.modeActionGroup.addAction(self.actionCustomLEDVerC)
@@ -46,13 +47,13 @@ class MainWindowCommon(QtGui.QMainWindow):
         customVerC_Callback = functools.partial(self.sensorMode_Callback,'CustomLEDVerC')
         self.actionCustomLEDVerC.triggered.connect(customVerC_Callback)
 
-        self.significantDigitActionGroup = QtGui.QActionGroup(self)
+        self.significantDigitActionGroup = QtWidgets.QActionGroup(self)
         self.significantDigitActionGroup.setExclusive(True)
         self.significantDigitAction2Value = {}
         
         for i in constants.SIGNIFICANT_DIGITS_LIST:
             actionName = 'actionSignificantDigits{0}'.format(i)
-            action = QtGui.QAction(self.menuSignificantDigits)
+            action = QtWidgets.QAction(self.menuSignificantDigits)
             action.setCheckable(True)
             action.setText('{0}'.format(i))
             self.menuSignificantDigits.addAction(action)
@@ -95,7 +96,7 @@ class MainWindowCommon(QtGui.QMainWindow):
         if constants.DEVEL_FAKE_MEASURE: 
             msgTitle = 'Development'
             msgText = 'Development mode fake measure is enabled'
-            QtGui.QMessageBox.warning(self,msgTitle, msgText)
+            QtWidgets.QMessageBox.warning(self,msgTitle, msgText)
 
 
     def connectPressed_Callback(self):
@@ -120,10 +121,10 @@ class MainWindowCommon(QtGui.QMainWindow):
             try:
                 self.dev = Colorimeter(self.port)
                 self.numSamples = self.dev.getNumSamples()
-            except Exception, e:
+            except Exception as e:
                 msgTitle = 'Connection Error'
                 msgText = 'unable to connect to device: {0}'.format(str(e))
-                QtGui.QMessageBox.warning(self,msgTitle, msgText)
+                QtWidgets.QMessageBox.warning(self,msgTitle, msgText)
                 self.connectPushButton.setText('Connect')
                 self.statusbar.showMessage('Not Connected')
                 self.dev = None
@@ -139,8 +140,8 @@ class MainWindowCommon(QtGui.QMainWindow):
             self.connectPushButton.setText('Connect')
             try:
                 self.cleanUpAndCloseDevice()
-            except Exception, e:
-                QtGui.QMessageBox.critical(self,'Error', str(e))
+            except Exception as e:
+                QtWidgets.QMessageBox.critical(self,'Error', str(e))
         self.samplesLineEdit.setText('')
 
     def samplesChanged_Callback(self):
@@ -160,13 +161,13 @@ class MainWindowCommon(QtGui.QMainWindow):
         if not constants.DEVEL_FAKE_MEASURE: 
             modeConfig = self.getModeConfig()
             error = False
-            for ledNum, ledValues in modeConfig['LED'].iteritems():
+            for ledNum, ledValues in modeConfig['LED'].items():
                 try:
                     self.dev.calibrate(ledValues['devColor'])
-                except IOError, e:
+                except IOError as e:
                     msgTitle = 'Calibration Error:'
                     msgText = 'unable to calibrate device: {0}'.format(str(e))
-                    QtGui.QMessageBox.warning(self,msgTitle, msgText)
+                    QtWidgets.QMessageBox.warning(self,msgTitle, msgText)
                     error = True
             if error:
                 self.isCalibrated = False
@@ -194,7 +195,7 @@ class MainWindowCommon(QtGui.QMainWindow):
         self.port = str(self.portLineEdit.text())
 
     def setAppSize(self):
-        availGeom = QtGui.QApplication.desktop().availableGeometry()
+        availGeom = QtWidgets.QApplication.desktop().availableGeometry()
         x, y = constants.START_POS_X, constants.START_POS_Y
         width = min([0.9*(availGeom.width()-x), self.geometry().width()])
         height = min([0.9*(availGeom.height()-y), self.geometry().height()])
@@ -204,19 +205,19 @@ class MainWindowCommon(QtGui.QMainWindow):
         if not self.haveData():
             msgTitle = 'Save Error'
             msgText = 'No data to save.'
-            QtGui.QMessageBox.warning(self,msgTitle, msgText)
+            QtWidgets.QMessageBox.warning(self,msgTitle, msgText)
             return
-        dialog = QtGui.QFileDialog()
-        dialog.setFileMode(QtGui.QFileDialog.AnyFile) 
+        dialog = QtWidgets.QFileDialog()
+        dialog.setFileMode(QtWidgets.QFileDialog.AnyFile) 
         if os.path.isdir(self.lastSaveDir):
             saveDir = self.lastSaveDir
         else:
             saveDir = self.userHome
-        filename = dialog.getSaveFileName(
+        filename, _ = dialog.getSaveFileName(
                    None,
                    'Select data file',
                    saveDir,
-                   options=QtGui.QFileDialog.DontUseNativeDialog,
+                   options=QtWidgets.QFileDialog.DontUseNativeDialog,
                    )              
         filename = str(filename)
         if not filename:
@@ -237,22 +238,22 @@ class MainWindowCommon(QtGui.QMainWindow):
                 self.aboutText,
                 constants.ABOUT_TEXT_COMMON
                 )
-        QtGui.QMessageBox.about(self,self.aboutCaption, aboutText)
+        QtWidgets.QMessageBox.about(self,self.aboutCaption, aboutText)
 
     def sensorMode_Callback(self,newSensorMode):
         if (self.dev is not None) and (newSensorMode != self.sensorMode): 
             if self.haveData():
-                reply = QtGui.QMessageBox.question(
+                reply = QtWidgets.QMessageBox.question(
                         self, 
                         'Message', 
                         'Changing sensor mode will clear all data. Continue?', 
-                        QtGui.QMessageBox.Yes, 
-                        QtGui.QMessageBox.No
+                        QtWidgets.QMessageBox.Yes, 
+                        QtWidgets.QMessageBox.No
                         )
             else:
-                reply = QtGui.QMessageBox.Yes
+                reply = QtWidgets.QMessageBox.Yes
 
-            if reply == QtGui.QMessageBox.Yes:
+            if reply == QtWidgets.QMessageBox.Yes:
                 self.setMode(newSensorMode)
             else:
                 self.sensorModeSetChecked(self.sensorMode)
@@ -286,10 +287,10 @@ class MainWindowCommon(QtGui.QMainWindow):
                 self.dev.setSensorModeColorSpecific()
             else:
                 self.dev.setSensorModeColorIndependent()
-        except Exception, e:
+        except Exception as e:
             msgTitle = 'Set LED Mode Error'
             msgText = 'error setting device LED mode: {0}'.format(str(e))
-            QtGui.QMessageBox.warning(self,msgTitle, msgText)
+            QtWidgets.QMessageBox.warning(self,msgTitle, msgText)
 
     def isStandardRgbLEDMode(self):
         return self.actionStandardRGBLED.isChecked()
@@ -336,7 +337,7 @@ class MainWindowCommon(QtGui.QMainWindow):
             self.samplesLineEdit.setEnabled(True)
 
     def getSignificantDigits(self):
-        for action, value in self.significantDigitAction2Value.iteritems():
+        for action, value in self.significantDigitAction2Value.items():
             if action.isChecked():
                 return value
 
@@ -401,7 +402,9 @@ class MainWindowWithTable(MainWindowCommon):
         super(MainWindowWithTable,self).initialize()
         self.setLED(0) # default is first led 
         self.lastLoadDir = self.userHome
-        self.tableWidget.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
+        header = self.tableWidget.horizontalHeader()
+        header.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
+        header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
         self.checkUserTestSolutionDir()
 
     def checkUserTestSolutionDir(self):
@@ -409,10 +412,10 @@ class MainWindowWithTable(MainWindowCommon):
         if not os.path.isdir(userTestSolutionDir):
             try:
                 os.makedirs(userTestSolutionDir)
-            except Exception, e:
+            except Exception as e:
                 msgTitle = 'Setup Warning'
                 msgText = 'Unable to create data directory, {0}\n{1}'.format(userTestSolutionDir,str(e))
-                QtGui.QMessageBox.warning(self,msgTitle, msgText)
+                QtWidgets.QMessageBox.warning(self,msgTitle, msgText)
 
     def setMode(self,value):
         self.setLED(0)
@@ -426,17 +429,17 @@ class MainWindowWithTable(MainWindowCommon):
         """
         Load data in table from a text file.
         """
-        dialog = QtGui.QFileDialog()
-        dialog.setFileMode(QtGui.QFileDialog.AnyFile) 
+        dialog = QtWidgets.QFileDialog()
+        dialog.setFileMode(QtWidgets.QFileDialog.AnyFile) 
         if os.path.isdir(self.lastLoadDir):
             loadDir = self.lastLoadDir
         else:
             loadDir = self.userHome
-        filename = dialog.getOpenFileName(
+        filename, _ = dialog.getOpenFileName(
                    None,
                    'Select data file',
                    loadDir,
-                   options=QtGui.QFileDialog.DontUseNativeDialog,
+                   options=QtWidgets.QFileDialog.DontUseNativeDialog,
                    )              
         filename = str(filename)
         if not filename:
@@ -447,7 +450,7 @@ class MainWindowWithTable(MainWindowCommon):
         if ledColor is None:
             msgTitle = 'Import Warning'
             msgText = 'Unable to determine LED from data file' 
-            QtGui.QMessageBox.warning(self,msgTitle, msgText)
+            QtWidgets.QMessageBox.warning(self,msgTitle, msgText)
         else:
             standardLEDColors = self.getAllowedLEDColors('StandardRGBLED')
             if sensorMode is None and ledColor in standardLEDColors:
@@ -458,7 +461,7 @@ class MainWindowWithTable(MainWindowCommon):
             if not sensorMode in allowedSensorModes:
                 msgTitle = 'Import Warning'
                 msgText = 'Unknown sensor mode, {0}, in data file'.format(sensorMode)
-                QtGui.QMessageBox.warning(self,msgTitle, msgText)
+                QtWidgets.QMessageBox.warning(self,msgTitle, msgText)
 
             allowedColors = self.getAllowedLEDColors(sensorMode)
             if ledColor in allowedColors:
@@ -467,7 +470,7 @@ class MainWindowWithTable(MainWindowCommon):
             else:
                 msgTitle = 'Import Warning'
                 msgText = 'Unknown LED color for given mode, {0}, in data file'.format(ledColor)
-                QtGui.QMessageBox.warning(self,msgTitle, msgText)
+                QtWidgets.QMessageBox.warning(self,msgTitle, msgText)
 
         self.setUnits(units);
 
@@ -477,7 +480,7 @@ class MainWindowWithTable(MainWindowCommon):
 
     def getAllowedLEDColors(self,sensorMode): 
         modeConfig = self.getModeConfig(sensorMode)
-        allowedColors = [v['text'] for k,v in modeConfig['LED'].iteritems()]
+        allowedColors = [v['text'] for k,v in modeConfig['LED'].items()]
         return allowedColors
 
     def getAllowedSensorModes(self):
@@ -491,10 +494,10 @@ class MainWindowWithTable(MainWindowCommon):
             fileLines = []
             with open(filename,'r') as f:
                 fileLines = f.readlines()
-        except IOError, e:
+        except IOError as e:
             msgTitle = 'File Load Error'
             msgText = 'Unable to load data file: {0}'.format(str(e))
-            QtGui.QMessageBox.warning(self,msgTitle, msgText)
+            QtWidgets.QMessageBox.warning(self,msgTitle, msgText)
             return 
 
         dataList = []
@@ -512,11 +515,11 @@ class MainWindowWithTable(MainWindowCommon):
                     sensorModeIndex = colorIndex+1
                     try:
                         ledColor = line[colorIndex]
-                    except IndexError, e:
+                    except IndexError as e:
                         continue
                     try:
                         sensorMode = line[sensorModeIndex]
-                    except IndexError, e:
+                    except IndexError as e:
                         continue
                     if ledColor == 'custom':
                         # For backwards compatibility
@@ -585,7 +588,7 @@ class MainWindowWithTable(MainWindowCommon):
 
     def setLEDByText(self,ledText):
         modeConfig = self.getModeConfig()
-        text2Num = dict([(d['text'], n) for n, d in modeConfig['LED'].iteritems()])
+        text2Num = dict([(d['text'], n) for n, d in modeConfig['LED'].items()])
         ledNum = text2Num[ledText]
         self.setLED(ledNum)
 
@@ -631,7 +634,7 @@ class MainWindowWithTable(MainWindowCommon):
 
     def setLEDChecks(self):
         modeConfig = self.getModeConfig()
-        for ledNum, ledDict in modeConfig['LED'].iteritems():
+        for ledNum, ledDict in modeConfig['LED'].items():
             button = getattr(self,'LED{0}RadioButton'.format(ledNum))
             button.setCheckable(True)
             if ledNum == self.currentLED:
@@ -641,7 +644,7 @@ class MainWindowWithTable(MainWindowCommon):
 
     def setLEDText(self):
         modeConfig = self.getModeConfig()
-        for ledNum, ledDict in modeConfig['LED'].iteritems():
+        for ledNum, ledDict in modeConfig['LED'].items():
             button = getattr(self,'LED{0}RadioButton'.format(ledNum))
             button.setText(ledDict['text'])
 

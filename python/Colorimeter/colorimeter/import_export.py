@@ -4,7 +4,7 @@ import sys
 import yaml
 import time
 import pkg_resources
-import constants
+from . import constants
 
 
 def getUserTestSolutionDir(userHome): 
@@ -26,7 +26,7 @@ def loadTestSolutionDict(fileList,tag=''):
     for name in testFiles:
         try:
             data = importTestSolutionData(name)
-        except IOError, e:
+        except IOError as e:
             continue
         if data is None:
             continue

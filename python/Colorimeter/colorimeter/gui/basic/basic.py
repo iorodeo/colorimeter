@@ -5,17 +5,18 @@ import time
 import platform
 import matplotlib
 import matplotlib.pyplot as plt 
-plt.ion()
 import numpy
 import numpy.random
 import functools
-from PyQt4 import QtCore
-from PyQt4 import QtGui
+from PyQt5 import QtCore
+from PyQt5 import QtGui
+from PyQt5 import QtWidgets
 
-from basic_ui import Ui_MainWindow 
 from colorimeter import Colorimeter
 from colorimeter import constants
 from colorimeter.main_window import MainWindowCommon
+
+from .basic_ui import Ui_MainWindow 
 
 DFLT_PORT_WINDOWS = 'com1' 
 DFLT_PORT_LINUX = '/dev/ttyACM0' 
@@ -125,10 +126,10 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
                 devColor = modeConfig['LED'][ledNum]['devColor']
                 try:
                     freqValues[i], tranValues[i], absoValues[i] = self.dev.getMeasurement(devColor)
-                except IOError, e: 
+                except IOError as e: 
                     msgTitle = 'Measurement Error:'
                     msgText = 'unable to get {0} measurement: {0}'.format(color, str(e))
-                    QtGui.QMessageBox.warning(self,msgTitle, msgText)
+                    QtWidgets.QMessageBox.warning(self,msgTitle, msgText)
                     error = True
                     break
             if error:
@@ -137,6 +138,7 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
                 self.measValues = freqValues, tranValues, absoValues
 
     def updatePlot(self,create=False):
+        plt.ion()
         modeConfig = self.getModeConfig()
         if not create and not plt.fignum_exists(constants.PLOT_FIGURE_NUM):
             return
@@ -147,7 +149,7 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
         if self.plotCheckBox.isChecked():
             barWidth = constants.PLOT_BAR_WIDTH 
             xLabelList, absoList = [], []
-            for ledNum, ledDict in modeConfig['LED'].iteritems():
+            for ledNum, ledDict in modeConfig['LED'].items():
                 if self.isLEDChecked(ledNum):
                     xLabelList.append(ledDict['text'])
                     absoList.append(absoValues[ledNum])
@@ -165,28 +167,29 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
             plt.clf()
             self.fig = plt.figure(constants.PLOT_FIGURE_NUM)
             self.fig.canvas.manager.set_window_title('Colorimeter Basic: Absorbance Plot')
-            ax = self.fig.add_subplot(111)
+            self.ax = self.fig.add_subplot(111)
 
             for y in yticks[1:]:
-                ax.plot(xlim,[y,y],'k:')
+                self.ax.plot(xlim,[y,y],'k:')
 
             digits = self.getSignificantDigits()
             for p, a, c in zip(posList, absoList, xLabelList): 
                 colorSymb = constants.PLOT_COLOR_DICT[c]
-                ax.bar([p],[a],width=barWidth,color=colorSymb,linewidth=2)
+                self.ax.bar([p],[a],width=barWidth,color=colorSymb,linewidth=2,edgecolor='black')
                 textXPos = p+0.5*barWidth
                 textYPos = a+0.01
                 valueStr = '{value:1.{digits}f}'.format(value=a,digits=digits)
-                ax.text(textXPos,textYPos,valueStr,ha ='center',va ='bottom')
+                self.ax.text(textXPos,textYPos,valueStr,ha ='center',va ='bottom')
 
-            ax.set_xlim(*xlim)
-            ax.set_ylim(*ylim)
-            ax.set_xticks([x+0.5*barWidth for x in posList])
-            ax.set_xticklabels(xLabelList)
-            ax.set_ylabel('Absorbance')
-            ax.set_xlabel('LED')
-            ax.set_yticks(yticks)
+            self.ax.set_xlim(*xlim)
+            self.ax.set_ylim(*ylim)
+            self.ax.set_xticks([x+0.5*barWidth for x in posList])
+            self.ax.set_xticklabels(xLabelList)
+            self.ax.set_ylabel('Absorbance')
+            self.ax.set_xlabel('LED')
+            self.ax.set_yticks(yticks)
             plt.draw() 
+            plt.ioff()
 
     def updateResultsDisplay(self):
         if self.measValues is None:
@@ -197,7 +200,7 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
             digits = self.getSignificantDigits()
             modeConfig = self.getModeConfig()
             tranStrList, absoStrList = [], []
-            for ledNum, ledDict in modeConfig['LED'].iteritems():
+            for ledNum, ledDict in modeConfig['LED'].items():
                 if self.isLEDChecked(ledNum):
                     tranStr = '{color}:\t{value:1.{digits}f}'.format(
                             color=ledDict['text'], 
@@ -225,7 +228,7 @@ class BasicMainWindow(MainWindowCommon,Ui_MainWindow):
         modeConfig = self.getModeConfig()
         maxNameLen = max([len(d['text']) for d in modeConfig['LED'].values()])
         dataList = []
-        for ledNum, ledDict in modeConfig['LED'].iteritems():
+        for ledNum, ledDict in modeConfig['LED'].items():
             tran = tranValues[ledNum]
             abso = absoValues[ledNum]
             if self.isLEDChecked(ledNum):
@@ -314,7 +317,7 @@ def startBasicMainWindow(app):
     app.exec_()
 
 def startBasicApp():
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     startBasicMainWindow(app)
 
 # -----------------------------------------------------------------------------

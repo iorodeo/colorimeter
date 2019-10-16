@@ -33,7 +33,8 @@ def getPolynomialFit(xList,yList,order=3,numPts=500):
 
     ind = numpy.arange(yFit.shape[0])
     yFitDiff = yFit[1:] - yFit[:-1]
-    maskPos = yFitDiff > 0
+    maskPos = scipy.tile(True,yFit.shape[0])
+    maskPos[1:] = yFitDiff > 0
     indPos = ind[maskPos]
     indTrim = getLargestContiguousBlock(indPos)
 
@@ -71,7 +72,7 @@ def getLargestContiguousBlock(ind):
 def getValueFromFit(fitCoeff,inputValue,numPts=500):
     interpFunc, minVal, maxVal = fitCoeff
     if (inputValue < minVal) or (inputValue > maxVal):
-        raise ValueError, 'value outside of calibration range'
+        raise(ValueError, 'value outside of calibration range')
     outputValue = interpFunc(inputValue)
     return float(outputValue)
 

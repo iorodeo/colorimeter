@@ -1,13 +1,14 @@
 from __future__ import print_function
 import os
 import sys
-from PyQt4 import QtCore
-from PyQt4 import QtGui
-from test_solution_dialog_ui import Ui_testSolutionDialog
+from PyQt5 import QtCore
+from PyQt5 import QtGui
+from PyQt5 import QtWidgets
+from .test_solution_dialog_ui import Ui_testSolutionDialog
 
 from colorimeter import import_export
 
-class TestSolutionDialog(QtGui.QDialog,Ui_testSolutionDialog):
+class TestSolutionDialog(QtWidgets.QDialog,Ui_testSolutionDialog):
 
     def __init__(self, mode='edit', parent=None):
         super(TestSolutionDialog,self).__init__(parent)
@@ -71,7 +72,7 @@ class TestSolutionDialog(QtGui.QDialog,Ui_testSolutionDialog):
             buttonText = 'Import'
             windowTitle = 'Test Solution Importer'
         else:
-            raise ValueError, 'unknown mode {0}'.format(value)
+            raise(ValueError, 'unknown mode {0}'.format(value))
         self.modePushButton.setText(buttonText)
         self.setWindowTitle(windowTitle)
         self._mode = value

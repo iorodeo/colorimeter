@@ -1,26 +1,28 @@
-from PyQt4 import QtCore
-from PyQt4 import QtGui
-
-from constants import TABLE_MIN_ROW_COUNT
-from constants import TABLE_COL_COUNT
+from PyQt5 import QtCore
+from PyQt5 import QtGui
+from PyQt5 import QtWidgets
 
 
-class ColorimeterTableWidget(QtGui.QTableWidget):
+from .constants import TABLE_MIN_ROW_COUNT
+from .constants import TABLE_COL_COUNT
+
+
+class ColorimeterTableWidget(QtWidgets.QTableWidget):
 
     def __init__(self,parent=None):
         super(ColorimeterTableWidget,self).__init__(parent=parent)
         self.measIndex = 0
         self.minRowCount = TABLE_MIN_ROW_COUNT
         self.contextMenuEvent = self.ContextMenu_Callback
-        self.copyAction = QtGui.QAction(self)
+        self.copyAction = QtWidgets.QAction(self)
         self.copyAction.setShortcut(QtCore.Qt.CTRL + QtCore.Qt.Key_C)
         self.copyAction.triggered.connect(self.copy_Callback)
         self.addAction(self.copyAction)
-        self.deleteAction = QtGui.QAction(self)
+        self.deleteAction = QtWidgets.QAction(self)
         self.deleteAction.setShortcut(QtCore.Qt.Key_Delete)
         self.deleteAction.triggered.connect(self.delete_Callback)
         self.addAction(self.deleteAction)
-        self.backspaceAction = QtGui.QAction(self)
+        self.backspaceAction = QtWidgets.QAction(self)
         self.backspaceAction.setShortcut(QtCore.Qt.Key_Backspace)
         self.backspaceAction.triggered.connect(self.delete_Callback)
         self.addAction(self.backspaceAction)
@@ -39,7 +41,7 @@ class ColorimeterTableWidget(QtGui.QTableWidget):
         Callback function for the table widget context menus. Currently
         handles copy and delete actions.
         """
-        menu = QtGui.QMenu(self)
+        menu = QtWidgets.QMenu(self)
         copyAction = menu.addAction("Copy")
         deleteAction = menu.addAction("Delete")
         action = menu.exec_(self.mapToGlobal(event.pos()))
@@ -56,10 +58,10 @@ class ColorimeterTableWidget(QtGui.QTableWidget):
         for i in range(self.rowCount()):
             item0 = self.item(i,0)
             item1 = self.item(i,1)
-            if self.isItemSelected(item0):
-                if not self.isItemSelected(item1):
+            if item0.isSelected():
+                if not item1.isSelected():
                     item0.setText("")
-            if self.isItemSelected(item1):
+            if item1.isSelected():
                 removeList.append(item1.row())
 
         for ind in reversed(removeList):
@@ -71,7 +73,7 @@ class ColorimeterTableWidget(QtGui.QTableWidget):
             self.setRowCount(TABLE_MIN_ROW_COUNT)
             for row in range(self.measIndex,TABLE_MIN_ROW_COUNT): 
                 for col in range(0,TABLE_COL_COUNT): 
-                    tableItem = QtGui.QTableWidgetItem() 
+                    tableItem = QtWidgets.QTableWidgetItem() 
                     tableItem.setFlags(QtCore.Qt.NoItemFlags) 
                     self.setItem(row,col,tableItem)
 
@@ -96,7 +98,7 @@ class ColorimeterTableWidget(QtGui.QTableWidget):
                     clipboardList.append(" ")
             clipboardList.append('\r\n')
         clipboardStr = ''.join(clipboardList)
-        clipboard = QtGui.QApplication.clipboard()
+        clipboard = QtWidgets.QApplication.clipboard()
         clipboard.setText(clipboardStr)
 
     def getSelectedList(self):
@@ -109,7 +111,7 @@ class ColorimeterTableWidget(QtGui.QTableWidget):
             rowList = []
             for j in range(self.columnCount()):
                 item = self.item(i,j)
-                if self.isItemSelected(item):
+                if item.isSelected():
                     rowList.append(str(item.text()))
             selectedList.append(rowList)
         return selectedList
@@ -120,20 +122,20 @@ class ColorimeterTableWidget(QtGui.QTableWidget):
         I dialog request confirmation if presented. 
         """
         if setup:
-            reply = QtGui.QMessageBox.Yes
+            reply = QtWidgets.QMessageBox.Yes
         elif self.haveData():
-            reply = QtGui.QMessageBox.question( self, 'Message', msg, 
-                    QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
+            reply = QtWidgets.QMessageBox.question( self, 'Message', msg, 
+                    QtWidgets.QMessageBox.Yes, QtWidgets.QMessageBox.No)
         else: 
             return True
 
-        if reply == QtGui.QMessageBox.Yes:
+        if reply == QtWidgets.QMessageBox.Yes:
             self.updateFlag = False
             self.setRowCount(TABLE_MIN_ROW_COUNT)
             self.setColumnCount(TABLE_COL_COUNT)
             for row in range(TABLE_MIN_ROW_COUNT+1):
                 for col in range(TABLE_COL_COUNT+1):
-                    tableItem = QtGui.QTableWidgetItem()
+                    tableItem = QtWidgets.QTableWidgetItem()
                     tableItem.setFlags(QtCore.Qt.NoItemFlags)
                     self.setItem(row,col,tableItem)
             self.measIndex = 0
@@ -155,12 +157,12 @@ class ColorimeterTableWidget(QtGui.QTableWidget):
         rowCount = self.measIndex+1
         if rowCount > self.minRowCount:
             self.setRowCount(rowCount)
-        tableItem = QtGui.QTableWidgetItem()
+        tableItem = QtWidgets.QTableWidgetItem()
         tableItem.setText(item1)
         tableItem.setFlags(QtCore.Qt.ItemIsSelectable|QtCore.Qt.ItemIsEnabled)
         self.setItem(self.measIndex,1,tableItem)
 
-        tableItem = QtGui.QTableWidgetItem()
+        tableItem = QtWidgets.QTableWidgetItem()
         tableItem.setText(item0)
         self.setItem(self.measIndex,0,tableItem)
         if selectAndEdit:

@@ -7,12 +7,12 @@ import numpy
 import random
 import matplotlib
 import matplotlib.pyplot as plt 
-plt.ion()
 
-from PyQt4 import QtCore
-from PyQt4 import QtGui
+from PyQt5 import QtCore
+from PyQt5 import QtGui
+from PyQt5 import QtWidgets
 
-from measure_ui import Ui_MainWindow 
+from .measure_ui import Ui_MainWindow 
 from colorimeter import constants 
 from colorimeter import import_export 
 from colorimeter import standard_curve
@@ -29,7 +29,7 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
         self.initialize()
 
     def createActionGroup(self):
-        self.unitsActionGroup = QtGui.QActionGroup(self)
+        self.unitsActionGroup = QtWidgets.QActionGroup(self)
         self.unitsActionGroup.addAction(self.actionSampleUnitsUM)
         self.unitsActionGroup.addAction(self.actionSampleUnitsPPM)
         self.unitsActionGroup.addAction(self.actionSampleUnitsPH)
@@ -121,6 +121,7 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
             if rsp:
                 self.isCalibrated = False
                 self.updateTestSolution(index)
+                self.closeFigure()
             else:
                 self.testSolutionComboBox.setCurrentIndex(
                         self.testSolutionIndex
@@ -189,10 +190,10 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
 
         try:
             measurementValue = self.absorbanceToUnit(absorbValue)
-        except ValueError, err: 
+        except ValueError as err: 
             msgTitle = 'Range Error'
             msgText = str(err)
-            QtGui.QMessageBox.warning(self,msgTitle, msgText)
+            QtWidgets.QMessageBox.warning(self,msgTitle, msgText)
             return
         digits = self.getSignificantDigits()
         measurementStr = '{value:1.{digits}f}'.format(value=measurementValue,digits=digits)
@@ -241,6 +242,7 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
                        #  will update even when disabled
 
     def updatePlot(self,create=False):
+        plt.ion()
         # Only create new figure is asked to do so
         if not create and not plt.fignum_exists(constants.PLOT_FIGURE_NUM):
             return
@@ -284,6 +286,7 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
         ax.set_ylabel(yLabelStr)
         ax.set_xlabel('Samples')
         plt.draw() 
+        plt.ioff()
 
     def updateTestSolutionDicts(self):
         # User test solutions
@@ -301,7 +304,7 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
 
     def filterTestSolutionDict(self,testSolutionDict,mode):
         newTestSolutionDict = {}
-        for testName, pathName in testSolutionDict.iteritems():
+        for testName, pathName in testSolutionDict.items():
             data = import_export.importTestSolutionData(pathName)
             dataSensorMode, dummy = import_export.getModeAndLEDTextFromData(data)
             if dataSensorMode == mode:
@@ -351,13 +354,13 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
         msgTitle = 'Import Error'
         if not data['fitType'] in ('linear', 'polynomial'):
             msgText = 'unknown fit type: {0}'.format(data['fitType']) 
-            QtGui.QMessageBox.warning(self,msgTitle, msgText)
+            QtWidgets.QMessageBox.warning(self,msgTitle, msgText)
             return False
 
         if data['fitType'] == 'polynomial':
             if data['fitParams'] not in (2,3,4,5):
                 msgText = 'unsuported polynomial order: {0}'.format(fitParams) 
-                QtGui.QMessageBox.warning(self,msgTitle, msgText)
+                QtWidgets.QMessageBox.warning(self,msgTitle, msgText)
                 return False
         return True
 
@@ -366,17 +369,18 @@ class MeasureMainWindow(MainWindowWithTable, Ui_MainWindow):
             self.actionSampleUnitsUM.setChecked(True)
             self.actionSampleUnitsPPM.setChecked(False)
             self.actionSampleUnitsPH.setChecked(False)
-            unitStr = QtCore.QString.fromUtf8("Concentration (\xc2\xb5M)")
+            unitStr = "Concentration (\xb5M)"
+
         elif units.lower() == 'ppm':
             self.actionSampleUnitsUM.setChecked(False)
             self.actionSampleUnitsPPM.setChecked(True)
             self.actionSampleUnitsPH.setChecked(False)
-            unitStr = QtCore.QString('Concentration (ppm)')
+            unitStr = 'Concentration (ppm)'
         else:
             self.actionSampleUnitsUM.setChecked(False)
             self.actionSampleUnitsPPM.setChecked(False)
             self.actionSampleUnitsPH.setChecked(True)
-            unitStr = QtCore.QString('(pH)')
+            unitStr = '(pH)'
         self.units = units
         self.tableWidget.setHorizontalHeaderLabels(('Sample', unitStr)) 
 
@@ -422,7 +426,7 @@ def startMeasureMainWindow(app):
     app.exec_()
 
 def startMeasureApp():
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     startMeasureMainWindow(app)
 
 # -----------------------------------------------------------------------------

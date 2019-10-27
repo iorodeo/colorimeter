@@ -67,7 +67,9 @@ class PlotMainWindow(MainWindowWithTable, Ui_MainWindow):
     def importData_Callback(self):
         userSolutionDict = import_export.loadUserTestSolutionDict(self.userHome,tag='U')
         dfltSolutionDict = import_export.loadDefaultTestSolutionDict(tag='D')
-        solutionDict = dict(userSolutionDict.items() + dfltSolutionDict.items())
+        solutionDict = {}
+        solutionDict.update(dfltSolutionDict)
+        solutionDict.update(userSolutionDict)
         data = TestSolutionDialog().importData(solutionDict)
         if data is not None:
             sensorMode, ledText  = import_export.getModeAndLEDTextFromData(data)

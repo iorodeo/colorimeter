@@ -29,8 +29,11 @@ class StartupDialog(QtWidgets.QDialog,Ui_startupDialog):
                 self.measurePushButtonClicked_Callback
                 )
 
-    def initialize(self):
+    def reset(self):
         self.program = None
+
+    def initialize(self):
+        self.reset()
 
     def basicPushButtonClicked_Callback(self):
         self.program = startBasicMainWindow
@@ -61,8 +64,10 @@ def startColorimeterApp():
     app = QtWidgets.QApplication(sys.argv)
     dlg = StartupDialog()
     program = dlg.run()
-    if program is not None:
+    while program is not None:
         program(app)
+        dlg.reset()
+        program = dlg.run()
 
 # ---------------------------------------------------------------------------------
 if __name__ == '__main__':

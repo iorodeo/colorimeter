@@ -29,12 +29,20 @@ setup(
         'colorimeter/gui/dialog',
         ],
     package_data = { 'colorimeter': ['data/*.yaml']},
-    scripts=[
-        'bin/colorimeter-main',
-        'bin/colorimeter-basic', 
-        'bin/colorimeter-plot', 
-        'bin/colorimeter-measure',
-        ],
+    #scripts=[
+    #    'bin/colorimeter-main',
+    #    'bin/colorimeter-basic', 
+    #    'bin/colorimeter-plot', 
+    #    'bin/colorimeter-measure',
+    #    ],
+    entry_points = {
+        'console_scripts': [
+            'colorimeter-main = colorimeter.gui.dialog.startup_dialog:startColorimeterApp',
+            'colorimeter-basic = colorimeter.gui.basic:startBasicApp', 
+            'colorimeter-plot = colorimeter.gui.plot:startPlotApp', 
+            'colorimeter-measure = colorimeter.gui.measure:startMeasureApp', 
+            ],
+        },
     license='LICENSE.txt',
     description="Serial interface and measurement software for IO Rodeo's colorimeter",
     long_description=open('README.txt').read(),

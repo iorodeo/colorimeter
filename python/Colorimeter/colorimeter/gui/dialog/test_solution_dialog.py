@@ -41,15 +41,15 @@ class TestSolutionDialog(QtWidgets.QDialog,Ui_testSolutionDialog):
         if self.listWidget.count() <= 0:
             return;
         listItem = self.listWidget.currentItem()
-        if not self.listWidget.isItemSelected(listItem):
+        if not listItem.isSelected():
             return
         itemName = str(listItem.text())
         self.selectedItem = listItem
         if self.mode == 'edit':
             msg = 'Delete {0}?'.format(itemName)
-            reply = QtGui.QMessageBox.question( self, 'Delete', msg, 
-                    QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
-            if reply == QtGui.QMessageBox.Yes:
+            reply = QtWidgets.QMessageBox.question( self, 'Delete', msg, 
+                    QtWidgets.QMessageBox.Yes, QtWidgets.QMessageBox.No)
+            if reply == QtWidgets.QMessageBox.Yes:
                 testSolutionDict = self.testSolutionDict
                 fileName = testSolutionDict.pop(itemName)
                 os.remove(fileName)
@@ -87,7 +87,7 @@ class TestSolutionDialog(QtWidgets.QDialog,Ui_testSolutionDialog):
         if newDict:
             nameList = sorted(newDict.keys())
             for name in nameList:
-                listItem = QtGui.QListWidgetItem()
+                listItem = QtWidgets.QListWidgetItem()
                 listItem.setText(name)
                 self.listWidget.addItem(listItem)
             self._testSolutionDict = newDict
@@ -118,7 +118,7 @@ class TestSolutionDialog(QtWidgets.QDialog,Ui_testSolutionDialog):
 if __name__ == '__main__':
 
     mode = 'edit'
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     dlg = TestSolutionDialog(mode)
 
     userHome = os.getenv('USERPROFILE')

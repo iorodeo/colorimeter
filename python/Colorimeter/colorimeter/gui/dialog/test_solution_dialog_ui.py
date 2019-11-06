@@ -37,7 +37,7 @@ class Ui_testSolutionDialog(object):
         self.verticalLayout.addWidget(self.widget)
 
         self.retranslateUi(testSolutionDialog)
-        QtCore.QMetaObject.connectSlotsByName(testSolutionDialog)
+        #QtCore.QMetaObject.connectSlotsByName(testSolutionDialog)
 
     def retranslateUi(self, testSolutionDialog):
         _translate = QtCore.QCoreApplication.translate

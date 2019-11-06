@@ -78,7 +78,7 @@ def importTestSolutionData(fileName):
     test solutions directory.
     """
     with open(fileName,'r') as fid:
-        data = yaml.load(fid)
+        data = yaml.load(fid,Loader=yaml.Loader)
 
     # For backward compatability
     if not 'fitType' in data:

@@ -17,7 +17,7 @@ from setuptools import setup
 
 setup(
     name='Colorimeter',
-    version='0.1.0',
+    version='0.6.0',
     author='Will Dickson',
     author_email='will@iorodeo.com',
     packages=[

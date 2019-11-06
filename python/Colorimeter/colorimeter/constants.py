@@ -1,5 +1,7 @@
 import os
 
+VERSION = 0.6
+
 # Development
 DEVEL_FAKE_MEASURE = False 
 #DEVEL_FAKE_MEASURE = True 
@@ -99,9 +101,9 @@ START_POS_Y = 75
 
 # About text messages
 ABOUT_TEXT_COMMON = 'IO Rodeo Inc.'
-BASIC_ABOUT_TEXT = 'Colorimieter Basic 0.1'
-PLOT_ABOUT_TEXT = 'Colorimieter Plot 0.1'
-MEASURE_ABOUT_TEXT = 'Colorimieter Measure 0.1'
+BASIC_ABOUT_TEXT = 'Colorimieter Basic {}'.format(VERSION)
+PLOT_ABOUT_TEXT = 'Colorimieter Plot {}'.format(VERSION)
+MEASURE_ABOUT_TEXT = 'Colorimieter Measure {}'.format(VERSION)
 
 # Significant Digits
 SIGNIFICANT_DIGITS_LIST = [1,2,3,4] 

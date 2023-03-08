@@ -46,6 +46,6 @@ setup(
     license='LICENSE.txt',
     description="Serial interface and measurement software for IO Rodeo's colorimeter",
     long_description=open('README.txt').read(),
-    install_requires= [],
+    install_requires= ['pyserial', 'numpy', 'scipy', 'matplotlib', 'PyQt5', 'pyyaml'],
 )
 

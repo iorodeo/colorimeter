@@ -1,3 +1,3 @@
 import matplotlib
-if matplotlib.get_backend() != 'Qt4Agg':
-    matplotlib.use('Qt4Agg')
+if matplotlib.get_backend() != 'Qt5Agg':
+    matplotlib.use('Qt5Agg')

@@ -59,15 +59,15 @@ class Colorimeter(serial.Serial):
             print('rsp: ', rsp)
 
         if len(rsp) < 2:
-            raise(IOError, 'response from device is too short')
+            raise IOError('response from device is too short')
 
         if rsp[1] == str(RSP_ERROR):
-            raise(IOError, 'RSP_ERROR: {0}'.format(rsp))
+            raise IOError('RSP_ERROR: {0}'.format(rsp))
 
         try:
             rsp = eval(rsp.strip())
         except Exception:
-            raise(IOError, 'bad response unable to parse result')
+            raise IOError('bad response unable to parse result')
 
         return rsp
         
@@ -81,7 +81,7 @@ class Colorimeter(serial.Serial):
         else:
             color = color.lower()
             if not color in LED_COLOR_LIST:
-                raise(ValueError, 'unknown device color {0}'.format(color))
+                raise ValueError('unknown device color {0}'.format(color))
             calFunc = getattr(self,'calibrate{0}'.format(color.title()))
             rsp = calFunc()
 
@@ -138,7 +138,7 @@ class Colorimeter(serial.Serial):
             measureFunc = getattr(self,'getMeasurement{0}'.format(color.title()))
             freq, tran, abso = measureFunc()
         else:
-            raise(ValueError, 'unknown color {0}'.format(color))
+            raise ValueError('unknown color {0}'.format(color))
         return freq, tran, abso
 
     def getMeasurementRed(self):
@@ -182,7 +182,7 @@ class Colorimeter(serial.Serial):
         Set the number of samples aquired per measurement.
         """
         if value <= 0 or value > (2**16-1):
-            raise(ValueError, 'numSamples must be > 0 or < 2**16 -1')
+            raise ValueError('numSamples must be > 0 or < 2**16 -1')
         cmd = '[{0}, {1}]'.format(CMD_SET_NUM_SAMPLES,value)
         rsp = self.sendCmd(cmd)
 

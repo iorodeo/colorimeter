@@ -72,7 +72,7 @@ def getLargestContiguousBlock(ind):
 def getValueFromFit(fitCoeff,inputValue,numPts=500):
     interpFunc, minVal, maxVal = fitCoeff
     if (inputValue < minVal) or (inputValue > maxVal):
-        raise(ValueError, 'value outside of calibration range')
+        raise ValueError('value outside of calibration range')
     outputValue = interpFunc(inputValue)
     return float(outputValue)
 
